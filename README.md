@@ -4,7 +4,7 @@ Visor y validador de datos **Darwin Core** para colecciones biológicas. Abre un
 
 Corre entero en el navegador: una página HTML, sin servidor, sin cuenta, sin instalar nada. **Los datos nunca salen de tu computador.**
 
-![Pantalla de revisión de VisionCore](docs/captura.png)
+![Pantalla de revisión de VisionCore](captura.png)
 
 ## Para qué sirve
 
