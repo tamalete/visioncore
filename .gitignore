@@ -1,0 +1,23 @@
+# Datos biologicos: nunca se versionan (ver POLITICA_DE_DATOS.md)
+*.xlsx
+*.xls
+*.csv
+!ejemplo_visioncore.xlsx
+informe*
+Informe*
+correcciones*
+*Darwin*Core*
+*darwin*core*
+
+# Documentos de trabajo
+*.docx
+*.pptx
+*.pdf
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+node_modules/
