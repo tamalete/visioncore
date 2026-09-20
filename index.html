@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisionCore · visor y validador Darwin Core</title>
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
+<script src="vendor/leaflet/leaflet.js"></script>
+<link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css"/>
+<script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
+<script src="vendor/sheetjs/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#0c1015; --bg2:#131a22; --panel:#161e28; --panel2:#1b2530;
+  --edge:#26323f; --edge2:#33424f;
+  --txt:#e4ecf2; --txt2:#8ba0b0; --txt3:#5d7182;
+  --rept:#e0a24a; --amph:#4fd39a; --otro:#8899a6; --sel:#37e0ff;
+  --err:#ff7b72; --falta:#c9a227;
+  --accent:#4fd39a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Space Grotesk',sans-serif;color:var(--txt);background:var(--bg);display:grid;grid-template-columns:334px 1fr;height:100vh;overflow:hidden;transition:grid-template-columns .28s ease}
+body.aside-hidden{grid-template-columns:0 1fr}
+aside{background:var(--panel);border-right:1px solid var(--edge);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:500}
+body.aside-hidden aside{border-right:none}
+.panel-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0}
+.panel-scroll::-webkit-scrollbar{width:8px}.panel-scroll::-webkit-scrollbar-thumb{background:var(--edge2);border-radius:4px}
+.sec{border-bottom:1px solid var(--edge)}
+.sec-h{display:flex;align-items:center;gap:9px;padding:12px 22px;cursor:pointer;user-select:none;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);transition:color .13s}
+.sec-h:hover{color:var(--txt)}
+.sec-h .sc-caret{width:13px;height:13px;stroke:var(--txt3);fill:none;transition:transform .2s;flex-shrink:0}
+.sec.closed .sc-caret{transform:rotate(-90deg)}
+.sec-badge{margin-left:auto;font-size:10.5px;color:var(--txt3);background:var(--bg2);padding:2px 9px;border-radius:10px;letter-spacing:0}
+.sec-body{overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:2000px;opacity:1}
+.sec.closed .sec-body{max-height:0;opacity:0}
+.sec-list{flex:1;display:flex;flex-direction:column;min-height:0}
+.sec-list.closed{flex:0}
+.sec-body-list{padding-bottom:8px}
+.aside-toggle{position:fixed;top:16px;left:334px;z-index:700;width:22px;height:44px;background:var(--panel);border:1px solid var(--edge);border-left:none;border-radius:0 8px 8px 0;color:var(--txt2);cursor:pointer;font-size:15px;transition:left .28s ease,background .13s;display:grid;place-items:center}
+.aside-toggle:hover{background:var(--panel2);color:var(--txt)}
+body.aside-hidden .aside-toggle{left:0;transform:rotate(180deg);border-radius:8px 0 0 8px;border-left:1px solid var(--edge);border-right:none}
+.masthead{padding:22px 22px 16px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.kicker::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+h1{font-weight:600;font-size:24px;line-height:1.08;letter-spacing:-.02em}
+.sub{font-size:12.5px;color:var(--txt2);margin-top:8px;line-height:1.5}
+.loader{margin-top:13px}
+.load-btn{width:100%;background:var(--accent);color:#0c1015;border:none;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:filter .15s}
+.load-btn:hover{filter:brightness(1.08)}
+.load-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.5;color:var(--txt3);margin-top:8px}
+.load-status .ok{color:var(--amph)}
+.load-status .warn{color:var(--rept)}
+.load-status a{color:var(--sel);cursor:pointer;text-decoration:underline}
+.sources{margin-top:9px;display:flex;flex-direction:column;gap:5px}
+.qc-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:11.5px;border:1px solid transparent}
+.qc-row:hover{background:var(--panel2);border-color:var(--edge)}
+.qc-row.on{background:rgba(55,224,255,.1);border-color:var(--sel)}
+.qc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.qc-row .qn{flex:1;min-width:0;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qc-row .qc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt)}
+.qc-title{font-size:9.5px;letter-spacing:.14em;color:var(--txt3);font-family:'IBM Plex Mono',monospace;margin:9px 0 4px}
+.qc-sum{font-size:11.5px;color:var(--txt2);line-height:1.5;margin-bottom:4px}
+.qc-sum b{color:var(--txt)}
+.qc-btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.tile-attr{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:var(--txt3);margin-top:9px;line-height:1.45}
+.v-flag.falta{background:rgba(201,162,39,.12);border-color:rgba(201,162,39,.45)}
+.v-dud{color:var(--err);font-size:10.5px;border:1px solid var(--err);border-radius:4px;padding:1px 5px;margin-left:5px}
+.v-verb{color:var(--txt3);font-size:11px;font-family:'IBM Plex Mono',monospace}
+.v-aut{color:var(--txt3);font-size:11px;font-style:normal;font-weight:400}
+.src{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--edge);border-radius:7px;padding:6px 9px;font-size:11.5px}
+.src .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.src .sname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.src .scount{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--txt3)}
+.src .sx{cursor:pointer;color:var(--txt3);font-size:14px;line-height:1;padding:0 2px}
+.src .sx:hover{color:var(--rept)}
+.src-clear{background:none;border:none;color:var(--txt3);font-family:'IBM Plex Mono',monospace;font-size:10px;cursor:pointer;text-decoration:underline;align-self:flex-start;padding:2px 0}
+.src-clear:hover{color:var(--txt2)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--edge);border-bottom:1px solid var(--edge)}
+.stat{padding:13px 8px;text-align:center;background:var(--panel)}
+.stat b{font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;display:block;line-height:1;color:var(--txt)}
+.stat span{font-size:9px;color:var(--txt3);letter-spacing:.06em;margin-top:6px;display:block;text-transform:uppercase}
+.controls{padding:14px 22px 10px;display:flex;flex-direction:column;gap:11px;border-bottom:1px solid var(--edge)}
+.legend{display:flex;gap:8px}
+.mode-tabs{display:flex;gap:5px;margin-bottom:10px;background:var(--bg2);border:1px solid var(--edge);border-radius:8px;padding:3px}
+.mode-tab{flex:1;background:transparent;border:none;color:var(--txt3);font-family:inherit;font-size:12px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:all .13s}
+.mode-tab:hover{color:var(--txt2)}
+.mode-tab.on{background:var(--panel2);color:var(--txt);font-weight:500}
+.elev-scale{margin-top:4px;padding:2px 2px}
+.elev-bar{height:11px;border-radius:6px;background:linear-gradient(90deg,#2c7fb8,#41b6c4,#7fcdbb,#c7e9b4,#fecc5c,#fd8d3c,#e31a1c);margin-bottom:5px}
+.elev-labels{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3)}
+.elev-note{font-size:9.5px;color:var(--txt3);margin-top:5px;text-align:center;font-style:italic}
+.time-panel{margin-top:4px;padding:10px 2px 2px}
+.time-head{display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:9px;color:var(--txt)}
+.time-head span:first-child{font-size:16px}
+#timeSlider{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:4px;background:linear-gradient(90deg,#465aaa 0%,#465aaa 22%,#f5c846 50%,#465aaa 78%,#465aaa 100%);outline:none;cursor:pointer}
+#timeSlider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--sel);cursor:pointer;box-shadow:0 0 8px rgba(55,224,255,.6)}
+#timeSlider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--sel);cursor:pointer}
+.time-marks{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--txt3);margin-top:5px}
+.time-reset{width:100%;margin-top:9px;background:var(--bg2);border:1px solid var(--edge);color:var(--txt2);font-family:inherit;font-size:11.5px;padding:6px;border-radius:7px;cursor:pointer;transition:all .13s}
+.time-reset:hover{border-color:var(--edge2);color:var(--txt)}
+.time-reset.active{background:var(--accent);color:#0c1015;border-color:var(--accent)}
+.legend-row{flex:1;display:flex;align-items:center;gap:9px;padding:8px 11px;cursor:pointer;user-select:none;border-radius:8px;transition:background .14s,opacity .14s;border:1px solid var(--edge);background:var(--bg2)}
+.legend-row:hover{border-color:var(--edge2)}
+.legend-row.off{opacity:.32}
+.sil{width:20px;height:20px;flex-shrink:0;display:grid;place-items:center}
+.sil svg{width:100%;height:100%}
+.legend-row .nm{font-size:13px;font-weight:500}
+.legend-row .ct{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--txt3)}
+.search{position:relative}
+.search input{width:100%;background:var(--bg2);border:1px solid var(--edge);border-radius:8px;padding:10px 12px 10px 34px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;transition:border .15s}
+.search input:focus{border-color:var(--sel)}
+.search input::placeholder{color:var(--txt3)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--txt3);fill:none}
+.grpby{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt3)}
+.grpby span{font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+.grpby select{flex:1;background:var(--bg2);border:1px solid var(--edge);border-radius:7px;color:var(--txt2);font-family:inherit;font-size:12px;padding:6px 8px;outline:none;cursor:pointer}
+.grpby select:focus{border-color:var(--sel)}
+.list{overflow-y:auto;flex:1;padding:6px 12px 20px}
+.list::-webkit-scrollbar{width:8px}.list::-webkit-scrollbar-thumb{background:var(--edge2);border-radius:4px}
+.grp{margin-bottom:2px}
+.grp-h{display:flex;align-items:center;gap:9px;padding:9px 11px;cursor:pointer;user-select:none;border-radius:8px;transition:background .12s;position:sticky;top:0;background:var(--panel);z-index:2}
+.grp-h:hover{background:var(--panel2)}
+.grp-h .caret{width:14px;height:14px;flex-shrink:0;transition:transform .18s;stroke:var(--txt3);fill:none}
+.grp.closed .caret{transform:rotate(-90deg)}
+.grp-h .gnm{font-size:13px;font-weight:600;font-style:italic}
+.grp-h .gct{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);background:var(--bg2);padding:2px 8px;border-radius:10px}
+.grp-h .gdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.grp-body{overflow:hidden;transition:max-height .22s ease}
+.grp.closed .grp-body{max-height:0!important}
+.item{padding:9px 11px 9px 22px;border-radius:8px;cursor:pointer;transition:background .12s,border-color .12s;border:1px solid transparent;display:flex;align-items:center;gap:10px}
+.item:hover{background:var(--panel2)}
+.item.active{background:var(--panel2);border-color:var(--sel)}
+.item .isil{width:17px;height:17px;flex-shrink:0}
+.item .isil svg{width:100%;height:100%}
+.item .txt{min-width:0;flex:1}
+.item .sci{font-size:13.5px;font-weight:500;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .meta{font-size:10.5px;color:var(--txt3);margin-top:1px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{position:relative;background:var(--bg2)}
+#map{height:100%;width:100%;background:#0c1015}
+.leaflet-container{font-family:'Space Grotesk',sans-serif;background:#0c1015}
+.dark-tiles{filter:invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.85)}
+
+.leaflet-control-zoom a{background:var(--panel)!important;color:var(--txt)!important;border-color:var(--edge)!important}
+.leaflet-control-zoom a:hover{background:var(--panel2)!important}
+.mk{cursor:pointer;transition:transform .18s,filter .18s;transform-origin:center}
+.mk svg path,.mk svg g{paint-order:stroke;stroke:#0c1015;stroke-width:3px;stroke-linejoin:round}
+.mk:hover{transform:scale(1.28)}
+.mk.rept{color:var(--rept);filter:drop-shadow(0 0 5px rgba(224,162,74,.55))}
+.mk.amph{color:var(--amph);filter:drop-shadow(0 0 5px rgba(79,211,154,.55))}
+.mk.otro{color:var(--otro);filter:drop-shadow(0 0 5px rgba(136,153,166,.5))}
+.mk.dudosa{opacity:.9;filter:drop-shadow(0 0 7px rgba(255,123,114,.9)) drop-shadow(0 0 2px rgba(0,0,0,.6))!important}
+.qc-chk{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:11.5px;color:var(--txt2);cursor:pointer}
+.qc-chk input{accent-color:var(--sel)}
+.syn-row{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:3px 0;color:var(--txt2)}
+.syn-row b{color:var(--txt);font-weight:500}
+.syn-row .n{font-family:'IBM Plex Mono',monospace;color:var(--txt3)}
+.mk.ping{animation:ping 1.3s ease-out}
+@keyframes ping{0%{transform:scale(1)}35%{transform:scale(1.7)}100%{transform:scale(1)}}
+.mk.sel{color:var(--sel)!important;filter:drop-shadow(0 0 10px var(--sel)) drop-shadow(0 0 4px var(--sel))!important;transform:scale(1.5);z-index:9999}
+.mk.hit{color:var(--sel)!important;filter:drop-shadow(0 0 7px rgba(55,224,255,.9))!important;transform:scale(1.24)}
+.mk.dim{opacity:.25;filter:grayscale(.7) brightness(.6)}
+.mk.elevmode{filter:drop-shadow(0 0 6px rgba(255,255,255,.5)) drop-shadow(0 0 2px rgba(0,0,0,.6))!important;transform:scale(1.15)}
+.cl-badge{width:30px;height:30px;border-radius:50%;background:rgba(55,224,255,.16);border:1.5px solid var(--sel);color:var(--sel);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;box-shadow:0 0 10px rgba(55,224,255,.4);cursor:pointer;transition:transform .15s}
+.cl-badge:hover{transform:scale(1.15)}
+.leaflet-cluster-anim .leaflet-marker-icon{transition:transform .3s ease-out}
+.marker-cluster-spider-leg{stroke:var(--sel)!important;stroke-opacity:.5!important}
+.voucher{position:absolute;top:16px;right:16px;width:340px;z-index:1000;background:var(--panel);border:1px solid var(--edge2);border-radius:13px;box-shadow:0 20px 60px rgba(0,0,0,.6);opacity:0;pointer-events:none;transform:translateX(14px) scale(.97);transition:opacity .24s,transform .24s;overflow:hidden}
+.voucher.show{opacity:1;transform:none;pointer-events:auto}
+.v-band{height:4px}
+.v-head{padding:18px 20px 15px;border-bottom:1px solid var(--edge);position:relative;display:flex;gap:13px;align-items:flex-start}
+.v-icon{width:44px;height:44px;flex-shrink:0;border-radius:10px;background:var(--bg2);display:grid;place-items:center;border:1px solid var(--edge)}
+.v-icon svg{width:28px;height:28px}
+.v-htxt{min-width:0;flex:1}
+.v-code{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--accent)}
+.v-sci{font-style:italic;font-size:20px;font-weight:600;line-height:1.12;margin-top:5px;padding-right:20px}
+.v-rank{font-size:11.5px;color:var(--txt3);margin-top:4px;font-family:'IBM Plex Mono',monospace}
+.v-close{position:absolute;top:15px;right:15px;width:24px;height:24px;border:none;background:var(--bg2);border-radius:6px;cursor:pointer;font-size:13px;color:var(--txt2);line-height:1}
+.v-close:hover{background:var(--edge);color:var(--txt)}
+.v-desc{margin:14px 20px;padding:13px 15px;background:var(--bg2);border-left:2px solid var(--accent);border-radius:0 8px 8px 0;font-size:13px;line-height:1.5;color:var(--txt)}
+.v-flag{margin:0 20px 12px;padding:9px 13px;background:rgba(224,162,74,.12);border:1px solid rgba(224,162,74,.35);border-radius:8px;font-size:11.5px;line-height:1.45;color:var(--rept)}.v-flag code{font-family:'IBM Plex Mono',monospace;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;font-size:10.5px}.v-flag b{color:#f0b968}
+.v-desc .lbl{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:var(--txt3);display:block;margin-bottom:6px;text-transform:uppercase}
+.v-body{padding:2px 20px 8px}
+.v-row{display:flex;padding:9px 0;border-bottom:1px solid var(--edge);font-size:13px}
+.v-row:last-child{border:none}
+.v-row .k{width:92px;flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;color:var(--txt3);padding-top:2px;text-transform:uppercase}
+.v-row .val{flex:1;line-height:1.4}
+.v-coord{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--sel)}
+.v-time{color:var(--txt2);font-size:12.5px}
+.v-foot{padding:11px 20px;background:var(--bg2);border-top:1px solid var(--edge);font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--txt3);display:flex;justify-content:space-between}
+.nocoord{padding:11px 20px;background:rgba(224,162,74,.1);border-top:1px solid rgba(224,162,74,.3);font-size:12px;color:var(--rept);display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:500;font-family:'IBM Plex Mono',monospace}
+.credit{position:absolute;bottom:12px;left:14px;z-index:600;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txt3);background:rgba(12,16,21,.8);padding:6px 11px;border-radius:6px;border:1px solid var(--edge);backdrop-filter:blur(3px)}
+.layers-panel{position:absolute;top:16px;left:62px;z-index:600;background:rgba(18,26,34,.92);border:1px solid var(--edge);border-radius:11px;padding:12px 13px;backdrop-filter:blur(6px);box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.lyr-title{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:var(--txt3);margin-bottom:9px}
+.lyr-btns{display:flex;gap:5px;margin-bottom:9px}
+.lyr-btn{background:var(--bg2);border:1px solid var(--edge);color:var(--txt2);font-family:inherit;font-size:11.5px;padding:6px 11px;border-radius:7px;cursor:pointer;transition:all .13s}
+.lyr-btn:hover{border-color:var(--edge2);color:var(--txt)}
+.lyr-btn.on{background:var(--accent);border-color:var(--accent);color:#0c1015;font-weight:600}
+
+
+
+
+
+.sound-tgl{position:absolute;bottom:12px;right:14px;z-index:600;background:rgba(12,16,21,.8);border:1px solid var(--edge);border-radius:6px;padding:7px 11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--txt2);display:flex;align-items:center;gap:6px;backdrop-filter:blur(3px)}
+.sound-tgl:hover{color:var(--txt);border-color:var(--edge2)}
+.sound-tgl.off{color:var(--txt3)}
+@media(max-width:820px){body{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{max-height:46vh}.voucher{width:calc(100% - 24px);right:12px;top:12px}.list{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- pantalla de revisión ---- */
+.revision{position:fixed;inset:0;z-index:2000;background:rgba(6,9,13,.72);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:34px 18px;overflow-y:auto}
+.revision.show{display:flex}
+.rev-box{position:relative;width:min(760px,100%);background:var(--panel);border:1px solid var(--edge);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.6);overflow:hidden}
+.rev-x{position:absolute;top:13px;right:14px;background:none;border:0;color:var(--txt3);font-size:17px;cursor:pointer;padding:4px 7px;border-radius:6px}
+.rev-x:hover{background:var(--panel2);color:var(--txt)}
+.rev-head{padding:26px 28px 18px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,rgba(79,211,154,.07),transparent)}
+.rev-head h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:7px}
+.rev-head p{font-size:13px;color:var(--txt2);line-height:1.6;max-width:62ch}
+.rev-head p b{color:var(--txt)}
+.rev-tabs{display:flex;gap:6px;padding:12px 28px 0}
+.rev-tab{background:none;border:1px solid transparent;border-bottom:2px solid transparent;color:var(--txt3);font-family:inherit;font-size:12.5px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.rev-tab.on{color:var(--txt);border-bottom-color:var(--accent)}
+.rev-tab span{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--panel2);border-radius:20px;padding:1px 7px}
+.rev-body{padding:16px 28px 8px;max-height:min(58vh,560px);overflow-y:auto}
+.rev-vacio{font-size:13px;color:var(--txt3);padding:18px 0}
+.rev-card{border:1px solid var(--edge);border-left:3px solid var(--err);border-radius:10px;padding:15px 17px;margin-bottom:13px;background:var(--panel2)}
+.rev-card.falta{border-left-color:var(--falta)}
+.rev-card-h{display:flex;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap}
+.rev-card-h h3{font-size:14.5px;font-weight:600;flex:1;min-width:180px}
+.rev-card-h code{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--txt3);background:var(--bg);border:1px solid var(--edge);border-radius:5px;padding:2px 7px}
+.rev-n{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--err);background:rgba(255,123,114,.12);border-radius:7px;padding:3px 10px}
+.rev-card.falta .rev-n{color:var(--falta);background:rgba(201,162,39,.14)}
+.rev-q{font-size:12.5px;color:var(--txt2);line-height:1.6;margin-bottom:5px}
+.rev-q b,.rev-como b{color:var(--txt2);font-weight:600}
+.rev-como{font-size:12.5px;color:var(--txt);line-height:1.6;margin:9px 0 3px;background:rgba(79,211,154,.08);border:1px solid rgba(79,211,154,.25);border-radius:8px;padding:10px 12px}
+.rev-como b{color:var(--accent)}
+.rev-ej{width:100%;border-collapse:collapse;margin:11px 0 4px;font-size:11.5px}
+.rev-ej th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:var(--txt3);font-weight:500;padding:0 9px 5px 0;text-transform:uppercase}
+.rev-ej td{padding:4px 9px 4px 0;border-top:1px solid var(--edge);font-family:'IBM Plex Mono',monospace;color:var(--txt2);vertical-align:top;word-break:break-word}
+.rev-ej td.mal{color:var(--err)}
+.rev-ej td.bien{color:var(--accent)}
+.rev-rev{color:var(--txt3);font-style:italic;font-family:'Space Grotesk',sans-serif}
+.rev-mas{font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.rev-acc{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.rev-foot{padding:16px 28px 22px;border-top:1px solid var(--edge);display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg2)}
+.rev-nota{font-size:11.5px;color:var(--txt3);line-height:1.5;flex:1;min-width:200px}
+.rev-abrir{margin-bottom:10px}
+.load-btn.ghost{background:transparent;color:var(--txt2);border:1px solid var(--edge)}
+.load-btn.ghost:hover{border-color:var(--accent);color:var(--txt)}
+/* ---- estado vacío ---- */
+.vacio{position:absolute;inset:0;z-index:520;display:none;align-items:center;justify-content:center;padding:24px;pointer-events:none}
+.vacio.show{display:flex}
+.vacio-box{pointer-events:auto;max-width:430px;text-align:center;background:rgba(18,26,34,.93);border:1px solid var(--edge);border-radius:14px;padding:30px 28px;backdrop-filter:blur(6px);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.vacio-box h2{font-size:19px;font-weight:600;margin-bottom:9px}
+.vacio-box p{font-size:12.5px;color:var(--txt2);line-height:1.65}
+.vacio-btns{display:flex;gap:8px;margin:17px 0 12px;justify-content:center;flex-wrap:wrap}
+.vacio-btns .load-btn{width:auto;padding:9px 16px}
+.vacio-nota{font-size:11px;color:var(--txt3)}
+@media (max-width:620px){.rev-head,.rev-body,.rev-foot,.rev-tabs{padding-left:16px;padding-right:16px}.revision{padding:12px 8px}}
+</style>
+</head>
+<body>
+<aside id="aside">
+  <div class="masthead">
+    <div class="kicker">VISIONCORE · v23</div>
+    <h1>Visor Darwin Core</h1>
+    <p class="sub">Carga archivos DwC (plantilla SiB Colombia), los mapea y revisa su calidad. Toca un ejemplar para volar a su punto de colecta.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+
+  <div class="panel-scroll">
+    <section class="sec" id="sec-src">
+      <div class="sec-h" onclick="toggleSec('sec-src')"><svg class="sc-caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg><span>Fuentes de datos</span><span class="sec-badge" id="srcBadge"></span></div>
+      <div class="sec-body">
+        <div class="loader">
+          <button class="load-btn" id="loadBtn">↑ Añadir registros (Excel)</button>
+          <button class="load-btn ghost" onclick="cargarEjemplo()">Probar con datos de ejemplo</button>
+          <input type="file" id="fileIn" accept=".xlsx,.xls" multiple hidden>
+          <div class="sources" id="sources"></div>
+          <div class="load-status" id="loadStatus"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="sec-qc">
+      <div class="sec-h" onclick="toggleSec('sec-qc')"><svg class="sc-caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg><span>Calidad de los datos</span><span class="sec-badge" id="qcBadge"></span></div>
+      <div class="sec-body">
+        <button class="load-btn rev-abrir" onclick="abrirRevision('err')">Ver qué hay que arreglar</button>
+        <div id="qcPanel"></div>
+      </div>
+    </section>
+
+    <section class="sec closed" id="sec-syn">
+      <div class="sec-h" onclick="toggleSec('sec-syn')"><svg class="sc-caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg><span>Síntesis</span></div>
+      <div class="sec-body"><div id="synPanel"></div></div>
+    </section>
+
+    <section class="sec" id="sec-view">
+      <div class="sec-h" onclick="toggleSec('sec-view')"><svg class="sc-caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg><span>Vista y filtros</span></div>
+      <div class="sec-body">
+        <div class="controls">
+          <div class="mode-tabs">
+            <button class="mode-tab on" data-m="group" onclick="setColorMode('group')">Grupo</button>
+            <button class="mode-tab" data-m="elev" onclick="setColorMode('elev')">Altitud</button>
+            <button class="mode-tab" data-m="time" onclick="setColorMode('time')">Hora</button>
+          </div>
+          <div class="legend" id="legend"></div>
+          <div class="elev-scale" id="elevScale" style="display:none"></div>
+          <div class="time-panel" id="timePanel" style="display:none">
+            <div class="time-head"><span id="timeIcon">☀️</span><span id="timeLabel">Barrido horario</span></div>
+            <input type="range" id="timeSlider" min="0" max="1440" value="1440" step="10">
+            <div class="time-marks"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+            <button class="time-reset" id="timeReset">▶ mostrar todo</button>
+          </div>
+          <div class="search">
+            <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+            <input id="q" placeholder="Buscar especie, familia, lugar…" autocomplete="off">
+          </div>
+          <div class="grpby">
+            <span>AGRUPAR:</span>
+            <select id="gsel">
+              <option value="fam">Por familia</option>
+              <option value="mun">Por localidad</option>
+              <option value="cls">Por grupo</option>
+              <option value="none">Sin agrupar</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="sec-list">
+      <div class="sec-h" onclick="toggleSec('sec-list')"><svg class="sc-caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg><span>Ejemplares</span><span class="sec-badge" id="listBadge"></span></div>
+      <div class="sec-body sec-body-list">
+        <div class="list" id="list"></div>
+      </div>
+    </section>
+  </div>
+</aside>
+<button class="aside-toggle" id="asideToggle" onclick="toggleAside()" title="Ocultar/mostrar panel">‹</button>
+<main>
+  <div id="map"></div>
+  <div class="layers-panel">
+    <div class="lyr-title">CAPA BASE</div>
+    <div class="lyr-btns">
+      <button class="lyr-btn on" data-b="Oscuro" onclick="setBase('Oscuro')">Oscuro</button>
+      <button class="lyr-btn" data-b="Satelital" onclick="setBase('Satelital')">Satelital</button>
+      <button class="lyr-btn" data-b="Topográfico" onclick="setBase('Topográfico')">Topográfico</button>
+      <button class="lyr-btn" data-b="OSM" onclick="setBase('OSM')">OSM</button>
+    </div>
+    <div class="lyr-title" style="margin-top:11px">EXPORTAR</div>
+    <div class="lyr-btns">
+      <button class="lyr-btn" onclick="exportCSV()" title="Descargar CSV Darwin Core">↓ CSV</button>
+      <button class="lyr-btn" onclick="exportGeoJSON()" title="Descargar GeoJSON">↓ GeoJSON</button>
+      <button class="lyr-btn" onclick="exportQC()" title="Descargar informe de calidad">↓ Informe</button>
+    </div>
+    <div class="tile-attr">Teselas: Esri (Dark Gray, World Imagery) · OpenTopoMap · © OpenStreetMap</div>
+  </div>
+  <div class="credit" id="credit"></div>
+  <button class="sound-tgl" id="stgl">♪ sonido</button>
+  <div class="voucher" id="voucher"></div>
+  <div class="revision" id="revision"></div>
+  <div class="vacio" id="vacio"></div>
+</main>
+<script>
+// ===== Utilidades de seguridad y rendimiento =====
+function esc(s){if(s==null)return '';const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};return String(s).replace(/[&<>"']/g,c=>m[c]||c);}
+function debounce(fn,ms){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),ms);};}
+function isValidCoord(lat,lon){return lat!=null&&lon!=null&&!isNaN(lat)&&!isNaN(lon)&&lat>=-90&&lat<=90&&lon>=-180&&lon<=180;}
+let DATA=[]; // sin datos incrustados: los de los colegas salieron del archivo para poder publicarlo
+const SIL={rept:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M70 20c6-3 13-1 16 4 2 4 1 8-2 10l-4-3c2-1 2-3 1-5-2-3-6-3-9-1-5 3-6 9-4 14 3 7 2 14-4 19-7 6-17 5-24-1-5-4-11-4-16 0-4 3-5 8-2 12l-5 4c-5-6-4-15 3-20 7-5 16-4 22 1 4 4 10 4 14 0 4-3 5-9 3-13-3-7-1-15 6-19l9-6z" fill="currentColor"/><circle cx="76" cy="24" r="2.4" fill="#0c1015"/></svg>`,amph:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M50 26c-8 0-13 6-13 14 0 5 2 9 2 14 0 6-3 10-3 15 0 7 6 11 14 11s14-4 14-11c0-5-3-9-3-15 0-5 2-9 2-14 0-8-5-14-13-14z"/><circle cx="43" cy="30" r="5.5"/><circle cx="57" cy="30" r="5.5"/><path d="M37 40c-7-5-14-9-21-6-5 2-6 8-2 10 2 1 4 0 5-2 2-3 6-3 10-1 3 2 6 4 8 5M63 40c7-5 14-9 21-6 5 2 6 8 2 10-2 1-4 0-5-2-2-3-6-3-10-1-3 2-6 4-8 5M40 74c-6 4-12 10-12 17 0 5 5 7 8 3 2-3 0-6 3-10 2-3 5-5 7-7M60 74c6 4 12 10 12 17 0 5-5 7-8 3-2-3 0-6-3-10-2-3-5-5-7-7"/></g></svg>`};
+const GROUPS={'Reptilia':{key:'rept',nm:'Reptiles',col:'#e0a24a',freq:180},'Amphibia':{key:'amph',nm:'Anfibios',col:'#4fd39a',freq:640},'Indeterminado':{key:'otro',nm:'Sin determinar',col:'#8899a6',freq:320}};
+SIL.otro=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M50 9L91 50 50 91 9 50z"/><path d="M50 33c7 0 12 5 12 11 0 7-8 8-8 14" fill="none" stroke="#0c1015" stroke-width="7" stroke-linecap="round"/><circle cx="54" cy="70" r="4.6" fill="#0c1015"/></svg>`;
+const off=new Set(); let active=null; let query=''; let soundOn=true; let groupBy='fam'; const closedGroups=new Set();
+
+let colorMode='group';
+let timeCut=1440; // minutos del día hasta donde se muestran ejemplares (1440 = todo)
+let sources=[];
+const SRC_COLORS=['#4fd39a','#e0a24a','#37e0ff','#c77dff','#ff6b9d','#ffd166'];
+function elevOf(r){const m=(r.elev||'').match(/\d+/);return m?parseInt(m[0]):null;}
+let elevMin=0,elevMax=1,elevSorted=[];
+function computeElevRange(){const es=DATA.map(elevOf).filter(v=>v!=null);if(es.length){elevMin=Math.min(...es);elevMax=Math.max(...es);elevSorted=es.slice().sort((a,b)=>a-b);}}
+// posición 0..1 de un valor según su RANGO entre los datos (percentil), no lineal
+function elevRank(e){
+  if(e==null||!elevSorted.length)return 0;
+  let lo=0,hi=elevSorted.length;
+  while(lo<hi){const mid=(lo+hi)>>1;if(elevSorted[mid]<e)lo=mid+1;else hi=mid;}
+  // fracción de datos por debajo -> reparte el color uniformemente entre los ejemplares
+  return elevSorted.length>1?lo/(elevSorted.length-1):0;
+}
+// escala de color tipo terreno (azul bajo -> rojo alto)
+function elevColor(e){
+  if(e==null)return '#5d7182';
+  const t=Math.max(0,Math.min(1,elevRank(e)));
+  const stops=[[44,127,184],[65,182,196],[127,205,187],[199,233,180],[254,204,92],[253,141,60],[227,26,28]];
+  const p=t*(stops.length-1);const i=Math.floor(p);const f=p-i;
+  const a=stops[i],b=stops[Math.min(i+1,stops.length-1)];
+  const c=a.map((v,k)=>Math.round(v+(b[k]-v)*f));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+function markerColor(r){
+  if(colorMode==='elev')return elevColor(elevOf(r));
+  if(colorMode==='time')return timeColor(hourOf(r));
+  return GROUPS[r.cls]?GROUPS[r.cls].col:'#889';
+}
+// ----- hora -----
+function hourOf(r){if(!r.time)return null;const m=r.time.match(/(\d{1,2}):(\d{2})/);return m?parseInt(m[1])+parseInt(m[2])/60:null;}
+function dayPhase(hr){
+  if(hr==null)return {ic:'—',lbl:'sin hora',col:'#5d7182'};
+  if(hr<5.5)return {ic:'🌙',lbl:'noche',col:'#5a6fb0'};
+  if(hr<7)return {ic:'🌅',lbl:'amanecer',col:'#e0954a'};
+  if(hr<17.5)return {ic:'☀️',lbl:'día',col:'#f0c04a'};
+  if(hr<19)return {ic:'🌆',lbl:'atardecer',col:'#e0703a'};
+  return {ic:'🌙',lbl:'noche',col:'#5a6fb0'};
+}
+// gradiente horario: noche azul -> día amarillo -> noche azul (cíclico por 24h)
+function timeColor(hr){
+  if(hr==null)return '#5d7182';
+  // mapear 0-24 a un ciclo: medianoche azul oscuro, mediodía amarillo cálido
+  const t=hr/24;
+  const dayness=Math.cos((hr-13)/24*2*Math.PI)*0.5+0.5; // 1 al mediodía(~13h), 0 a medianoche
+  const night=[70,90,170], day=[245,200,70];
+  const c=night.map((v,k)=>Math.round(v+(day[k]-v)*dayness));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+const CARET='<svg class="caret" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+
+let actx=null;
+function beep(freq){if(!soundOn)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=freq;o.connect(g);g.connect(actx.destination);const t=actx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.01);g.gain.exponentialRampToValueAtTime(.0008,t+.22);o.frequency.exponentialRampToValueAtTime(freq*1.5,t+.12);o.start(t);o.stop(t+.24);}catch(e){}}
+
+const map=L.map('map',{zoomControl:true,attributionControl:false}).setView([5.4,-73.3],7.5);
+
+// --- Capas base (gratis y sin llave de API) ---
+// CARTO paso a exigir API key y estampa "API KEY REQUIRED" sobre las teselas, asi que salio.
+// Esri Dark Gray Canvas es oscuro de verdad, gratis y no pide llave.
+const baseDark=L.layerGroup([
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19}),
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:19})
+]);
+const baseSat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:17,maxZoom:19});
+const baseTopo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxNativeZoom:17,maxZoom:19,subdomains:'abc'});
+const baseOSM=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxNativeZoom:19,maxZoom:19,className:'dark-tiles'});
+const bases={'Oscuro':baseDark,'Satelital':baseSat,'Topográfico':baseTopo,'OSM':baseOSM};
+baseDark.addTo(map);
+let curBase='Oscuro';
+function setBase(name){
+  if(name===curBase)return;
+  map.removeLayer(bases[curBase]);
+  bases[name].addTo(map);
+  const b=bases[name];
+  if(b.bringToBack)b.bringToBack();
+  else if(b.eachLayer)b.eachLayer(l=>l.bringToBack&&l.bringToBack());
+  curBase=name;
+  document.querySelectorAll('.lyr-btn').forEach(x=>x.classList.toggle('on',x.dataset.b===name));
+}
+
+let markers={};
+let cluster=null;
+function buildMarkers(){
+  if(cluster)map.removeLayer(cluster);
+  markers={};
+  cluster=L.markerClusterGroup({
+    maxClusterRadius:DATA.length>800?26:1, // con miles de registros agrupar de a 1 pixel congela el mapa
+    spiderfyOnMaxZoom:true,
+    spiderfyDistanceMultiplier:1.7,
+    showCoverageOnHover:false,
+    zoomToBoundsOnClick:false,
+    iconCreateFunction:function(c){const n=c.getChildCount();return L.divIcon({className:'',html:`<div class="cl-badge">${n}</div>`,iconSize:[30,30],iconAnchor:[15,15]});}
+  });
+  DATA.forEach((r,i)=>{
+    if(r.lat==null||r.lon==null)return;
+    if(r.cok===false&&!verDudosas)return; // coordenada imposible: no se dibuja salvo que se pida
+    const g=GROUPS[r.cls]||GROUPS['Indeterminado'];
+    if(colorMode==='time'&&timeCut<1440){const hr=hourOf(r);if(hr==null||hr*60>timeCut)return;}
+    const col=markerColor(r);
+    const icon=L.divIcon({className:'',html:`<div class="mk ${g.key} ${r.cok===false?'dudosa':''} ${colorMode==='elev'?'elevmode':''}" data-i="${i}" style="width:26px;height:26px;color:${col}">${SIL[g.key]}</div>`,iconSize:[26,26],iconAnchor:[13,13]});
+    const m=L.marker([r.lat,r.lon],{icon});
+    m.on('click',()=>openV(i,true));
+    markers[i]=m; cluster.addLayer(m);
+  });
+  map.addLayer(cluster);
+}
+computeElevRange();
+buildMarkers();
+sources=[];
+
+function toggleSec(id){document.getElementById(id).classList.toggle('closed');}
+function toggleAside(){
+  document.body.classList.toggle('aside-hidden');
+  // reajustar el mapa durante toda la animación, no solo al final
+  let n=0;
+  const iv=setInterval(()=>{map.invalidateSize({animate:false});if(++n>=20)clearInterval(iv);},20);
+}
+function setColorMode(m){
+  colorMode=m;
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.getElementById('legend').style.display=(m==='group')?'flex':'none';
+  document.getElementById('elevScale').style.display=(m==='elev')?'block':'none';
+  document.getElementById('timePanel').style.display=(m==='time')?'block':'none';
+  if(m==='elev')renderElevScale();
+  if(m!=='time')timeCut=1440;
+  buildMarkers();
+  if(active!=null){const e=mkEl(active);if(e)e.classList.add('sel');}
+}
+function renderElevScale(){
+  computeElevRange();
+  const q=f=>{if(!elevSorted.length)return 0;const i=Math.min(elevSorted.length-1,Math.round(f*(elevSorted.length-1)));return elevSorted[i];};
+  document.getElementById('elevScale').innerHTML=`<div class="elev-bar"></div><div class="elev-labels"><span>${q(0)} m</span><span>${q(0.5)} m</span><span>${q(1)} m</span></div><div class="elev-note">color repartido entre los ejemplares (percentiles)</div>`;
+}
+function renderStats(){document.getElementById('stats').innerHTML=`<div class="stat"><b>${DATA.length}</b><span>ejemplares</span></div><div class="stat"><b>${new Set(DATA.map(r=>r.sci)).size}</b><span>especies</span></div><div class="stat"><b>${new Set(DATA.map(r=>r.mun)).size}</b><span>localidades</span></div>`;}
+function renderLegend(){const el=document.getElementById('legend');el.innerHTML='';Object.entries(GROUPS).forEach(([k,g])=>{const ct=DATA.filter(r=>r.cls==k).length;if(!ct&&k==='Indeterminado')return;const row=document.createElement('div');row.className='legend-row'+(off.has(k)?' off':'');row.innerHTML=`<div class="sil" style="color:${g.col}">${SIL[g.key]}</div><span class="nm">${g.nm}</span><span class="ct">${ct}</span>`;row.onclick=()=>{off.has(k)?off.delete(k):off.add(k);row.classList.toggle('off');syncMarkers();renderList();highlightSearch();};el.appendChild(row);});}
+function syncMarkers(){DATA.forEach((r,i)=>{const m=markers[i];if(!m)return;if(off.has(r.cls))cluster.removeLayer(m);else if(!cluster.hasLayer(m))cluster.addLayer(m);});}
+function match(r){if(off.has(r.cls))return false;if(qcFilter&&!(r.iss||[]).some(x=>x.t===qcFilter))return false;if(!query)return true;const q=query.toLowerCase();return[r.sci,r.fam,r.ord,r.mun,r.loc,r.vloc,r.id].some(x=>(x||'').toLowerCase().includes(q));}
+function keyOf(r){if(groupBy=='fam')return r.fam||'(sin familia)';if(groupBy=='mun')return r.mun||'(sin localidad)';if(groupBy=='cls')return GROUPS[r.cls]?GROUPS[r.cls].nm:r.cls;return '__ALL__';}
+function renderList(){
+  const el=document.getElementById('list');el.innerHTML='';
+  const vis=DATA.map((r,i)=>({r,i})).filter(o=>match(o.r));
+  const lb=document.getElementById('listBadge');if(lb)lb.textContent=vis.length;
+  const groups={};
+  vis.forEach(o=>{const k=keyOf(o.r);(groups[k]=groups[k]||[]).push(o);});
+  const keys=Object.keys(groups).sort((a,b)=>groups[b].length-groups[a].length||a.localeCompare(b));
+  keys.forEach(k=>{
+    const items=groups[k];
+    const repCls=items[0].r.cls;const g=GROUPS[repCls]||{col:'#889'};
+    const wrap=document.createElement('div');wrap.className='grp'+(closedGroups.has(k)?' closed':'');
+    if(groupBy=='none'){
+      items.forEach(o=>wrap.appendChild(itemEl(o)));
+    }else{
+      const h=document.createElement('div');h.className='grp-h';
+      const dot=groupBy=='mun'?'':`<span class="gdot" style="background:${g.col}"></span>`;
+      h.innerHTML=`${CARET}${dot}<span class="gnm" style="${groupBy=='mun'?'font-style:normal':''}">${esc(k)}</span><span class="gct">${items.length}</span>`;
+      h.onclick=()=>{closedGroups.has(k)?closedGroups.delete(k):closedGroups.add(k);wrap.classList.toggle('closed');};
+      wrap.appendChild(h);
+      const body=document.createElement('div');body.className='grp-body';
+      items.forEach(o=>body.appendChild(itemEl(o)));
+      wrap.appendChild(body);
+    }
+    el.appendChild(wrap);
+  });
+}
+function itemEl(o){
+  const{r,i}=o;const g=GROUPS[r.cls]||GROUPS['Indeterminado'];
+  const it=document.createElement('div');it.className='item'+(active===i?' active':'');it.dataset.i=i;
+  const sub=groupBy=='fam'?(r.mun):(r.fam);
+  it.innerHTML=`<div class="isil" style="color:${g.col}">${SIL[g.key]}</div><div class="txt"><div class="sci">${esc(r.sci)}</div><div class="meta">${esc(r.id)} · ${esc(sub)}</div></div>`;
+  it.onclick=()=>openV(i,true);
+  return it;
+}
+function mkEl(i){const m=markers[i];if(!m)return null;const e=m.getElement();return e?e.querySelector('.mk'):null;}
+function clearSel(){document.querySelectorAll('.mk.sel').forEach(e=>e.classList.remove('sel'));}
+function highlightSearch(){const q=query.trim().toLowerCase();DATA.forEach((r,i)=>{const el=mkEl(i);if(!el)return;el.classList.remove('hit','dim');if(off.has(r.cls))return;if(!q)return;const hit=[r.sci,r.fam,r.ord,r.mun,r.loc,r.vloc,r.id].some(x=>(x||'').toLowerCase().includes(q));el.classList.add(hit?'hit':'dim');});}
+function fmtCoord(lat,lon){if(lat==null)return '—';return Math.abs(lat).toFixed(5)+'° '+(lat>=0?'N':'S')+', '+Math.abs(lon).toFixed(5)+'° '+(lon>=0?'E':'W');}
+function openV(i,fly){
+  const r=DATA[i];active=i;const g=GROUPS[r.cls]||GROUPS['Indeterminado'];beep(g.freq);
+  const has=r.lat!=null;const desc=r.notes||r.behav||'Sin descripción de campo registrada.';
+  const v=document.getElementById('voucher');
+  const vr=(k,val)=>val?`<div class="v-row"><div class="k">${k}</div><div class="val">${val}</div></div>`:'';
+  const gente=[r.by&&('Colectó: '+esc(r.by)),r.ident&&('Identificó: '+esc(r.ident))].filter(Boolean).join('<br>');
+  const lugar=[esc(r.loc||'—'),`<span style="color:var(--txt3);font-size:11.5px;font-family:'IBM Plex Mono',monospace">${esc([r.mun,r.dept,r.pais].filter(Boolean).join(', '))}</span>`].join('<br>');
+  const coord=r.lat!=null?`${fmtCoord(r.lat,r.lon)}${r.cok===false?' <span class="v-dud">dudosa</span>':''}${r.vcoord?`<br><span class="v-verb">${esc(r.vcoord)}</span>`:''}`:'';
+  const bicho=[r.sex&&r.sex!=='IND'?esc(r.sex):'',r.stage?esc(r.stage):'',r.qty?('n = '+esc(r.qty)):''].filter(Boolean).join(' · ');
+  const taxon=[esc(r.fam),esc(r.ord),r.rank?esc(r.rank):''].filter(Boolean).join(' · ');
+  v.innerHTML=`<div class="v-band" style="background:${g.col}"></div><div class="v-head"><button class="v-close" onclick="closeV()">✕</button><div class="v-icon" style="color:${g.col}">${SIL[g.key]}</div><div class="v-htxt"><div class="v-code">${esc(r.id)}${r.colc?' · '+esc(r.colc):''}${r.rec&&r.rec!==r.id?' · campo '+esc(r.rec):''}</div><div class="v-sci">${esc(r.sci)}${r.aut?` <span class="v-aut">${esc(r.aut)}</span>`:''}</div><div class="v-rank">${taxon}</div></div></div>${r.notes?`<div class="v-desc"><span class="lbl">Dónde se encontró</span>${esc(r.notes)}</div>`:''}${qcBlock(r)}<div class="v-body">${vr('Grupo',`<span class="badge" style="background:${g.col}22;color:${g.col}">${g.nm}</span>`)}${vr('Localidad',lugar)}${vr('Coordenadas',coord)}${r.elev?vr('Elevación',(r.elev.match(/-?\d+([.,]\d+)?/)||[r.elev])[0]+' msnm'):''}${vr('Colecta',(r.date||'—')+(r.time?` · <span class="v-time">${dayPhase(hourOf(r)).ic} ${r.time.slice(0,5)}</span>`:''))}${vr('Personas',gente)}${vr('Ejemplar',bicho)}${vr('Hábitat',esc(r.hab))}${vr('Método',esc(r.meth))}${vr('Preparación',esc(r.prep))}${vr('Tipo nomenclatural',esc(r.typ))}${vr('Comportamiento',esc(r.behav))}${vr('Medidas',esc(r.dyn))}</div>${has?`<div class="v-foot"><span>${esc(r.basis||'PreservedSpecimen')}</span><span>${esc(r.datum||'WGS84')}</span></div>`:`<div class="nocoord">⚠ Sin georreferencia — no aparece en el mapa</div>`}`;
+  v.classList.add('show');clearSel();const selEl=mkEl(i);if(selEl)selEl.classList.add('sel');
+  document.querySelectorAll('.item').forEach(el=>el.classList.toggle('active',+el.dataset.i===i));
+  const act=document.querySelector('.item.active');if(act)act.scrollIntoView({block:'nearest'});
+  if(fly&&has&&markers[i]){
+    // zoomToShowLayer desagrupa y abre el spiderfy solo; antes el punto se quedaba dentro del grupo
+    map.flyTo([r.lat,r.lon],Math.max(map.getZoom(),15),{duration:.7});
+    setTimeout(()=>{
+      try{
+        cluster.zoomToShowLayer(markers[i],()=>{
+          clearSel();const e=mkEl(i);
+          if(e){e.classList.add('sel');e.classList.remove('ping');void e.offsetWidth;e.classList.add('ping');}
+        });
+      }catch(err){
+        clearSel();const e=mkEl(i);if(e)e.classList.add('sel');
+      }
+    },720);
+  }else if(fly&&has&&!markers[i]){
+    // tiene coordenada pero esta marcada como dudosa y no se esta dibujando
+    map.flyTo([r.lat,r.lon],Math.max(map.getZoom(),12),{duration:.7});
+  }
+}
+function closeV(){document.getElementById('voucher').classList.remove('show');active=null;clearSel();document.querySelectorAll('.item').forEach(el=>el.classList.remove('active'));}
+document.getElementById('q').addEventListener('input',debounce(e=>{query=e.target.value;renderList();highlightSearch();},150));
+document.getElementById('gsel').addEventListener('change',e=>{groupBy=e.target.value;closedGroups.clear();renderList();});
+(function(){
+  const sl=document.getElementById('timeSlider'), rst=document.getElementById('timeReset');
+  const ic=document.getElementById('timeIcon'), lb=document.getElementById('timeLabel');
+  function fmt(min){const h=Math.floor(min/60),m=Math.round(min%60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+  sl.addEventListener('input',e=>{
+    timeCut=+e.target.value;
+    const ph=dayPhase(timeCut/60);
+    if(timeCut>=1440){ic.textContent='🌙';lb.textContent='24:00 · todo el día';rst.classList.remove('active');}
+    else{ic.textContent=ph.ic;lb.textContent=fmt(timeCut)+' · '+ph.lbl;rst.classList.add('active');}
+    buildMarkers();
+    if(active!=null){const el=mkEl(active);if(el)el.classList.add('sel');}
+  });
+  rst.onclick=()=>{sl.value=1440;timeCut=1440;ic.textContent='🌙';lb.textContent='24:00 · todo el día';rst.classList.remove('active');buildMarkers();};
+})();
+document.getElementById('stgl').onclick=function(){soundOn=!soundOn;this.classList.toggle('off',!soundOn);this.innerHTML=soundOn?'♪ sonido':'♪̶ mudo';if(soundOn)beep(500);};
+// ====== CARGA DE EXCEL (SiB Colombia / Darwin Core) ======
+// ====== TAXONOMIA: tablas de referencia ======
+// norm() quita tildes, espacios y signos: compara "Gymnophthalmidae " con "gymnophthalmidae"
+function norm(v){return String(v==null?'':v).normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]','g'),'').replace(/[^A-Za-z0-9]/g,'').toLowerCase();}
+
+const FAM_ANF=['Allophrynidae','Aromobatidae','Bufonidae','Caeciliidae','Centrolenidae','Ceratophryidae','Craugastoridae','Dendrobatidae','Eleutherodactylidae','Hemiphractidae','Hylidae','Hylodidae','Leptodactylidae','Microhylidae','Phyllomedusidae','Pipidae','Plethodontidae','Ranidae','Rhinatrematidae','Siphonopidae','Strabomantidae','Telmatobiidae','Typhlonectidae'];
+const FAM_REP=['Alligatoridae','Alopoglossidae','Amphisbaenidae','Anguidae','Aniliidae','Anomalepididae','Boidae','Charinidae','Chelidae','Chelydridae','Colubridae','Corytophanidae','Crocodylidae','Dactyloidae','Diploglossidae','Dipsadidae','Elapidae','Emydidae','Gekkonidae','Geoemydidae','Gymnophthalmidae','Hoplocercidae','Iguanidae','Kinosternidae','Leiosauridae','Leptotyphlopidae','Mabuyidae','Natricidae','Phyllodactylidae','Podocnemididae','Polychrotidae','Anolidae','Scincidae','Sphaerodactylidae','Teiidae','Testudinidae','Tropidophidae','Tropiduridae','Typhlopidae','Viperidae'];
+const FAM2CLS={},FAM_CANON={};
+FAM_ANF.forEach(f=>{FAM2CLS[norm(f)]='Amphibia';FAM_CANON[norm(f)]=f;});
+FAM_REP.forEach(f=>{FAM2CLS[norm(f)]='Reptilia';FAM_CANON[norm(f)]=f;});
+const FAM_TYPO={aromabatidae:'Aromobatidae',bufoniade:'Bufonidae',centronalidae:'Centrolenidae',ceratophrydae:'Ceratophryidae',geckonidae:'Gekkonidae',gymnolphthalmidae:'Gymnophthalmidae',igunidae:'Iguanidae',leptotyplopidae:'Leptotyphlopidae',spherodactylidae:'Sphaerodactylidae',dendrobatide:'Dendrobatidae',hylidade:'Hylidae'};
+const FAM_OLD={anolidae:'Dactyloidae',polychrotidae:'Dactyloidae'};
+const ORD2CLS={anura:'Amphibia',caudata:'Amphibia',gymnophiona:'Amphibia',squamata:'Reptilia',sauria:'Reptilia',serpentes:'Reptilia',ophidia:'Reptilia',testudines:'Reptilia',chelonia:'Reptilia',crocodilia:'Reptilia',crocodylia:'Reptilia',rhynchocephalia:'Reptilia'};
+const CLS_ALIAS={amphibia:'Amphibia',anfibia:'Amphibia',anfibios:'Amphibia',amphibians:'Amphibia',reptilia:'Reptilia',reptiles:'Reptilia',reptil:'Reptilia',reptila:'Reptilia'};
+const SEXO_OK={macho:'Macho',hembra:'Hembra',ind:'IND',indeterminado:'IND',desconocido:'Desconocido',male:'Macho',female:'Hembra',unknown:'Desconocido',m:'Macho',f:'Hembra',h:'Hembra'};
+const ETAPA_OK={adulto:'Adulto',juvenil:'Juvenil',subadulto:'Subadulto',cria:'Cría',huevos:'Huevos',huevo:'Huevos',renacuajo:'Renacuajo',larva:'Larva',adult:'Adulto',juvenile:'Juvenil',subadult:'Subadulto',tadpole:'Renacuajo',egg:'Huevos',eggs:'Huevos',hatchling:'Cría',larval:'Larva'};
+
+// Caja de Colombia continental + insular, con margen
+const CAJA={latMin:-4.4,latMax:13.6,lonMin:-82.0,lonMax:-66.8};
+function enColombia(lat,lon){return lat>=CAJA.latMin&&lat<=CAJA.latMax&&lon>=CAJA.lonMin&&lon<=CAJA.lonMax;}
+
+// ====== CATALOGO DE HALLAZGOS ======
+// s:'err' contradiccion o dato ilegible · s:'falta' campo vacio
+const QC_TYPES={
+  clase_incongruente:{s:'err',n:'Clase no concuerda con la familia'},
+  clase_es_orden:{s:'err',n:'La columna class trae un orden'},
+  clase_indeterminada:{s:'err',n:'No se pudo asignar clase'},
+  familia_mal_escrita:{s:'err',n:'Familia mal escrita'},
+  familia_no_vigente:{s:'err',n:'Familia con nombre no vigente'},
+  familia_desconocida:{s:'err',n:'Familia no reconocida'},
+  genero_no_concuerda:{s:'err',n:'El género no concuerda con el nombre científico'},
+  epiteto_no_concuerda:{s:'err',n:'El epíteto no concuerda con el nombre científico'},
+  id_duplicado:{s:'err',n:'Número de catálogo repetido'},
+  coord_intercambiadas:{s:'err',n:'Latitud y longitud intercambiadas'},
+  coord_grados_faltantes:{s:'err',n:'A la coordenada le faltan los grados'},
+  coord_reconstruida:{s:'err',n:'Coordenada sin separador decimal (reconstruida)'},
+  coord_ilegible:{s:'err',n:'Coordenada ilegible'},
+  coord_fuera_rango:{s:'err',n:'Coordenada fuera de rango'},
+  coord_fuera_colombia:{s:'err',n:'Coordenada cae fuera de Colombia'},
+  coord_discrepante:{s:'err',n:'Coordenadas originales no coinciden con las columnas'},
+  segundos_invalidos:{s:'err',n:'Segundos mayores o iguales a 60'},
+  minutos_invalidos:{s:'err',n:'Minutos mayores o iguales a 60'},
+  lon_sin_hemisferio:{s:'err',n:'Longitud sin hemisferio (se asumió W)'},
+  fecha_ilegible:{s:'err',n:'Fecha ilegible'},
+  fecha_improbable:{s:'err',n:'Fecha fuera de rango razonable'},
+  altitud_fuera_de_campo:{s:'err',n:'Altitud escrita en el campo equivocado'},
+  altitud_improbable:{s:'err',n:'Altitud improbable'},
+  vocabulario_sexo:{s:'err',n:'Sexo fuera del vocabulario SiB'},
+  vocabulario_etapa:{s:'err',n:'Etapa de vida fuera del vocabulario SiB'},
+  sin_identificador:{s:'falta',n:'Sin número de catálogo ni de registro'},
+  sin_familia:{s:'falta',n:'Sin familia'},
+  sin_coordenadas:{s:'falta',n:'Sin coordenadas'},
+  sin_fecha:{s:'falta',n:'Sin fecha'},
+  sin_colector:{s:'falta',n:'Sin recolector'},
+  sin_determinador:{s:'falta',n:'Sin quien identificó el ejemplar'},
+  sin_altitud:{s:'falta',n:'Sin altitud'},
+  sin_localidad:{s:'falta',n:'Sin localidad'}
+};
+
+// ====== ENCABEZADOS ======
+// La plantilla SiB trae el termino DwC en la fila 1 y la etiqueta en espanol en la fila 2.
+// Si a una columna le pisaron el termino (al archivo de anfibios le quedo "Sin etiqueta"
+// donde va recordNumber), la etiqueta en espanol permite recuperarla.
+const LBL2TERM={
+ 'numerodecatalogo':'catalogNumber','numeroderegistro':'recordNumber','iddelregistrobiologico':'occurrenceID',
+ 'nombrecientifico':'scientificName','clase':'class','orden':'order','familia':'family','genero':'genus',
+ 'epitetoespecifico':'specificEpithet','categoriadeltaxon':'taxonRank','autoriadelnombrecientifico':'scientificNameAuthorship',
+ 'latituddecimal':'decimalLatitude','longituddecimal':'decimalLongitude','latitudoriginal':'verbatimLatitude',
+ 'longitudoriginal':'verbatimLongitude','coordenadasoriginales':'verbatimCoordinates',
+ 'sistemaoriginaldecoordenadas':'verbatimCoordinateSystem','datumgeodesico':'geodeticDatum',
+ 'elevacionoriginal':'verbatimElevation','elevacionminimaenmetros':'minimumElevationInMeters',
+ 'elevacionmaximaenmetros':'maximumElevationInMeters','fechadelevento':'eventDate','horadelevento':'eventTime',
+ 'fechaoriginaldelevento':'verbatimEventDate','ano':'year','mes':'month','dia':'day',
+ 'pais':'country','departamento':'stateProvince','municipio':'county',
+ 'centropobladocabeceramunicipal':'municipality','localidad':'locality','localidadoriginal':'verbatimLocality',
+ 'registradopor':'recordedBy','identificadopor':'identifiedBy','sexo':'sex','etapadevida':'lifeStage',
+ 'habitat':'habitat','protocolodemuestreo':'samplingProtocol','preparaciones':'preparations',
+ 'codigodelacoleccion':'collectionCode','codigodelainstitucion':'institutionCode',
+ 'numerodeindividuos':'individualCount','cantidaddelorganismo':'organismQuantity','basedelregistro':'basisOfRecord',
+ 'notasdecampo':'fieldNotes','comentariosdelregistrobiologico':'occurrenceRemarks','comentariosdelevento':'eventRemarks',
+ 'comentariosdelaubicacion':'locationRemarks','comentariosdelorganismo':'organismRemarks','comportamiento':'behavior',
+ 'propiedadesdinamicas':'dynamicProperties','tiponomenclatural':'typeStatus','nombrecomun':'vernacularName'
+};
+const TERMINOS=['catalogNumber','recordNumber','occurrenceID','scientificName','class','order','family','genus','specificEpithet','taxonRank','scientificNameAuthorship','decimalLatitude','decimalLongitude','verbatimLatitude','verbatimLongitude','verbatimCoordinates','verbatimCoordinateSystem','geodeticDatum','verbatimElevation','minimumElevationInMeters','maximumElevationInMeters','eventDate','eventTime','verbatimEventDate','year','month','day','country','stateProvince','county','municipality','locality','verbatimLocality','recordedBy','identifiedBy','sex','lifeStage','habitat','samplingProtocol','preparations','collectionCode','institutionCode','individualCount','organismQuantity','basisOfRecord','fieldNotes','occurrenceRemarks','eventRemarks','locationRemarks','organismRemarks','behavior','dynamicProperties','typeStatus','vernacularName'];
+const TERM_SET={};TERMINOS.forEach(t=>TERM_SET[norm(t)]=t);
+
+function cell(v){if(v instanceof Date)return v.toISOString().slice(0,10);return v==null?'':String(v).trim();}
+function limpio(v){return String(v==null?'':v).split('').filter(function(c){var k=c.charCodeAt(0);return k>=32&&!(k>=0x200b&&k<=0x200f)&&!(k>=0xe000&&k<=0xf8ff);}).join('').trim();}
+
+// ====== COORDENADAS ======
+const RX_GRADO=/[°º˚]/;
+// Lee una celda suelta. Devuelve el valor, el eje que declara la letra (N/S = lat, E/W/O = lon) y los hallazgos.
+function leerCoord(raw,ejeHint){
+  const iss=[];
+  if(raw==null||raw==='')return{v:null,eje:null,iss,vacio:true};
+  if(typeof raw==='number'&&isFinite(raw)&&Math.abs(raw)<=180)return{v:raw,eje:null,iss};
+  const t=limpio(raw);
+  if(!t)return{v:null,eje:null,iss,vacio:true};
+  const mFin=t.match(/([NSEWOnsewo])\s*$/), mIni=t.match(/^\s*([NSEWOnsewo])(?=[\s\d])/);
+  const letra=(mFin?mFin[1]:(mIni?mIni[1]:null));
+  const L=letra?letra.toUpperCase():null;
+  const eje=L?((L==='N'||L==='S')?'lat':'lon'):null;
+  const grados=RX_GRADO.test(t);
+  const nums=(t.match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(',','.')));
+  if(!nums.length){iss.push({t:'coord_ilegible',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+  let v;
+  if(grados){
+    // "°31'48.77\" N" -> el numero de grados se perdio
+    if(/^\s*[°º˚]/.test(t)){iss.push({t:'coord_grados_faltantes',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+    const d=nums[0],mi=nums.length>1?nums[1]:0,se=nums.length>2?nums[2]:0;
+    if(mi>=60){iss.push({t:'minutos_invalidos',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+    if(se>=60){iss.push({t:'segundos_invalidos',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+    v=d+mi/60+se/3600;
+  }else if(nums.length===1&&Math.abs(nums[0])<=180){
+    v=nums[0];
+  }else if(nums.length>=2&&nums[1]<60&&(nums.length<3||nums[2]<60)&&Math.abs(nums[0])<=180&&/[\s'’‘′´`ʹ"”“″ʺ]/.test(t)){
+    // grados minutos segundos escritos con espacios: "72 42 41.3 W"
+    v=nums[0]+nums[1]/60+(nums.length>2?nums[2]/3600:0);
+  }else{
+    const r=reconstruir(t,eje||ejeHint);
+    if(r==null){iss.push({t:'coord_ilegible',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+    iss.push({t:'coord_reconstruida',d:t.slice(0,40)+' -> '+r.toFixed(6),v:t.slice(0,40),sug:r.toFixed(6)});
+    v=r;
+  }
+  if(/^\s*-/.test(t)||L==='S'||L==='W'||L==='O')v=-Math.abs(v);
+  return{v,eje,iss};
+}
+// Numeros a los que se les perdio el separador decimal (5675859) o vienen pegados como DDMMSS.s (060445.4)
+function reconstruir(t,eje){
+  const conPunto=t.match(/^(\d{5,7})[.,](\d{1,2})[^\d]*$/);
+  if(conPunto){
+    const e=conPunto[1],dec=conPunto[2];
+    const g=parseFloat(e.slice(0,e.length-4)),mi=parseFloat(e.slice(-4,-2)),se=parseFloat(e.slice(-2)+'.'+dec);
+    if(mi<60&&se<60&&g<=180)return g+mi/60+se/3600;
+    return null;
+  }
+  const d=(t.match(/\d+/g)||[]).join('');
+  if(d.length<6||d.length>9)return null;
+  const cand=[];
+  [1,2,3].forEach(k=>{const v=parseFloat(d.slice(0,k)+'.'+d.slice(k));if(plausible(v,eje))cand.push(v);});
+  if(d.length>=6){
+    const g=parseFloat(d.slice(0,d.length-4)),mi=parseFloat(d.slice(-4,-2)),se=parseFloat(d.slice(-2));
+    if(mi<60&&se<60){const v=g+mi/60+se/3600;if(plausible(v,eje))cand.push(v);}
+  }
+  const vistos={},unicos=[];
+  cand.forEach(v=>{const k=Math.round(v*1e4)/1e4;if(!vistos[k]){vistos[k]=1;unicos.push(v);}});
+  return unicos.length===1?unicos[0]:null;
+}
+function plausible(v,eje){
+  const a=Math.abs(v);
+  const esLat=a<=CAJA.latMax, esLon=a>=-CAJA.lonMax&&a<=-CAJA.lonMin;
+  if(eje==='lat')return esLat;
+  if(eje==='lon')return esLon;
+  return esLat||esLon;
+}
+
+// Arma el par a partir de dos celdas, respetando lo que digan las letras de hemisferio.
+function armarPar(a,b){
+  const iss=[];
+  const pa=leerCoord(a,'lat'),pb=leerCoord(b,'lon');
+  pa.iss.forEach(x=>iss.push(x));pb.iss.forEach(x=>iss.push(x));
+  let lat=pa.v,lon=pb.v;
+  if(lat==null||lon==null)return{lat:null,lon:null,iss,vacio:!!(pa.vacio&&pb.vacio)};
+  let cambio=false;
+  if(pa.eje==='lon'&&pb.eje==='lat')cambio=true;
+  else if(Math.abs(lat)>CAJA.latMax&&Math.abs(lon)<=CAJA.latMax)cambio=true;
+  if(cambio){
+    const x=lat;lat=lon;lon=x;
+    // al intercambiar, los signos venian pegados al valor equivocado: se normalizan y queda marcada para revision
+    lat=Math.abs(lat);lon=-Math.abs(lon);
+    iss.push({t:'coord_intercambiadas',d:limpio(a)+' / '+limpio(b),v:limpio(a)+' / '+limpio(b),sug:'lat '+Math.abs(lat).toFixed(5)+' / lon '+(-Math.abs(lon)).toFixed(5)});
+  }
+  if(lon>=66&&lon<=83){
+    const crudo=limpio(b)||String(b);
+    const sugL=/[°º˚]/.test(crudo)?crudo.replace(/\s+$/,'')+' W':String(-Math.round(lon*1e6)/1e6);
+    iss.push({t:'lon_sin_hemisferio',d:crudo,v:crudo,sug:sugL});lon=-lon;
+  }
+  if(Math.abs(lat)>90||Math.abs(lon)>180){iss.push({t:'coord_fuera_rango',d:lat+', '+lon,v:lat+', '+lon});return{lat:null,lon:null,iss};}
+  return{lat:Math.round(lat*1e6)/1e6,lon:Math.round(lon*1e6)/1e6,iss};
+}
+// Parte "5°30'45.1''N 76°33'17.3''O" en sus dos mitades
+function partirPar(v){
+  const s=limpio(v);
+  if(!s||!/\d/.test(s))return null;
+  const letras=[];let m;const rx=/[NSEWOnsewo]/g;
+  while((m=rx.exec(s))!==null)letras.push(m.index);
+  if(letras.length>=2){
+    if(letras[0]===0)return[s.slice(0,letras[1]).trim(),s.slice(letras[1]).trim()];
+    return[s.slice(0,letras[0]+1).trim(),s.slice(letras[0]+1).replace(/^[\s,;&]+/,'').trim()];
+  }
+  const gr=[];const rg=/[°º˚]/g;while((m=rg.exec(s))!==null)gr.push(m.index);
+  if(gr.length===2){
+    let cut=s.lastIndexOf(' ',gr[1]);
+    if(cut<=0)cut=s.lastIndexOf(',',gr[1]);
+    if(cut>0)return[s.slice(0,cut).trim(),s.slice(cut+1).trim()];
+  }
+  let p=s.split(/\s*[,;]\s*/);
+  if(p.length===2&&/\d/.test(p[0])&&/\d/.test(p[1]))return[p[0].trim(),p[1].trim()];
+  p=s.split(/\s+/);
+  if(p.length===2&&/\d/.test(p[0])&&/\d/.test(p[1]))return[p[0].trim(),p[1].trim()];
+  return null;
+}
+// compatibilidad
+function dmsToDd(x){return leerCoord(x).v;}
+
+// ====== FECHAS ======
+function parseFecha(v,y,mo,da){
+  const iss=[];
+  const arma=(Y,M,D)=>Y+'-'+String(M).padStart(2,'0')+'-'+String(D).padStart(2,'0');
+  const anioOk=Y=>Y>=1800&&Y<=new Date().getFullYear()+1;
+  if(v instanceof Date&&!isNaN(v)){
+    const Y=v.getFullYear();
+    const iso=arma(Y,v.getMonth()+1,v.getDate());
+    if(!anioOk(Y))iss.push({t:'fecha_improbable',d:iso,v:iso});
+    return{d:iso,iss};
+  }
+  const t=cell(v);
+  if(t){
+    let m,Y,M,D;
+    if((m=t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,4})/))){Y=+m[1];M=+m[2];D=+m[3];}
+    else if((m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,5})/))){D=+m[1];M=+m[2];Y=+m[3];if(Y<100)Y+=Y>50?1900:2000;}
+    if(Y!=null){
+      if(!anioOk(Y)||M<1||M>12||D<1||D>31){iss.push({t:'fecha_improbable',d:t.slice(0,30),v:t.slice(0,30)});return{d:t.slice(0,12),iss};}
+      return{d:arma(Y,M,D),iss};
+    }
+    iss.push({t:'fecha_ilegible',d:t.slice(0,30),v:t.slice(0,30)});
+    return{d:t.slice(0,12),iss};
+  }
+  // respaldo: columnas year / month / day
+  const Y=parseInt(cell(y),10),M=parseInt(cell(mo),10)||1,D=parseInt(cell(da),10)||1;
+  if(Y&&anioOk(Y))return{d:arma(Y,M,D),iss};
+  iss.push({t:'sin_fecha',d:''});
+  return{d:'',iss};
+}
+
+// ====== LECTOR DE LA PLANTILLA DwC (SiB Colombia) ======
+// Elige la hoja que de verdad tiene los datos: la plantilla del SiB trae "Instrucciones",
+// "Definiciones" y "Vocabulario" ademas de "Plantilla", y no siempre en el mismo orden.
+function elegirHoja(wb){
+  const cand=[];
+  wb.SheetNames.forEach(nm=>{
+    const sh=wb.Sheets[nm];if(!sh)return;
+    const filas=XLSX.utils.sheet_to_json(sh,{header:1,defval:null,blankrows:false});
+    const t=(filas[0]||[]).map(cell),l=(filas[1]||[]).map(cell);
+    let enc=0;
+    t.forEach(x=>{if(TERM_SET[norm(x)])enc+=2;});
+    l.forEach(x=>{if(LBL2TERM[norm(x)])enc+=1;});
+    cand.push({nm,sh,enc,datos:Math.max(0,filas.length-2)});
+  });
+  // Manda el contenido: primero las hojas con encabezados DwC Y filas de datos, luego las que
+  // mas filas tengan. El nombre "Plantilla" solo desempata, porque una hoja puede llamarse asi
+  // y estar vacia mientras los registros estan en otra.
+  const sirve=c=>(c.enc>=6&&c.datos>0)?1:0;
+  cand.sort((a,b)=> sirve(b)-sirve(a) || b.datos-a.datos || b.enc-a.enc
+    || ((norm(b.nm)==='plantilla'?1:0)-(norm(a.nm)==='plantilla'?1:0)));
+  const mejor=cand[0]||null;
+  return {sheet:mejor?mejor.sh:null,puntaje:mejor?mejor.enc:-1,nombre:mejor?mejor.nm:'',
+    otras:cand.slice(1).filter(c=>c.enc>=6&&c.datos>0).map(c=>c.nm+' ('+c.datos+(c.datos===1?' fila)':' filas)'))};
+}
+function parseWorkbook(wb){
+  const elec=elegirHoja(wb);
+  const sheet=elec.sheet||wb.Sheets[wb.SheetNames[0]];
+  const aoa=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null,blankrows:false});
+  if(!aoa.length)return{recs:[],flaggedCount:0,noCoord:0,issues:[]};
+  const terms=(aoa[0]||[]).map(cell), labels=(aoa[1]||[]).map(cell);
+  const col={};
+  terms.forEach((t,i)=>{const k=TERM_SET[norm(t)];if(k&&col[k]==null)col[k]=i;});
+  labels.forEach((l,i)=>{const k=LBL2TERM[norm(l)];if(k&&col[k]==null)col[k]=i;});
+  const out=[],issues=[];
+  let flaggedCount=0,noCoord=0,auto=0;
+  const vistos=new Set();
+  for(let n=2;n<aoa.length;n++){
+    const fila=aoa[n]||[];
+    const g=t=>{const i=col[t];const v=(i==null?null:fila[i]);return (v==null||String(v).trim()==='')?null:v;};
+    const sci=cell(g('scientificName'));
+    if(!sci||norm(sci)==='nombrecientifico')continue;
+    const iss=[];
+
+    // --- identificacion del ejemplar ---
+    const cat=cell(g('catalogNumber')),rec=cell(g('recordNumber')),occ=cell(g('occurrenceID'));
+    let id=cat||rec||occ;
+    if(!id||norm(id)==='sinetiqueta'){auto++;id='SIN-ID-'+String(auto).padStart(4,'0');iss.push({t:'sin_identificador',d:rec||'',v:rec||''});}
+    if(vistos.has(norm(id)))iss.push({t:'id_duplicado',d:id,v:id});
+    vistos.add(norm(id));
+
+    // --- taxonomia ---
+    let fam=cell(g('family')),famN=norm(fam);
+    const ord=cell(g('order')),clsX=cell(g('class')),gen=cell(g('genus')),epi=cell(g('specificEpithet'));
+    let famSug=null;
+    if(!fam||famN==='indeterminado')iss.push({t:'sin_familia',d:fam,v:fam});
+    else if(FAM_TYPO[famN]){famSug=FAM_TYPO[famN];iss.push({t:'familia_mal_escrita',d:fam+' -> '+famSug,v:fam,sug:famSug});famN=norm(famSug);}
+    else if(FAM_OLD[famN])iss.push({t:'familia_no_vigente',d:fam+' (hoy '+FAM_OLD[famN]+')',v:fam,sug:FAM_OLD[famN]});
+    else if(!FAM2CLS[famN])iss.push({t:'familia_desconocida',d:fam,v:fam});
+    else if(FAM_CANON[famN]&&FAM_CANON[famN]!==fam){famSug=FAM_CANON[famN];iss.push({t:'familia_mal_escrita',d:fam+' -> '+famSug,v:fam,sug:famSug});}
+    const porFam=FAM2CLS[famN]||null,porOrd=ORD2CLS[norm(ord)]||null,decl=CLS_ALIAS[norm(clsX)]||null;
+    const esOrden=!!(clsX&&!decl&&ORD2CLS[norm(clsX)]);
+    if(esOrden)iss.push({t:'clase_es_orden',d:clsX,v:clsX,sug:(FAM2CLS[famN]||ORD2CLS[norm(clsX)]||'')});
+    let cls=porFam||porOrd||decl||'Indeterminado';
+    let cls_raw=null,flagged=false;
+    if(porFam&&clsX&&!esOrden&&decl!==porFam){cls_raw=clsX;flagged=true;flaggedCount++;iss.push({t:'clase_incongruente',d:clsX+' -> '+porFam+' (familia '+(famSug||fam)+')',v:clsX,sug:porFam});}
+    if(cls==='Indeterminado')iss.push({t:'clase_indeterminada',d:(clsX||'-')+' / '+(fam||'-')+' / '+(ord||'-'),v:clsX||''});
+    const partes=sci.split(/\s+/);
+    if(gen&&partes[0]&&norm(gen)!==norm(partes[0]))iss.push({t:'genero_no_concuerda',d:gen+' vs '+partes[0],v:gen,sug:partes[0]});
+    const vago=x=>/^(sp|spp|aff|cf|indet)\.?$/i.test(String(x||'').trim());
+    if(epi&&partes[1]&&!vago(epi)&&!vago(partes[1])&&norm(epi)!==norm(partes[1]))iss.push({t:'epiteto_no_concuerda',d:epi+' vs '+partes[1],v:epi,sug:partes[1]});
+
+    // --- coordenadas: primero el par original, luego decimales, luego verbatim ---
+    let par=null;
+    const vc=partirPar(g('verbatimCoordinates'));
+    if(vc){const q=armarPar(vc[0],vc[1]);if(q.lat!=null)par=q;}
+    var issDec=null;
+    if(vc&&par){
+      const alt=armarPar(g('verbatimLatitude'),g('verbatimLongitude'));
+      if(alt.lat!=null&&(Math.abs(alt.lat-par.lat)>0.01||Math.abs(alt.lon-par.lon)>0.01))
+        iss.push({t:'coord_discrepante',d:'originales '+par.lat.toFixed(4)+', '+par.lon.toFixed(4)+' vs columnas '+alt.lat.toFixed(4)+', '+alt.lon.toFixed(4),v:alt.lat.toFixed(5)+', '+alt.lon.toFixed(5),sug:par.lat.toFixed(5)+', '+par.lon.toFixed(5)});
+    }
+    if(!par){const q=armarPar(g('decimalLatitude'),g('decimalLongitude'));if(q.lat!=null)par=q;else if(q.iss.length)issDec=q.iss;}
+    if(!par){const q=armarPar(g('verbatimLatitude'),g('verbatimLongitude'));if(q.lat!=null)par=q;else if(q.iss.length&&!issDec)issDec=q.iss;}
+    let lat=null,lon=null,cok=false;
+    if(par){
+      lat=par.lat;lon=par.lon;
+      par.iss.forEach(x=>iss.push(x));
+      cok=enColombia(lat,lon)&&!par.iss.some(x=>['coord_reconstruida','coord_intercambiadas','minutos_invalidos','segundos_invalidos','coord_grados_faltantes'].includes(x.t));
+      if(!enColombia(lat,lon))iss.push({t:'coord_fuera_colombia',d:lat.toFixed(4)+', '+lon.toFixed(4),v:lat.toFixed(5)+', '+lon.toFixed(5)});
+    }else{
+      (issDec||[]).forEach(x=>iss.push(x));
+      noCoord++;
+      if(!iss.some(x=>x.t.indexOf('coord')===0))iss.push({t:'sin_coordenadas',d:''});
+    }
+
+    // --- lugar ---
+    const pais=cell(g('country')),dept=cell(g('stateProvince')),muni=cell(g('county'));
+    const cpob=cell(g('municipality')),loc0=cell(g('locality')),vloc=cell(g('verbatimLocality'));
+    const sitio=loc0||vloc||cpob;
+    if(!sitio&&!muni)iss.push({t:'sin_localidad',d:''});
+
+    // --- altitud ---
+    let elev=cell(g('verbatimElevation'))||cell(g('minimumElevationInMeters'))||cell(g('maximumElevationInMeters'));
+    if(!elev&&/msnm|mnsm|m\.s\.n\.m/i.test(cpob+' '+loc0+' '+vloc)){
+      const mm=(cpob+' '+loc0+' '+vloc).match(/(\d+[.,]?\d*)\s*(?:msnm|mnsm|m\.s\.n\.m)/i);
+      if(mm){elev=mm[1].replace(',','.')+' msnm';iss.push({t:'altitud_fuera_de_campo',d:(cpob||loc0||vloc).slice(0,40),v:(cpob||loc0||vloc).slice(0,40),sug:elev});}
+    }
+    const emm=elev?String(elev).replace(',','.').match(/-?\d+(\.\d+)?/):null;
+    const en=emm?parseFloat(emm[0]):null;
+    if(!elev)iss.push({t:'sin_altitud',d:''});
+    else if(en!=null&&isFinite(en)&&(en<0||en>6500))iss.push({t:'altitud_improbable',d:elev,v:elev});
+
+    // --- fecha, gente y vocabularios ---
+    const f=parseFecha(g('eventDate')||g('verbatimEventDate'),g('year'),g('month'),g('day'));
+    f.iss.forEach(x=>iss.push(x));
+    const by=cell(g('recordedBy')),ident=cell(g('identifiedBy'));
+    if(!by)iss.push({t:'sin_colector',d:''});
+    if(!ident)iss.push({t:'sin_determinador',d:''});
+    const sex=cell(g('sex')),stage=cell(g('lifeStage'));
+    if(sex&&!SEXO_OK[norm(sex)])iss.push({t:'vocabulario_sexo',d:sex,v:sex});
+    else if(sex&&SEXO_OK[norm(sex)]!==sex)iss.push({t:'vocabulario_sexo',d:sex+' -> '+SEXO_OK[norm(sex)],v:sex,sug:SEXO_OK[norm(sex)]});
+    if(stage&&!ETAPA_OK[norm(stage)])iss.push({t:'vocabulario_etapa',d:stage,v:stage});
+    else if(stage&&ETAPA_OK[norm(stage)]!==stage)iss.push({t:'vocabulario_etapa',d:stage+' -> '+ETAPA_OK[norm(stage)],v:stage,sug:ETAPA_OK[norm(stage)]});
+
+    out.push({fila:n+1,id,cat,rec,sci,cls,ord,fam:famSug||fam,fam_raw:fam,gen,epi,
+      rank:cell(g('taxonRank')),aut:cell(g('scientificNameAuthorship')),vern:cell(g('vernacularName')),
+      mun:muni,cpob,loc:sitio,vloc:vloc||loc0,dept,pais,
+      lat,lon,cok,vcoord:cell(g('verbatimCoordinates')),vsys:cell(g('verbatimCoordinateSystem')),datum:cell(g('geodeticDatum')),
+      date:f.d,time:cell(g('eventTime')),elev,
+      by,ident,sex,stage,qty:cell(g('individualCount'))||cell(g('organismQuantity')),
+      hab:cell(g('habitat')),meth:cell(g('samplingProtocol')),prep:cell(g('preparations')),
+      basis:cell(g('basisOfRecord')),colc:cell(g('collectionCode')),inst:cell(g('institutionCode')),
+      typ:cell(g('typeStatus')),
+      notes:cell(g('fieldNotes'))||cell(g('occurrenceRemarks'))||cell(g('eventRemarks'))||cell(g('locationRemarks')),
+      behav:cell(g('behavior'))||cell(g('organismRemarks')),
+      dyn:cell(g('dynamicProperties')),
+      cls_raw,flagged,iss});
+    iss.forEach(x=>issues.push({fila:n+1,id,cat,rec,sci,fam,cls_excel:clsX,cls_final:cls,t:x.t,d:x.d,v:x.v,sug:x.sug}));
+  }
+  return {recs:out,flaggedCount,noCoord,issues,hoja:elec.nombre,otrasHojas:elec.otras};
+}
+
+
+
+function reloadData(recs,meta){
+  DATA=recs;
+  computeElevRange();
+  closeV();
+  closedGroups.clear();
+  buildMarkers();
+  renderStats();renderLegend();renderList();renderQC();
+  if(colorMode==='elev')renderElevScale();
+  document.getElementById('credit').textContent='Datos: '+ (recs[0]?.by||'—') +' · '+recs.length+' registros DwC';
+  const st=document.getElementById('loadStatus');
+  let msg=`<span class="ok">✓ ${recs.length} registros cargados</span>`;
+  if(meta.flaggedCount)msg+=`<br><span class="warn">⚑ ${meta.flaggedCount} con clase corregida por familia (revisar Excel)</span>`;
+  if(meta.noCoord)msg+=`<br>${meta.noCoord} sin coordenadas`;
+  st.innerHTML=msg;
+  // centrar el mapa en los datos
+  const pts=recs.filter(r=>r.lat!=null&&r.cok!==false).map(r=>[r.lat,r.lon]);
+  if(pts.length)map.fitBounds(pts,{padding:[60,60],maxZoom:13});
+}
+
+// ====== MULTI-ARCHIVO ======
+let sourceState=null; // (declaraciones movidas arriba)
+function rebuildFromSources(){
+  DATA=[];
+  sources.forEach(s=>{ s.recs.forEach(r=>{ r.__src=s.name; }); DATA=DATA.concat(s.recs); });
+  computeElevRange(); closeV(); closedGroups.clear();
+  buildMarkers(); renderStats(); renderLegend(); renderList(); renderQC(); renderSintesis(); renderVacio();
+  if(colorMode==='elev')renderElevScale();
+  const by=[...new Set(sources.map(s=>s.recs[0]?.by).filter(Boolean))];
+  document.getElementById('credit').textContent='Datos: '+(by.join(' · ')||'—')+' · '+DATA.length+' registros DwC';
+  renderSources();
+  const pts=DATA.filter(r=>r.lat!=null&&r.cok!==false).map(r=>[r.lat,r.lon]);
+  if(pts.length)map.fitBounds(pts,{padding:[60,60],maxZoom:13});
+}
+let qcFilter=null,verDudosas=false;
+function toggleDudosas(el){verDudosas=el.checked;buildMarkers();renderQC();}
+function top5(campo,n){
+  const c={};DATA.forEach(r=>{const k=(r[campo]||'').trim();if(k)c[k]=(c[k]||0)+1;});
+  return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,n||5);
+}
+function renderSintesis(){
+  const el=document.getElementById('synPanel');if(!el)return;
+  if(!DATA.length){el.innerHTML='';return;}
+  const anios=DATA.map(r=>parseInt((r.date||'').slice(0,4),10)).filter(x=>x>1800);
+  const fila=(k,v,n)=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${n!=null?n:''} ${v||''}</span></div>`;
+  let h='<div class="qc-title">LO QUE HAY EN LOS DATOS</div>';
+  h+=fila('Familias',' ',new Set(DATA.map(r=>r.fam).filter(Boolean)).size);
+  h+=fila('Géneros',' ',new Set(DATA.map(r=>r.gen||r.sci.split(' ')[0]).filter(Boolean)).size);
+  h+=fila('Municipios',' ',new Set(DATA.map(r=>r.mun).filter(Boolean)).size);
+  h+=fila('Colectores',' ',new Set(DATA.map(r=>r.by).filter(Boolean)).size);
+  h+=fila('Determinadores',' ',new Set(DATA.map(r=>r.ident).filter(Boolean)).size);
+  if(anios.length)h+=fila('Años',Math.min(...anios)+' – '+Math.max(...anios),anios.length+' reg.');
+  h+='<div class="qc-title">ESPECIES MÁS REGISTRADAS</div>'+top5('sci').map(([k,n])=>`<div class="syn-row"><b><i>${esc(k)}</i></b><span class="n">${n}</span></div>`).join('');
+  h+='<div class="qc-title">MUNICIPIOS CON MÁS REGISTROS</div>'+top5('mun').map(([k,n])=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${n}</span></div>`).join('');
+  h+='<div class="qc-title">QUIÉN COLECTÓ</div>'+top5('by',4).map(([k,n])=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${n}</span></div>`).join('');
+  el.innerHTML=h;
+}
+function qcAll(){const a=[];DATA.forEach(r=>(r.iss||[]).forEach(x=>a.push({r,x})));return a;}
+function qcBlock(r){
+  const iss=r.iss||[];
+  if(!iss.length)return '';
+  const err=iss.filter(x=>(QC_TYPES[x.t]||{}).s!=='falta');
+  const fal=iss.filter(x=>(QC_TYPES[x.t]||{}).s==='falta');
+  let h='';
+  if(err.length)h+='<div class="v-flag">&#9873; '+err.map(x=>esc((QC_TYPES[x.t]||{n:x.t}).n)+(x.d?': <b>'+esc(x.d)+'</b>':'')).join('<br>')+'</div>';
+  if(fal.length)h+='<div class="v-flag falta">Campos sin dato: '+fal.map(x=>esc((QC_TYPES[x.t]||{n:x.t}).n.replace(/^Sin /,''))).join(', ')+'</div>';
+  return h;
+}
+function renderVacio(){
+  const el=document.getElementById('vacio');if(!el)return;
+  if(DATA.length){el.classList.remove('show');return;}
+  el.innerHTML='<div class="vacio-box"><h2>Carga tu Darwin Core</h2>'+
+    '<p>Arrastra o elige uno o varios archivos .xlsx con la plantilla del SiB Colombia. Todo se procesa en tu propio navegador: nada se sube a ningún servidor.</p>'+
+    '<div class="vacio-btns"><button class="load-btn" onclick="document.getElementById(\'fileIn\').click()">↑ Elegir archivo</button>'+
+    '<button class="load-btn ghost" onclick="cargarEjemplo()">Probar con datos de ejemplo</button></div>'+
+    '<p class="vacio-nota">Los datos de ejemplo son inventados y traen errores a propósito, para que veas cómo funciona la revisión.</p></div>';
+  el.classList.add('show');
+}
+function renderQC(){
+  const el=document.getElementById('qcPanel');
+  const cuenta={};
+  qcAll().forEach(o=>{cuenta[o.x.t]=(cuenta[o.x.t]||0)+1;});
+  const tipos=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a]);
+  const errs=tipos.filter(t=>(QC_TYPES[t]||{}).s!=='falta');
+  const fals=tipos.filter(t=>(QC_TYPES[t]||{}).s==='falta');
+  const conErr=DATA.filter(r=>(r.iss||[]).some(x=>(QC_TYPES[x.t]||{}).s!=='falta')).length;
+  const badge=document.getElementById('qcBadge');if(badge)badge.textContent=conErr||'';
+  if(!DATA.length){el.innerHTML='<div class="qc-sum">Carga un Excel para revisarlo.</div>';return;}
+  let h='<div class="qc-sum"><b>'+conErr+'</b> de <b>'+DATA.length+'</b> registros con algo que revisar &middot; <b>'+DATA.filter(r=>r.lat!=null&&r.cok!==false).length+'</b> con coordenada confiable</div>';
+  const fila=t=>'<div class="qc-row'+(qcFilter===t?' on':'')+'" onclick="setQCFilter(\''+t+'\')"><span class="qc-dot" style="background:'+((QC_TYPES[t]||{}).s==='falta'?'var(--falta)':'var(--err)')+'"></span><span class="qn">'+esc((QC_TYPES[t]||{n:t}).n)+'</span><span class="qc">'+cuenta[t]+'</span></div>';
+  if(errs.length)h+='<div class="qc-title">ERRORES Y CONTRADICCIONES</div>'+errs.map(fila).join('');
+  if(fals.length)h+='<div class="qc-title">CAMPOS SIN DATO</div>'+fals.map(fila).join('');
+  const dud=DATA.filter(r=>r.cok===false&&r.lat!=null).length;
+  if(dud)h+=`<label class="qc-chk"><input type="checkbox" ${verDudosas?'checked':''} onchange="toggleDudosas(this)"> mostrar en el mapa las ${dud} coordenadas dudosas</label>`;
+  h+='<div class="qc-btns"><button class="lyr-btn" onclick="exportQC()">&darr; Informe CSV</button>'+(qcFilter?'<button class="lyr-btn" onclick="setQCFilter(null)">quitar filtro</button>':'')+'</div>';
+  el.innerHTML=h;
+}
+function setQCFilter(t){
+  qcFilter=(t&&t!==qcFilter)?t:null;
+  renderQC();renderList();highlightSearch();
+  const sec=document.getElementById('sec-list');if(sec)sec.classList.remove('closed');
+}
+function exportQC(){
+  const filas=qcAll();
+  if(!filas.length){alert('No hay hallazgos que exportar.');return;}
+  const q=qCSV;
+  const head=['fuente','id','catalogNumber','recordNumber','scientificName','family','class_excel','class_asignada','severidad','hallazgo','detalle'];
+  const rows=filas.map(o=>[o.r.__src||'',o.r.id,o.r.cat||'',o.r.rec||'',o.r.sci,o.r.fam_raw||o.r.fam||'',o.r.cls_raw||o.r.cls,o.r.cls,((QC_TYPES[o.x.t]||{}).s==='falta'?'campo vacio':'error'),(QC_TYPES[o.x.t]||{n:o.x.t}).n,o.x.d||''].map(q).join(','));
+  download('informe_calidad_visioncore.csv','\ufeff'+head.join(',')+'\n'+rows.join('\n'),'text/csv;charset=utf-8;');
+}
+function renderSources(){
+  const el=document.getElementById('sources'); el.innerHTML='';
+  sources.forEach((s,i)=>{
+    const row=document.createElement('div'); row.className='src';
+    row.innerHTML=`<span class="sdot" style="background:${s.color}"></span><span class="sname">${esc(s.name)}</span><span class="scount">${s.count}</span><span class="sx" title="Quitar">✕</span>`;
+    row.querySelector('.sx').onclick=()=>{sources.splice(i,1);rebuildFromSources();};
+    el.appendChild(row);
+  });
+  const sb=document.getElementById('srcBadge');if(sb)sb.textContent=sources.length;
+  if(sources.length>1){
+    const c=document.createElement('button'); c.className='src-clear'; c.textContent='limpiar todo';
+    c.onclick=()=>{sources=[];rebuildFromSources();document.getElementById('loadStatus').textContent='';};
+    el.appendChild(c);
+  }
+}
+document.getElementById('loadBtn').onclick=()=>document.getElementById('fileIn').click();
+
+// Explica en cristiano por que un archivo no dejo ningun registro, en vez de decir "listo" y no cargar nada.
+function porQueNoSirvio(wb,recs){
+  if(!wb||!wb.SheetNames||!wb.SheetNames.length)return 'el archivo no se pudo abrir como Excel (¿está dañado o es otro formato con extensión .xlsx?)';
+  const {sheet,puntaje}=elegirHoja(wb);
+  if(!sheet)return 'el libro no tiene ninguna hoja con datos';
+  if(puntaje<6)return 'ninguna hoja del libro tiene los encabezados Darwin Core en la primera fila (hojas encontradas: '+wb.SheetNames.join(', ')+')';
+  const aoa=XLSX.utils.sheet_to_json(sheet,{header:1,defval:null,blankrows:false});
+  const terms=(aoa[0]||[]).map(cell),labels=(aoa[1]||[]).map(cell);
+  const tiene=t=>terms.some(x=>norm(x)===norm(t))||labels.some(x=>LBL2TERM[norm(x)]===t);
+  if(!tiene('scientificName'))return 'falta la columna scientificName (Nombre científico): sin ella no se puede leer ningún registro';
+  if(aoa.length<3)return 'la hoja tiene los encabezados pero ninguna fila de datos debajo';
+  return 'las filas están vacías en las columnas mínimas (nombre científico)';
+}
+// Firma por lo que trae el archivo, no por como se llama: dos archivos distintos pueden
+// compartir nombre y numero de filas y no son el mismo dato.
+function firmaFuente(recs){
+  let h=5381;
+  const s=recs.map(r=>r.id+'|'+r.sci+'|'+(r.lat==null?'':r.lat)+'|'+(r.date||'')).join(';');
+  for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;
+  return recs.length+'-'+h.toString(36);
+}
+document.getElementById('fileIn').addEventListener('change',e=>{
+  const files=[...e.target.files]; if(!files.length)return;
+  const st=document.getElementById('loadStatus'); st.textContent='Leyendo…'; qcFilter=null;
+  let done=0; const buenas=[],malas=[],repetidas=[];
+  files.forEach(f=>{
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      let wb=null;
+      try{
+        wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellDates:true});
+        const {recs,hoja,otrasHojas}=parseWorkbook(wb);
+        const name=f.name.replace(/\.(xlsx|xls)$/i,'').replace(/Darwin[_ ]?Core[-_ ]?/i,'').replace(/Plantilla[_ ]?de[_ ]?registros[_ ]?/i,'').slice(0,28);
+        if(!recs.length){
+          malas.push({f:f.name,razon:porQueNoSirvio(wb,recs)});
+        }else{
+          const firma=firmaFuente(recs);
+          if(sources.some(x=>x.firma===firma)){
+            repetidas.push(f.name);
+          }else{
+            sources.push({name,count:recs.length,color:SRC_COLORS[sources.length%SRC_COLORS.length],recs,firma});
+            buenas.push({f:f.name,n:recs.length,hoja,otras:otrasHojas||[]});
+          }
+        }
+      }catch(err){
+        malas.push({f:f.name,razon:'no se pudo leer como Excel ('+err.message+')'});
+      }
+      if(++done===files.length){
+        rebuildFromSources();
+        let msg='';
+        if(buenas.length)msg+='<span class="ok">✓ '+DATA.length+' registros en total ('+sources.length+' fuente'+(sources.length>1?'s':'')+')</span>';
+        buenas.forEach(x=>{if(x.otras&&x.otras.length)msg+='<br><span class="warn">En <b>'+esc(x.f)+'</b> leí la hoja «'+esc(x.hoja)+'»; el libro trae otra hoja con datos que no cargué: '+esc(x.otras.join(', '))+'</span>';});
+        repetidas.forEach(n=>{msg+=(msg?'<br>':'')+'<span class="warn">Ese archivo ya estaba cargado, no lo volví a sumar: '+esc(n)+'</span>';});
+        malas.forEach(m=>{msg+=(msg?'<br>':'')+'<span class="warn">No pude leer <b>'+esc(m.f)+'</b>: '+esc(m.razon)+'</span>';});
+        if(!msg)msg='<span class="warn">No se cargó ningún registro.</span>';
+        st.innerHTML=msg;
+        const hayErr=DATA.some(r=>(r.iss||[]).some(x=>(QC_TYPES[x.t]||{}).s!=='falta'));
+        if(buenas.length&&hayErr)abrirRevision('err');
+      }
+    };
+    rd.readAsArrayBuffer(f);
+  });
+  e.target.value='';
+});
+
+document.getElementById('credit').textContent='VisionCore · visor y validador Darwin Core';
+
+// ====== QUÉ SIGNIFICA CADA HALLAZGO Y CÓMO SE ARREGLA ======
+// col: columna Darwin Core donde se corrige · auto: la sugerencia es segura de aplicar tal cual
+const QC_INFO={
+ clase_incongruente:{col:'class',auto:true,que:'La columna class dice una cosa y la familia dice otra.',porque:'Así publicado, el ejemplar entra al SiB y a GBIF en el grupo equivocado: quien filtre por anfibios no lo va a encontrar.',como:'La familia manda. Escribe en class el valor que corresponde a la familia (Amphibia o Reptilia). Si la que está mal es la familia, corrige la familia.'},
+ clase_es_orden:{col:'class',auto:true,que:'En la columna class quedó escrito un orden (Squamata, Anura, Testudines…).',porque:'class y order son dos niveles distintos; el SiB valida esa jerarquía y rechaza o marca el registro.',como:'Pasa ese valor a la columna order y escribe la clase en class: Reptilia para Squamata, Testudines y Crocodylia; Amphibia para Anura, Caudata y Gymnophiona.'},
+ clase_indeterminada:{col:'class',que:'Entre class, order y family no hay con qué saber si es anfibio o reptil.',porque:'El registro queda sin grupo: no se puede mapear por color ni contar en ningún resumen.',como:'Llena al menos la familia. Con la familia el programa deduce la clase solo.'},
+ familia_mal_escrita:{col:'family',auto:true,que:'La familia tiene una letra cambiada.',porque:'Una familia mal escrita no existe para GBIF ni para el SiB: el registro queda huérfano de taxonomía.',como:'Reemplaza el valor por el nombre correcto que se sugiere aquí. Ojo: revisa si el error está en todas las filas de esa familia o solo en algunas.'},
+ familia_no_vigente:{col:'family',que:'La familia existe pero ya no se usa para ese grupo.',porque:'Los anolis salieron de Polychrotidae y de Anolidae hace años. Publicar con el nombre viejo desactualiza toda la base.',como:'Confirma contra la taxonomía que use la colección (o contra GBIF) y actualiza la familia. No lo cambies en masa sin revisarlo: hay géneros que sí siguen en Polychrotidae.'},
+ familia_desconocida:{col:'family',que:'Esa familia no está en la lista de familias de anfibios y reptiles del programa.',porque:'O está mal escrita, o es una familia que el validador todavía no conoce, o el ejemplar no es herpetofauna.',como:'Verifica el nombre. Si la familia es correcta, avísale al programa: hay que agregarla a la tabla de familias.'},
+ genero_no_concuerda:{col:'genus',que:'El género de la columna genus no es el mismo que el del nombre científico.',porque:'A veces es un error de tipeo, pero a veces son dos identificaciones distintas en la misma fila: alguien redeterminó el ejemplar y no actualizó todas las columnas.',como:'Decide cuál de los dos es el bueno y deja las dos columnas iguales. Si fue una redeterminación, actualiza también familia, orden e identifiedBy.'},
+ epiteto_no_concuerda:{col:'specificEpithet',que:'El epíteto específico no coincide con la segunda palabra del nombre científico.',porque:'Mismo caso del género: o es tipeo, o el ejemplar se redeterminó a medias.',como:'Deja las dos columnas iguales. Si el ejemplar se redeterminó, actualiza todas las columnas taxonómicas.'},
+ id_duplicado:{col:'catalogNumber',que:'Ese número de catálogo aparece en más de una fila.',porque:'El número de catálogo es la llave del ejemplar: repetido, no se sabe cuál es cuál y el SiB rechaza la publicación.',como:'Busca las filas con ese número. Si son dos ejemplares distintos, dale número nuevo a uno; si es la misma fila copiada, bórrala.'},
+ coord_intercambiadas:{col:'decimalLatitude / decimalLongitude',que:'La latitud tiene el valor de la longitud y viceversa.',porque:'El punto cae al otro lado del mundo. En Colombia la latitud va entre 0 y 13 y la longitud entre −67 y −79: si ves 73 en la latitud, están cruzadas.',como:'Intercambia los dos valores y revisa las letras: N/S son de latitud, E/W (u O) de longitud.'},
+ coord_grados_faltantes:{col:'verbatimLatitude / verbatimLongitude',que:'La coordenada empieza en el símbolo de grados: se perdió el número.',porque:'Sin los grados no hay forma de saber dónde es; el programa no la puede usar.',como:'Búscala en la libreta de campo o en el GPS y vuelve a escribirla completa.'},
+ coord_reconstruida:{col:'verbatimLatitude / verbatimLongitude',que:'El número venía sin punto decimal y el programa lo reconstruyó (5432109 se leyó como 5.432109).',porque:'La reconstrucción es una suposición razonable, no un dato: por eso el punto no se dibuja en el mapa hasta que alguien lo confirme.',como:'Confirma el valor contra la fuente original y escríbelo con su punto decimal.'},
+ coord_ilegible:{col:'verbatimLatitude / verbatimLongitude',que:'En la celda hay algo que no es una coordenada (texto, NA, números pegados sin formato).',porque:'El ejemplar no aparece en ningún mapa ni sirve para análisis espacial.',como:'Escribe la coordenada en grados decimales (5.53214) o en grados-minutos-segundos con sus símbolos (5°26\'32.7"N). Si no existe el dato, deja la celda vacía en vez de poner NA.'},
+ coord_fuera_rango:{col:'decimalLatitude / decimalLongitude',que:'El valor no puede ser una coordenada: pasa de 90 en latitud o de 180 en longitud.',porque:'Es un dato imposible, no un dato dudoso.',como:'Revisa la celda: casi siempre es un separador decimal perdido o dos coordenadas pegadas.'},
+ coord_fuera_colombia:{col:'decimalLatitude / decimalLongitude',que:'La coordenada es válida pero cae fuera del país.',porque:'Si el ejemplar dice country = Colombia, el punto y el país se contradicen.',como:'Revisa el signo (Colombia siempre va con longitud negativa y casi siempre con latitud positiva) y el hemisferio. Si el ejemplar sí es de otro país, corrige la columna country.'},
+ coord_discrepante:{col:'verbatimCoordinates',que:'La coordenada original y las columnas de latitud/longitud no dicen lo mismo.',porque:'Una de las dos está mal y no hay forma de saber cuál sin ir a la fuente. El programa usa la original.',como:'Compara las dos contra la libreta de campo y deja una sola versión. Un caso típico: a la longitud de la columna le falta un dígito.'},
+ segundos_invalidos:{col:'verbatimLatitude / verbatimLongitude',que:'Los segundos de la coordenada son 60 o más.',porque:'Un minuto tiene 60 segundos: ese valor no existe, así que la coordenada completa es sospechosa.',como:'Vuelve a la libreta o al GPS. Suele ser un dígito mal tecleado (94,4" por 44,4" o por 34,4").'},
+ minutos_invalidos:{col:'verbatimLatitude / verbatimLongitude',que:'Los minutos de la coordenada son 60 o más.',porque:'Un grado tiene 60 minutos: el valor no existe y el punto quedaría corrido varios kilómetros.',como:'Revisa el dato original. A veces es que los minutos y los segundos quedaron pegados (73°754.5" por 73°7\'54.5").'},
+ lon_sin_hemisferio:{col:'decimalLongitude / verbatimLongitude',auto:true,que:'La longitud está en positivo y sin la letra W.',porque:'Colombia está toda al oeste de Greenwich: en positivo, el punto se va a África o a Asia.',como:'Ponle el signo menos a la longitud (74.2137 pasa a −74.2137), o escribe la letra W en la coordenada original.'},
+ fecha_ilegible:{col:'eventDate',que:'En la fecha hay algo que no es una fecha completa (solo el año, un rango, texto).',porque:'Sin fecha no hay análisis temporal ni se puede saber si el registro es reciente o histórico.',como:'Escríbela como AAAA-MM-DD. Si solo conoces el año, déjalo en la columna year y deja eventDate vacía; si es un rango, usa la fecha de inicio.'},
+ fecha_improbable:{col:'eventDate',que:'La fecha existe pero el año no tiene sentido (20220, 1805, fechas futuras).',porque:'Una fecha imposible daña cualquier gráfico temporal y delata error de digitación.',como:'Corrige el año. Casi siempre es un dígito de más o dos cifras cambiadas.'},
+ altitud_fuera_de_campo:{col:'verbatimElevation',auto:true,que:'La altitud está escrita dentro de la columna de localidad.',porque:'En esa columna nadie la lee: ni el SiB ni el visor la encuentran, y la localidad queda con basura.',como:'Pasa el valor a verbatimElevation (o a minimumElevationInMeters) y deja la localidad solo con el nombre del sitio.'},
+ altitud_improbable:{col:'verbatimElevation',que:'La altitud está por debajo de 0 o por encima de 6.500 m.',porque:'El punto más alto de Colombia no llega a 5.800 m: un valor así es error de digitación o de unidad.',como:'Revisa el número y la unidad (a veces vienen pies en vez de metros).'},
+ vocabulario_sexo:{col:'sex',auto:true,que:'El sexo está escrito distinto al vocabulario del SiB.',porque:'"macho", "Macho" y "M" cuentan como tres categorías distintas al momento de resumir o publicar.',como:'Usa siempre los mismos términos: Macho, Hembra, IND o Desconocido.'},
+ vocabulario_etapa:{col:'lifeStage',auto:true,que:'La etapa de vida está escrita distinto al vocabulario del SiB.',porque:'Adult, adulto y Adulto se cuentan como tres etapas diferentes.',como:'Unifica en español y con mayúscula inicial: Adulto, Juvenil, Subadulto, Renacuajo, Huevos.'},
+ sin_identificador:{col:'catalogNumber',que:'La fila no tiene número de catálogo ni número de registro.',porque:'Sin identificador el ejemplar no se puede citar, ni corregir después, ni ligar al frasco en la colección.',como:'Asígnale el número de catálogo que le corresponde en la colección.'},
+ sin_familia:{col:'family',que:'La fila no tiene familia.',porque:'Sin familia el programa no puede verificar la clase ni agrupar el registro.',como:'Complétala a partir del género. Si el ejemplar está sin determinar, déjalo dicho en identificationQualifier en vez de escribir "Indeterminado" en familia.'},
+ sin_coordenadas:{col:'decimalLatitude / decimalLongitude',que:'La fila no trae coordenadas utilizables.',porque:'El ejemplar existe en la base pero no aparece en el mapa ni sirve para nada espacial.',como:'Si hay localidad escrita, se puede georreferenciar después con el nombre del sitio. Si no hay ni localidad, el registro queda solo como dato de colección.'},
+ sin_fecha:{col:'eventDate',que:'La fila no tiene fecha de colecta.',porque:'Sin fecha no se puede analizar el cambio en el tiempo, que es la mitad de lo que se le pide a una colección.',como:'Búscala en la etiqueta del frasco o en la libreta. Si solo se sabe el año, llena la columna year.'},
+ sin_colector:{col:'recordedBy',que:'La fila no dice quién colectó.',porque:'Es un problema de crédito y de trazabilidad: sin colector no se le puede preguntar a nadie por ese ejemplar.',como:'Complétalo desde la etiqueta original. Escribe el nombre siempre igual para la misma persona.'},
+ sin_determinador:{col:'identifiedBy',que:'La fila no dice quién identificó el ejemplar.',porque:'La identificación es una opinión con autor y fecha: sin ella no se puede evaluar qué tan confiable es el nombre.',como:'Complétalo con quien hizo la determinación y, si se puede, la fecha en dateIdentified.'},
+ sin_altitud:{col:'verbatimElevation',que:'La fila no tiene altitud.',porque:'Sin altitud no se puede analizar el gradiente altitudinal, que para herpetofauna andina es de lo más útil.',como:'Se puede completar después a partir de la coordenada y un modelo de elevación, dejando claro que es un valor derivado y no medido.'},
+ sin_localidad:{col:'locality',que:'La fila no tiene ni localidad ni municipio.',porque:'Sin nombre de sitio no se puede verificar la coordenada ni georreferenciar si falta.',como:'Complétala desde la etiqueta. El municipio va en county y el nombre del sitio en locality.'}
+};
+
+// ====== PANTALLA DE REVISIÓN ======
+let revTab='err';
+function qcResumen(){
+  const t={},orden=[];
+  DATA.forEach((r,i)=>{
+    (r.iss||[]).forEach(x=>{
+      if(!t[x.t]){t[x.t]={t:x.t,n:0,ej:[],idx:[],ids:[]};orden.push(x.t);}
+      const g=t[x.t];g.n++;g.idx.push(i);
+      if(r.cat||r.id)g.ids.push(r.cat||r.id);
+      if(g.ej.length<4)g.ej.push({id:r.cat||r.id,fila:r.fila,v:x.v||x.d||'',sug:x.sug||''});
+    });
+  });
+  return orden.map(k=>t[k]).sort((a,b)=>b.n-a.n);
+}
+function abrirRevision(tab){
+  if(tab)revTab=tab;
+  const cont=document.getElementById('revision');
+  const todos=qcResumen();
+  const errs=todos.filter(g=>(QC_TYPES[g.t]||{}).s!=='falta');
+  const fals=todos.filter(g=>(QC_TYPES[g.t]||{}).s==='falta');
+  const lista=revTab==='err'?errs:fals;
+  const conErr=DATA.filter(r=>(r.iss||[]).some(x=>(QC_TYPES[x.t]||{}).s!=='falta')).length;
+  const conf=DATA.filter(r=>r.lat!=null&&r.cok!==false).length;
+  const nErr=errs.reduce((a,g)=>a+g.n,0),nFal=fals.reduce((a,g)=>a+g.n,0);
+  let h='<div class="rev-box"><button class="rev-x" onclick="cerrarRevision()">✕</button>';
+  if(!DATA.length){
+    h+='<div class="rev-head"><h2>Todavía no hay datos cargados</h2><p>Carga un archivo Darwin Core y aquí te digo qué encontré.</p></div></div>';
+    cont.innerHTML=h;cont.classList.add('show');return;
+  }
+  h+='<div class="rev-head">';
+  if(!nErr&&!nFal){
+    h+='<h2>Tu archivo salió limpio</h2><p>Revisé '+DATA.length+' registros y no encontré contradicciones ni campos críticos vacíos.</p>';
+  }else{
+    h+='<h2>Encontramos '+nErr+' cosas para arreglar en tu Darwin Core</h2>';
+    h+='<p>Revisé <b>'+DATA.length+'</b> registros: <b>'+conErr+'</b> tienen al menos un error y <b>'+conf+'</b> quedaron con coordenada confiable. Abajo está cada problema con su solución.</p>';
+  }
+  h+='</div>';
+  h+='<div class="rev-tabs"><button class="rev-tab'+(revTab==='err'?' on':'')+'" onclick="abrirRevision(\'err\')">Para arreglar <span>'+nErr+'</span></button>'+
+     '<button class="rev-tab'+(revTab==='falta'?' on':'')+'" onclick="abrirRevision(\'falta\')">Campos vacíos <span>'+nFal+'</span></button></div>';
+  h+='<div class="rev-body">';
+  if(!lista.length)h+='<p class="rev-vacio">Nada en esta pestaña.</p>';
+  lista.forEach(g=>{
+    const info=QC_INFO[g.t]||{},tipo=QC_TYPES[g.t]||{n:g.t};
+    h+='<div class="rev-card'+(tipo.s==='falta'?' falta':'')+'">';
+    h+='<div class="rev-card-h"><span class="rev-n">'+g.n+'</span><h3>'+esc(tipo.n||g.t)+'</h3>'+(info.col?'<code>'+esc(info.col)+'</code>':'')+'</div>';
+    if(info.que)h+='<p class="rev-q"><b>Qué pasó:</b> '+esc(info.que)+'</p>';
+    if(info.porque)h+='<p class="rev-q"><b>Por qué importa:</b> '+esc(info.porque)+'</p>';
+    if(info.como)h+='<p class="rev-como"><b>Cómo se arregla:</b> '+esc(info.como)+'</p>';
+    const conEj=g.ej.filter(e=>e.v);
+    if(conEj.length){
+      h+='<table class="rev-ej"><tr><th>Registro</th><th>Dice</th><th>Debería decir</th></tr>';
+      conEj.forEach(e=>{h+='<tr><td>'+esc(e.id||('fila '+e.fila))+'</td><td class="mal">'+esc(String(e.v).slice(0,44))+'</td><td class="bien">'+(e.sug?esc(String(e.sug).slice(0,44)):'<span class="rev-rev">hay que revisarlo a mano</span>')+'</td></tr>';});
+      h+='</table>';
+      if(g.n>conEj.length)h+='<p class="rev-mas">y '+(g.n-conEj.length)+' más</p>';
+    }
+    h+='<div class="rev-acc"><button class="lyr-btn" onclick="revVer(\''+g.t+'\')">ver los '+g.n+' en la lista</button>'+
+       '<button class="lyr-btn" onclick="revCopiar(\''+g.t+'\')">copiar los números de catálogo</button></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div class="rev-foot"><button class="load-btn" onclick="exportCorrecciones()">↓ Descargar la lista de correcciones (CSV)</button>'+
+     '<span class="rev-nota">Una fila por corrección, con el número de catálogo, la columna y el valor que debería ir. Ábrela al lado del Excel y ve arreglando.</span></div>';
+  h+='</div>';
+  cont.innerHTML=h;cont.classList.add('show');
+}
+function cerrarRevision(){document.getElementById('revision').classList.remove('show');}
+function revVer(t){cerrarRevision();setQCFilter(t);}
+function revCopiar(t){
+  const ids=[...new Set(qcResumen().filter(g=>g.t===t).flatMap(g=>g.ids))];
+  const txt=ids.join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  if(navigator.clipboard&&!ok)navigator.clipboard.writeText(txt).catch(()=>{});
+  const b=event&&event.target;if(b){const v=b.textContent;b.textContent='✓ '+ids.length+' copiados';setTimeout(()=>{b.textContent=v;},1600);}
+}
+function exportCorrecciones(){
+  const filas=[];
+  DATA.forEach(r=>{
+    (r.iss||[]).forEach(x=>{
+      const info=QC_INFO[x.t]||{},tipo=QC_TYPES[x.t]||{n:x.t};
+      filas.push([r.__src||'',r.fila||'',r.cat||r.id||'',r.rec||'',r.sci||'',
+        (tipo.s==='falta'?'campo vacío':'error'),tipo.n||x.t,info.col||'',
+        x.v||'',x.sug||'',info.como||'']);
+    });
+  });
+  if(!filas.length){alert('No hay correcciones que exportar: el archivo salió limpio.');return;}
+  const q=qCSV;
+  const head=['fuente','fila_excel','catalogNumber','recordNumber','scientificName','tipo','hallazgo','columna_a_corregir','dice','deberia_decir','como_se_arregla'];
+  download('correcciones_sugeridas.csv','﻿'+head.join(',')+'\n'+filas.map(f=>f.map(q).join(',')).join('\n'),'text/csv;charset=utf-8;');
+}
+
+// ====== DATOS DE EJEMPLO (inventados, para probar el visor sin datos reales) ======
+function datosEjemplo(){
+  const H=['catalogNumber','recordNumber','scientificName','genus','specificEpithet','class','order','family','country','stateProvince','county','municipality','locality','decimalLatitude','decimalLongitude','verbatimLatitude','verbatimLongitude','verbatimElevation','eventDate','eventTime','recordedBy','identifiedBy','sex','lifeStage','habitat','samplingProtocol','individualCount','institutionCode','collectionCode','basisOfRecord','fieldNotes'];
+  const L=['Número de catálogo','Número de registro','Nombre científico','Género','Epíteto específico','Clase','Orden','Familia','País','Departamento','Municipio','Centro poblado / Cabecera municipal','Localidad','Latitud decimal','Longitud decimal','Latitud original','Longitud original','Elevación original','Fecha del evento','Hora del evento','Registrado por','Identificado por','Sexo','Etapa de vida','Hábitat','Protocolo de muestreo','Número de individuos','Código de la institución','Código de la colección','Base del registro','Notas de campo'];
+  // Localidades y personas inventadas a propósito: este archivo es de demostración.
+  const F=(cat,sci,gen,epi,cls,ord,fam,mun,loc,lat,lon,elev,fecha,hora,sexo,etapa,nota,vlat,vlon)=>
+    [cat,'EJ-'+cat.slice(-3),sci,gen,epi,cls,ord,fam,'Colombia','Boyacá',mun,'',loc,lat,lon,vlat||'',vlon||'',elev,fecha,hora,'Equipo de ejemplo','Equipo de ejemplo',sexo,etapa,'Bosque altoandino','Encuentro visual','1','EJEMPLO','EJ-Herp','PreservedSpecimen',nota];
+  const filas=[
+    F('EJEM-001','Pristimantis bogotensis','Pristimantis','bogotensis','Amphibia','Anura','Strabomantidae','Tunja','Vereda El Ejemplo',5.54,-73.36,'2820 msnm','2025-03-14','19:40:00','IND','Adulto','Bajo una piedra junto a la quebrada.'),
+    F('EJEM-002','Dendropsophus molitor','Dendropsophus','molitor','Amphibia','Anura','Hylidae','Tunja','Humedal de muestra',5.53,-73.37,'2790 msnm','2025-03-14','20:10:00','IND','Adulto','Cantando en la orilla.'),
+    F('EJEM-003','Rhinella marina','Rhinella','marina','Amphibia','Anura','Bufoniade','Puerto Demo','Finca de prueba',6.02,-74.21,'320 msnm','2025-04-02','21:05:00','IND','Adulto','Junto a una luz.'),
+    F('EJEM-004','Atractus crassicaudatus','Atractus','crassicaudatus','Reptilia','Squamata','Colubridae','Tunja','Vereda El Ejemplo',5.55,-73.35,'2760 msnm','2025-03-15','11:20:00','Hembra','Adulto','Bajo tronco caído.'),
+    F('EJEM-005','Anolis heterodermus','Anolis','heterodermus','Reptilia','Squamata','Anolidae','Arcabuco Demo','Bosque de muestra',5.75,-73.44,'2400 msnm','2025-05-08','09:15:00','macho','Adult','Sobre rama a 2 m.'),
+    F('EJEM-006','Riama striata','Riama','striata','Squamata','Squamata','Gymnophthalmidae','Arcabuco Demo','Bosque de muestra',5.76,-73.43,'2380 msnm','2025-05-08','10:02:00','IND','Juvenil','En hojarasca.'),
+    F('EJEM-007','Hyloscirtus bogotensis','Hyloscitus','bogotensis','Amphibia','Anura','Hylidae','Arcabuco Demo','Quebrada de muestra',5.77,-73.42,'2350 msnm','2025-05-09','20:45:00','IND','Adulto','En vegetación sobre el agua.'),
+    F('EJEM-008','Bolitoglossa adspersa','Bolitoglossa','adspersa','Amphibia','Caudata','Plethodontidae','Tunja','Vereda El Ejemplo',5.54,73.36,'2830 msnm','2025-06-01','18:30:00','IND','Adulto','Entre bromelias.'),
+    F('EJEM-009','Gonatodes albogularis','Gonatodes','albogularis','Reptilia','Squamata','Sphaerodactylidae','Puerto Demo','Casa de muestra',6.03,-74.22,'310 msnm','2025-04-03','14:50:00','Macho','Adulto','En pared de vivienda.'),
+    F('EJEM-010','Bothrops asper','Bothrops','asper','Reptilia','Squamata','Viperidae','Puerto Demo','Potrero de prueba',6.04,-74.20,'300 msnm','2025-04-04','16:10:00','IND','Adulto','Al borde del camino.'),
+    F('EJEM-011','Rheobates palmatus','Rheobates','palmatus','Amphibia','Anura','Aromobatidae','Arcabuco Demo','Quebrada de muestra',5.78,-73.41,'2300 msnm','09/02/20220','08:20:00','IND','Adulto','En roca dentro del cauce.'),
+    F('EJEM-012','Stenocercus trachycephalus','Stenocercus','trachycephalus','Reptilia','Squamata','tropiduridae','Tunja','Vereda El Ejemplo',5.56,-73.34,'2700 msnm','2025-03-16','12:40:00','Hembra','Adulto','Asoleándose sobre piedra.'),
+    F('EJEM-013','Pristimantis nicefori','Pristimantis','nicefori','Amphibia','Anura','Strabomantidae','Arcabuco Demo','Bosque de muestra','','','2410 msnm','2025-05-10','19:55:00','IND','Juvenil','En hojarasca húmeda.','5°46\'12.5"N','73°26\'94.0"W'),
+    F('EJEM-014','Erythrolamprus epinephelus','Erythrolamprus','epinephelus','Reptilia','Squamata','Dipsadidae','Tunja','Humedal de muestra',5.52,-73.38,'','2025-06-02','10:05:00','IND','Adulto','Cerca del espejo de agua.')
+  ];
+  const aoa=[H,L,...filas];
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Plantilla');
+  return wb;
+}
+function cargarEjemplo(){
+  const {recs,issues}=parseWorkbook(datosEjemplo());
+  sources.push({name:'Datos de ejemplo',count:recs.length,color:SRC_COLORS[sources.length%SRC_COLORS.length],recs,firma:'ejemplo'});
+  rebuildFromSources();
+  document.getElementById('loadStatus').innerHTML='<span class="ok">✓ '+recs.length+' registros de ejemplo (inventados) cargados</span>';
+  abrirRevision('err');
+}
+
+// ===== Exportación =====
+// Un valor que empieza en = + @ o - puede ejecutarse como formula al abrir el CSV en Excel.
+// Se le antepone una comilla simple, salvo que sea un numero negativo de verdad (las longitudes).
+function qCSV(v){
+  v=v==null?'':String(v);
+  if(/^[=+@\t\r]/.test(v)||(/^-/.test(v)&&!/^-?\d+([.,]\d+)?$/.test(v)))v="'"+v;
+  return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;
+}
+function download(filename,text,mime){
+  const blob=new Blob([text],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportCSV(){
+  if(!DATA.length)return;
+  const cols=['id','rec','sci','gen','epi','cls','ord','fam','pais','dept','mun','cpob','loc','lat','lon','cok','vcoord','elev','date','time','by','ident','sex','stage','qty','hab','meth','prep','colc','inst','notes'];
+  const head=['catalogNumber','recordNumber','scientificName','genus','specificEpithet','class','order','family','country','stateProvince','county','municipality','locality','decimalLatitude','decimalLongitude','coordinateTrusted','verbatimCoordinates','verbatimElevation','eventDate','eventTime','recordedBy','identifiedBy','sex','lifeStage','individualCount','habitat','samplingProtocol','preparations','collectionCode','institutionCode','fieldNotes'];
+  const q=qCSV;
+  const rows=DATA.map(r=>cols.map(c=>q(r[c])).join(','));
+  download('coleccion_herpetologica.csv','\ufeff'+head.join(',')+'\n'+rows.join('\n'),'text/csv;charset=utf-8');
+}
+function exportGeoJSON(){
+  if(!DATA.length)return;
+  const feats=DATA.filter(r=>r.lat!=null&&r.lon!=null).map(r=>({
+    type:'Feature',
+    geometry:{type:'Point',coordinates:[r.lon,r.lat]},
+    properties:{catalogNumber:r.id,scientificName:r.sci,class:r.cls,family:r.fam,
+      county:r.mun,locality:r.loc,stateProvince:r.dept,country:r.pais,elevation:r.elev,
+      eventDate:r.date,eventTime:r.time,recordedBy:r.by,identifiedBy:r.ident,fieldNotes:r.notes,
+      coordinateTrusted:r.cok!==false,
+      coordinateIssues:(r.iss||[]).filter(x=>x.t.indexOf('coord')===0||x.t==='segundos_invalidos'||x.t==='minutos_invalidos').map(x=>(QC_TYPES[x.t]||{n:x.t}).n).join(' · ')||''}
+  }));
+  download('coleccion_herpetologica.geojson',JSON.stringify({type:'FeatureCollection',features:feats},null,2),'application/geo+json');
+}
+renderStats();renderLegend();renderList();renderSources();renderQC();renderSintesis();renderVacio();
+</script>
+</body>
+</html>
