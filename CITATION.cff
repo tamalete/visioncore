@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: "VisionCore: visor y validador de datos Darwin Core para colecciones biológicas"
+message: "Si usa este software, por favor cítelo así."
+type: software
+authors:
+  - family-names: "Zuñiga Tinjacá"
+    given-names: "Ithamar"
+    affiliation: "Universidad Pedagógica y Tecnológica de Colombia"
+    city: "Tunja"
+    country: CO
+version: "0.23.0"
+date-released: "2026-09-20"
+license: Apache-2.0
+abstract: >-
+  Aplicación web de una sola página que lee archivos Darwin Core con la plantilla
+  del SiB Colombia, los representa en un mapa interactivo y evalúa su calidad
+  mediante reglas deterministas de consistencia taxonómica, geográfica y temporal,
+  indicando para cada hallazgo la columna afectada y la corrección sugerida.
+  Funciona por completo en el navegador, sin servidor y sin transmitir los datos.
+keywords:
+  - Darwin Core
+  - SiB Colombia
+  - calidad de datos
+  - colecciones biológicas
+  - biodiversidad
+  - herpetofauna
