@@ -16,7 +16,7 @@ En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.310 reg
 
 1. Descarga el repositorio (`Code` → `Download ZIP`) y descomprímelo.
 2. Abre `index.html` con doble clic. No necesita servidor ni conexión, salvo para las teselas del mapa.
-3. Arrastra tu archivo `.xlsx` con la plantilla Darwin Core del SiB, o prueba primero con `ejemplo/ejemplo_visioncore.xlsx` — son 14 registros inventados con errores puestos a propósito.
+3. Arrastra tu archivo `.xlsx` con la plantilla Darwin Core del SiB, o prueba primero con `ejemplo_visioncore.xlsx` — son 14 registros inventados con errores puestos a propósito.
 
 Se pueden cargar varios archivos a la vez: cada uno queda como una fuente con su color y se puede quitar.
 
@@ -48,7 +48,7 @@ Conviene decirlo claro para no dar por buena una base solo porque pasó la revis
 
 El visor no hace ni una sola petición de red con tus datos: no hay `fetch`, ni `XMLHttpRequest`, ni analítica, ni almacenamiento en el navegador. Todo se procesa en memoria y se pierde al cerrar la pestaña. Las únicas peticiones que hace la página son las teselas del mapa a Esri, OpenTopoMap u OpenStreetMap, que reciben el área que estás mirando (no tus registros); si trabajas sin conexión, el mapa queda gris y el resto funciona igual.
 
-Las tres librerías que usa van empaquetadas dentro del repositorio, no se cargan de ningún CDN. Ver [SECURITY.md](SECURITY.md).
+Las tres librerías que usa van dentro del repositorio, no se cargan de ningún CDN. Ver [SECURITY.md](SECURITY.md).
 
 ## Datos
 
@@ -56,7 +56,7 @@ Este repositorio **no contiene datos biológicos reales**, solo un archivo de ej
 
 ## Tecnología
 
-HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https://leafletjs.com) y [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para el mapa, [SheetJS](https://sheetjs.com) para leer los Excel. Las tres están en `vendor/` con sus licencias; ver [NOTICE](NOTICE).
+HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https://leafletjs.com) y [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para el mapa, [SheetJS](https://sheetjs.com) para leer los Excel. Las tres van dentro del repositorio con sus licencias; ver [NOTICE](NOTICE).
 
 ## Cómo citar
 

@@ -1,23 +1,23 @@
 VisionCore
 Copyright 2026 Ithamar Zuniga Tinjaca
 
-Este producto incluye software de terceros, empaquetado en vendor/ para que
+Este producto incluye software de terceros, incluido en este repositorio para que
 el visor funcione sin conexión y sin depender de ningún CDN:
 
 - Leaflet 1.9.4 — (c) 2010-2024 Volodymyr Agafonkin, (c) 2010-2011 CloudMade.
-  Licencia BSD de 2 cláusulas. Ver vendor/leaflet/LICENSE
+  Licencia BSD de 2 cláusulas. Ver el archivo "LICENSE (1)"
 
 - Leaflet.markercluster 1.5.3 — (c) 2012 David Leaver.
-  Licencia MIT. Ver vendor/leaflet.markercluster/MIT-LICENCE.txt
+  Licencia MIT. Ver MIT-LICENCE.txt
 
 - SheetJS Community Edition (xlsx) 0.18.5 — (c) SheetJS LLC.
-  Licencia Apache 2.0. Ver vendor/sheetjs/LICENSE
+  Licencia Apache 2.0. Ver el archivo "LICENSE (2)"
 
 - Space Grotesk — (c) 2020 The Space Grotesk Project Authors.
-  SIL Open Font License 1.1. Ver vendor/fonts/LICENSE-space-grotesk.txt
+  SIL Open Font License 1.1. Ver LICENSE-space-grotesk.txt
 
 - IBM Plex Mono — (c) 2017 IBM Corp.
-  SIL Open Font License 1.1. Ver vendor/fonts/LICENSE-ibm-plex-mono.txt
+  SIL Open Font License 1.1. Ver LICENSE-ibm-plex-mono.txt
 
 Las teselas de los mapas base son servicios de terceros (Esri, OpenTopoMap y
 OpenStreetMap) y se usan bajo sus propias condiciones; la atribución aparece
