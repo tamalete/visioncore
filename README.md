@@ -4,7 +4,7 @@ Visor y validador de datos **Darwin Core** para colecciones biológicas. Abre un
 
 Corre entero en el navegador: una página HTML, sin servidor, sin cuenta, sin instalar nada. **Los datos nunca salen de tu computador.**
 
-![Pantalla de revisión de VisionCore](captura.png)
+![Pantalla de revisión de VisionCore](docs/captura.png)
 
 ## Para qué sirve
 
@@ -46,7 +46,7 @@ Conviene decirlo claro para no dar por buena una base solo porque pasó la revis
 
 ## Privacidad y seguridad
 
-El visor no hace ni una sola petición de red con tus datos: no hay `fetch`, ni `XMLHttpRequest`, ni analítica, ni almacenamiento en el navegador. Todo se procesa en memoria y se pierde al cerrar la pestaña. Las únicas peticiones que hace la página son las teselas del mapa a Esri, OpenTopoMap u OpenStreetMap, que reciben el área que estás mirando (no tus registros); si trabajas sin conexión, el mapa queda gris y el resto funciona igual.
+El visor no hace ni una sola petición de red con tus datos: no hay `fetch`, ni `XMLHttpRequest`, ni analítica, ni almacenamiento en el navegador. Todo se procesa en memoria y se pierde al cerrar la pestaña. Las únicas peticiones que hace la página son las teselas del mapa a Esri y OpenTopoMap, que reciben el área que estás mirando (no tus registros); si trabajas sin conexión, el mapa queda gris y el resto funciona igual.
 
 Las tres librerías que usa van dentro del repositorio, no se cargan de ningún CDN. Ver [SECURITY.md](SECURITY.md).
 
