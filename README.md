@@ -14,6 +14,10 @@ En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 reg
 
 ## Cómo se usa
 
+**En línea:** abre [tamalete.github.io/visioncore](https://tamalete.github.io/visioncore/) y carga tu archivo; no hay que instalar nada. Aunque la página venga de GitHub, tus registros se procesan en tu navegador y no se suben a ningún lado.
+
+**Sin conexión:**
+
 1. Descarga el repositorio (`Code` → `Download ZIP`) y descomprímelo.
 2. Abre `index.html` con doble clic. No necesita servidor; solo necesita conexión para las teselas del mapa y, si la pides, para la verificación de nombres.
 3. Arrastra tu archivo a la página o usa el botón "Añadir registros (Excel, CSV o GBIF)". Acepta:
