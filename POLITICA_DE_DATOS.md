@@ -31,4 +31,11 @@ Mientras esa función no exista, antes de publicar un conjunto de datos hay que 
 
 ## 4. Lo que el programa hace con los datos de quien lo use
 
-Nada sale del navegador de esa persona: no hay envío a ningún servidor, ni almacenamiento, ni analítica. Al cerrar la pestaña no queda rastro. Si eso cambiara alguna vez, tendría que decirse aquí y en el README antes de publicar la versión que lo cambie.
+Los registros que se cargan se procesan en el navegador de esa persona: no se envían a ningún servidor, no se guardan (el visor no usa `localStorage`, `sessionStorage` ni IndexedDB) y no hay analítica. Al cerrar la pestaña no queda rastro.
+
+Hay exactamente dos salidas a internet:
+
+- **Teselas del mapa** (Esri y OpenTopoMap): esos servidores reciben el área que se está mirando, no los registros.
+- **Verificación de nombres con el Catalogue of Life, a través de la API de GBIF** (`api.gbif.org`): ocurre **solo si la persona pulsa el botón**. Se envían únicamente los nombres científicos distintos del archivo (sin autoría), uno por consulta. No se envían registros, localidades, coordenadas, fechas ni nombres de personas, números de catálogo ni identificadores. GBIF, como cualquier servidor web, puede registrar la dirección IP y la hora de la consulta bajo sus propias condiciones. Un nombre científico es dato público, pero una lista de nombres puede revelar qué especies hay en una colección o proyecto; si eso es sensible, no se debe pulsar el botón.
+
+Si esto cambiara alguna vez (por ejemplo, para enviar algo más), tendría que decirse aquí y en el README antes de publicar la versión que lo cambie.
