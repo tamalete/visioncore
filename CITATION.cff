@@ -8,15 +8,15 @@ authors:
     affiliation: "Universidad Pedagógica y Tecnológica de Colombia"
     city: "Tunja"
     country: CO
-version: "0.23.0"
-date-released: "2026-09-20"
+version: "0.30.0"
+date-released: "2026-10-04"
 license: Apache-2.0
 abstract: >-
   Aplicación web de una sola página que lee archivos Darwin Core con la plantilla
   del SiB Colombia, los representa en un mapa interactivo y evalúa su calidad
   mediante reglas deterministas de consistencia taxonómica, geográfica y temporal,
   indicando para cada hallazgo la columna afectada y la corrección sugerida.
-  Funciona por completo en el navegador, sin servidor y sin transmitir los datos.
+  Funciona por completo en el navegador, sin servidor y sin transmitir los registros; la verificación opcional de nombres solo envía a GBIF los nombres científicos.
 keywords:
   - Darwin Core
   - SiB Colombia
