@@ -10,7 +10,7 @@ Corre entero en el navegador: una página HTML, sin servidor, sin cuenta, sin in
 
 Publicar un conjunto de datos en el SiB o en GBIF exige que los campos sean coherentes entre sí, y en una colección con miles de registros digitados a lo largo de años esas incoherencias no se ven a simple vista: una rana registrada como reptil, una longitud sin el signo W que manda el punto a África, segundos de coordenada mayores a 60, una familia con una letra cambiada que deja al ejemplar huérfano de taxonomía. VisionCore las busca con reglas deterministas, las explica en español y propone el valor que debería ir.
 
-En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.010 registros, con 8.515 hallazgos entre errores y campos vacíos. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
+En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.087 registros, con 8.601 hallazgos entre errores y campos vacíos. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
 
 ## Cómo se usa
 
@@ -26,23 +26,27 @@ En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 reg
    - el `.zip` de una descarga de GBIF (Darwin Core Archive o descarga simple), que se descomprime en el navegador.
 
    Para probar primero, usa `ejemplo/ejemplo_visioncore.xlsx`: son 14 registros inventados con errores puestos a propósito.
-4. Se abre la pantalla de revisión, con tres pestañas: errores del dato, requisitos para publicar en el SiB y, si la pides, verificación de nombres. Desde ahí se exporta.
+4. Se abre la pantalla de revisión, con sus pestañas: errores del dato, campos vacíos, requisitos para publicar en el SiB, alertas de GBIF y, si la pides, verificación de nombres. Desde ahí se exporta.
 
-Se pueden cargar varios archivos a la vez (por ejemplo, la plantilla del SiB y una descarga de GBIF): cada uno queda como una fuente con su color y se puede quitar.
+Se pueden cargar varios archivos a la vez (por ejemplo, la plantilla del SiB y una descarga de GBIF): cada uno queda como una fuente con su color y se puede quitar. Mientras carga, la página muestra el avance de cada archivo.
+
+En el panel se filtra por grupo, por tipo de registro (espécimen, iNaturalist, otra observación, muestra, cámara o grabadora), por hallazgo y por periodo en una línea de tiempo (año, lustro o década), y la lista se agrupa por familia, género, especie (como está escrita o aceptada), conjunto de datos, localidad o tipo de registro. Lo filtrado se puede exportar aparte.
 
 ## Qué revisa
 
-Hay 60 tipos de hallazgo, agrupados en:
+Hay 62 tipos de hallazgo, más una capa de alertas, agrupados en:
 
-- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido, puntos fuera de Colombia, desacuerdo entre las coordenadas originales y las columnas decimales.
+- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido (también cuando el visor tomó la coordenada de otra columna), puntos fuera de Colombia, desacuerdo entre las coordenadas originales y las columnas decimales.
 - **Taxonomía** — clase que no concuerda con la familia, órdenes escritos en la columna `class`, familias mal escritas o con nombres no vigentes, género y epíteto que no concuerdan con el nombre científico (en descargas de GBIF, con el nombre aceptado cuando el nombre es un sinónimo).
-- **Duplicados** — el mismo número de catálogo repetido dentro de la misma institución, colección y conjunto de datos (o el mismo `occurrenceID` si no hay catálogo).
+- **Duplicados** — el mismo número de catálogo repetido dentro de la misma institución, colección y conjunto de datos (o el mismo `occurrenceID` si no hay catálogo). Dos catálogos que solo difieren en espacios, guiones, mayúsculas o ceros a la izquierda cuentan como el mismo.
 - **Fechas, altitud y vocabularios** — fechas ilegibles o imposibles, `eventDate` que no coincide con `year`, `month` y `day`, altitud escrita en la columna equivocada, en pies o fuera de rango, sexo y etapa de vida fuera del vocabulario del SiB.
 - **Campos vacíos** — identificador, familia, coordenada, fecha, recolector, determinador, altitud y localidad.
-- **Para publicar en el SiB** — una capa aparte, basada en el manual de la plantilla del SiB v4.0. No dice que el dato biológico esté mal, sino que, como está escrito, el SiB no lo recibiría: elementos obligatorios según el origen de los datos (colección biológica, permiso de recolección, eventos, marinos u otros), vocabularios controlados, coherencia entre `basisOfRecord` y `type`, formato de `institutionCode` y `occurrenceID`, nombres con cf., aff., sp. o autoría, listas de personas mal separadas. Donde el manual da la receta, propone el valor. En una descarga de GBIF esta capa avisa que GBIF ya reescribió esos valores.
+- **Para publicar en el SiB** — una capa aparte, basada en el manual de la plantilla del SiB v4.0. No dice que el dato biológico esté mal, sino que, como está escrito, el SiB no lo recibiría: elementos obligatorios según el origen de los datos (colección biológica, permiso de recolección, eventos, marinos u otros), vocabularios controlados, coherencia entre `basisOfRecord` y `type`, formato de `institutionCode` y `occurrenceID`, nombres con cf., aff., sp. o autoría, listas de personas mal separadas, números de catálogo escritos de varias formas dentro de una misma serie. Donde el manual da la receta, propone el valor. En una descarga de GBIF esta capa avisa que GBIF ya reescribió esos valores.
+- **Alertas de GBIF** — una pestaña aparte que no cuenta como error: las banderas de la columna `issue` de GBIF, traducidas y clasificadas en alta, media e informativa; posibles registros repetidos (misma especie, día y punto, con el mismo número de catálogo o de campo, otro conjunto de datos u otro tipo de registro), y registros que dicen ser una observación aunque el ejemplar se colectó.
+- **Personas** — la misma persona escrita de varias formas en `recordedBy` o `identifiedBy`, con la forma más frecuente como propuesta. Tampoco cuenta como error.
 - **Verificación de nombres** (opcional, usa internet) — compara los nombres científicos con el Catalogue of Life a través de GBIF y señala nombres mal escritos, sinónimos, nombres que el catálogo no reconoce, solo reconocidos como género, familias distintas a las del catálogo, nombres de otro grupo y especies en categoría vulnerable, en peligro o en peligro crítico de la UICN. El emparejamiento lo hace GBIF, no el visor.
 
-Cada hallazgo trae la columna Darwin Core donde se corrige, qué pasó, por qué importa al publicar y cómo se arregla. Se exporta en cuatro formas: Darwin Core `.xlsx` y `.csv` (con todas las columnas y valores originales; lo que calcula el visor va en una hoja aparte), GeoJSON y un CSV de correcciones con una fila por corrección, pensado para abrirlo al lado del Excel.
+Cada hallazgo trae la columna Darwin Core donde se corrige, qué pasó, por qué importa al publicar y cómo se arregla. Se exporta en cinco formas: Darwin Core `.xlsx` y `.csv` (con todas las columnas y valores originales; lo que calcula el visor va en una hoja aparte), GeoJSON, una lista de correcciones en `.xlsx` con una fila por hallazgo, pensada para abrirla al lado del Excel, y un Darwin Core `.xlsx` con las correcciones seguras ya aplicadas (vocabularios con equivalencia exacta, fechas a ISO, familias mal escritas, separador decimal perdido, `taxonRank` deducido del nombre…) y una hoja "Cambios" con cada celda que cambió. Ese archivo nunca toca identificadores ni nada que dependa de juicio, y el original no se modifica.
 
 También lee la plantilla del SiB aunque venga maltratada: escoge la hoja correcta del libro, recupera encabezados pisados usando las etiquetas en español de la segunda fila, y acepta las coordenadas en los formatos en que realmente las escriben los colectores (`5°26'32.7"N`, `5° 26' 32,7''`, `05°26ʹ32.7ʺ N`, `5.53214N`, `72 42 41.3 W`).
 
@@ -51,10 +55,10 @@ También lee la plantilla del SiB aunque venga maltratada: escoge la hoja correc
 Conviene decirlo claro para no dar por buena una base solo porque pasó la revisión:
 
 - **No es inteligencia artificial.** Son reglas lógicas verificables: cada hallazgo se puede rastrear hasta la celda que lo produjo. La verificación de nombres la hace el servicio de GBIF y solo cuando la pides; el visor muestra lo que ese servicio responde y no garantiza que esté libre de errores.
-- No detecta registros duplicados por coincidencia de especie, coordenada y fecha: los duplicados que busca son de número de catálogo u `occurrenceID`.
+- Los registros repetidos por especie, día y punto son una alerta para revisar, no un veredicto: una serie del mismo número de campo puede ser un lote legítimo.
 - No comprueba que el municipio declarado corresponda a la coordenada. La comprobación de "fuera de Colombia" usa cajas y no el contorno del país: el mar Caribe al norte de La Guajira todavía cuenta como Colombia.
-- No oculta ni generaliza las localidades de especies amenazadas. La verificación de nombres sí señala las especies en categoría VU, EN o CR de la UICN, pero no es la lista nacional de especies amenazadas. **Si vas a publicar datos de especies con riesgo de tráfico, esa parte todavía te toca a ti.**
-- No escribe sobre tu archivo: solo lee y reporta.
+- Generalizar las coordenadas de especies amenazadas es opcional y solo al exportar: si la verificación de nombres encontró especies en categoría VU, EN o CR de la UICN, aparece una casilla que redondea sus coordenadas a 0,1° y llena `dataGeneralizations` e `informationWithheld`. Es la categoría global de la UICN, no la lista nacional de especies amenazadas. **Si vas a publicar datos de especies con riesgo de tráfico, decide con la colección qué generalizar.**
+- No escribe sobre tu archivo: lee, reporta y exporta archivos nuevos.
 
 ## Privacidad y seguridad
 

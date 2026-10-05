@@ -2,6 +2,19 @@
 
 El proyecto se desarrolló como versiones numeradas de un archivo HTML antes de existir como repositorio; esta es la historia resumida. El repositorio arrancó en 0.23.0 porque la versión interna vigente era la v23; la numeración sigue la interna (v30 = 0.30.0). Las versiones intermedias no se publicaron una por una.
 
+## 0.31.0 — 4 de octubre de 2026
+
+- **Filtros**: al tocar un hallazgo, la lista y el mapa muestran solo esos registros, y el aviso del mapa trae "exportar estos" (Darwin Core .xlsx solo con lo filtrado). **Línea de tiempo** por año, lustro o década: un clic filtra por ese periodo; con Mayúsculas el periodo se extiende.
+- **Agrupar** también por especie aceptada y por conjunto de datos. Los títulos de los conjuntos de datos se leen de la carpeta `dataset/` del .zip de GBIF.
+- **Alertas de GBIF**, pestaña propia que no cuenta como error: las banderas de la columna `issue` (traducidas y clasificadas en alta, media e informativa), posibles registros repetidos (misma especie, día y punto) y registros que dicen ser una observación aunque el ejemplar se colectó.
+- **Excel con correcciones aplicadas**: Darwin Core .xlsx con las correcciones seguras ya escritas y una hoja "Cambios" con cada celda modificada. No toca identificadores ni nada que dependa de juicio.
+- **Generalizar coordenadas de especies amenazadas** al exportar (opcional, 0,1°), con `dataGeneralizations` e `informationWithheld`.
+- Nuevos hallazgos: coordenada sin punto decimal aunque el visor haya tomado la coordenada de otra columna (antes se reparaba en silencio); número de catálogo escrito de varias formas dentro de una serie (capa del SiB); la misma persona escrita de varias formas en `recordedBy` / `identifiedBy` (no cuenta como error). Para el catálogo repetido, "MUS-Am-0042" y "MUS- Am-42" son el mismo.
+- Avance visible al cargar archivos grandes, sin frenarse si la pestaña queda en segundo plano; las tandas de archivos esperan su turno en vez de mezclarse.
+- Arreglos: un año solo escrito como número (2011) ya no se lee como fecha de Excel (1905-07-03); "Scinax X-signatus" se reconoce como un problema de mayúsculas y no como nombre inexistente; ya no se propone "Chordata" cuando el catálogo solo reconoce un rango superior; una celda que diga "constructor" o "__proto__" ya no tumba la carga; "NA" cuenta como campo vacío; la altitud "2.820" se lee como 2.820 m; los colores de las fuentes no se repiten; el aviso de filtro y los límites del mapa se actualizan con cada cambio.
+- Rendimiento: la lista se pinta unas cuatro veces más rápido y la búsqueda unas tres veces más rápido con miles de registros.
+- Con los Excel de la UPTC: 4.315 registros, 3.941 con coordenada confiable, 1.087 con al menos un error (antes 1.010: los 77 nuevos son coordenadas guardadas sin punto decimal, que antes se reparaban sin avisar), 8.601 hallazgos entre errores y campos vacíos.
+
 ## 0.30.0 — 4 de octubre de 2026
 
 - Revisión sobre una descarga real de GBIF (Darwin Core Archive, 3.647 registros de *Dendropsophus*): de 592 registros con error en la v29 se pasó a 9, y los que quedan son reales. Se quitaron falsos positivos:

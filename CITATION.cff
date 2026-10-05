@@ -8,7 +8,7 @@ authors:
     affiliation: "Universidad Pedagógica y Tecnológica de Colombia"
     city: "Tunja"
     country: CO
-version: "0.30.0"
+version: "0.31.0"
 date-released: "2026-10-04"
 license: Apache-2.0
 abstract: >-
