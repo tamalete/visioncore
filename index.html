@@ -130,7 +130,7 @@ h1{font-weight:600;font-size:24px;line-height:1.08;letter-spacing:-.02em}
 .grp-h .gdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .grp-body{overflow:hidden;transition:max-height .22s ease}
 .grp.closed .grp-body{max-height:0!important}
-.item{padding:9px 11px 9px 22px;border-radius:8px;cursor:pointer;transition:background .12s,border-color .12s;border:1px solid transparent;display:flex;align-items:center;gap:10px}
+.item{content-visibility:auto;contain-intrinsic-size:auto 29px;padding:9px 11px 9px 22px;border-radius:8px;cursor:pointer;transition:background .12s,border-color .12s;border:1px solid transparent;display:flex;align-items:center;gap:10px}
 .item:hover{background:var(--panel2)}
 .item.active{background:var(--panel2);border-color:var(--sel)}
 .item .isil{width:17px;height:17px;flex-shrink:0}
@@ -159,6 +159,9 @@ main{position:relative;background:var(--bg2)}
 .syn-row{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:3px 0;color:var(--txt2)}
 .syn-row b{color:var(--txt);font-weight:500}
 .syn-row .n{font-family:'IBM Plex Mono',monospace;color:var(--txt3)}
+.pers-nota{font-size:11px;line-height:1.45;color:var(--txt3);margin:2px 0 6px}
+.pers-g{border-left:2px solid var(--edge2);padding-left:8px;margin:0 0 7px}
+.pers-v{font-size:11px;color:var(--txt3)}
 .mk.ping{animation:ping 1.3s ease-out}
 @keyframes ping{0%{transform:scale(1)}35%{transform:scale(1.7)}100%{transform:scale(1)}}
 .mk.sel{color:var(--sel)!important;filter:drop-shadow(0 0 10px var(--sel)) drop-shadow(0 0 4px var(--sel))!important;transform:scale(1.5);z-index:9999}
@@ -502,6 +505,7 @@ body.capas-off .layers-panel{display:none}
 #map{z-index:0}
 .rev-tabs{flex-shrink:0}
 @media (min-width:900px){.rev-box{width:min(820px,100%)}}
+@media (min-width:1100px){.rev-box{width:min(960px,100%)}} /* con la pestaña de alertas los rótulos largos ya no caben en 820 */
 .rev-ej td a{color:inherit;text-decoration:underline;text-decoration-color:rgba(79,211,154,.45);text-underline-offset:3px}
 .rev-ej td a:hover{text-decoration-color:currentColor}
 .v-htxt{min-width:0;padding-right:24px}
@@ -515,6 +519,62 @@ body.capas-off .layers-panel{display:none}
   .rev-foot{padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
   .rev-foot .rev-nota{display:none}
 }
+/* ===== v31: tipo de registro y aviso de filtro ===== */
+.tipos{display:flex;flex-direction:column;gap:5px}
+.tipos-t{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:1px}
+.tipo-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--edge);border-radius:7px;padding:6px 10px;color:var(--txt);font-family:inherit;font-size:12px;cursor:pointer;text-align:left;transition:opacity .13s,border-color .13s}
+.tipo-chip:hover{border-color:var(--edge2)}
+.tipo-chip.off{opacity:.35}
+.tipo-chip:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+.tipo-chip .tct{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3)}
+.tdot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:6px;vertical-align:middle}
+.tipo-chip .tdot{margin-right:0}
+.tipos:not(.modo) .tdot{opacity:.85}
+.ttag{margin-left:6px;font-size:9.5px;letter-spacing:.04em;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.85}
+.filtro-aviso{position:absolute;left:50%;transform:translateX(-50%);bottom:52px;z-index:650;display:none;align-items:center;gap:10px;max-width:calc(100% - 32px);background:rgba(18,26,34,.95);border:1px solid var(--sel);border-radius:10px;padding:8px 10px 8px 14px;font-size:12.5px;color:var(--txt2);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 12px rgba(55,224,255,.18);backdrop-filter:blur(6px)}
+.filtro-aviso.show{display:flex}
+.filtro-aviso b{color:var(--txt);font-weight:600}
+.fa-t{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sel)}
+.fa-n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);white-space:nowrap}
+.fa-x{background:var(--bg2);border:1px solid var(--edge);border-radius:6px;color:var(--txt2);font-family:inherit;font-size:11.5px;padding:4px 9px;cursor:pointer;white-space:nowrap}
+.fa-x:hover{border-color:var(--sel);color:var(--txt)}
+.v-links a{color:var(--sel);text-decoration:none}
+.v-links a:hover{text-decoration:underline}
+.mode-tab{padding:6px 4px}
+/* línea de tiempo: histograma de registros por año, lustro o década (vive en el panel, no tapa el mapa) */
+.linea{display:flex;flex-direction:column;gap:5px}
+.lt-top{display:flex;align-items:center;gap:8px}
+.lt-top .tipos-t{flex:1;margin:0}
+.lt-top select{background:var(--bg2);border:1px solid var(--edge);border-radius:6px;color:var(--txt2);font-family:inherit;font-size:11.5px;padding:3px 6px;cursor:pointer}
+.lt-scroll{overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.lt-in{display:flex;flex-direction:column;min-width:100%}
+.lt-barras{display:flex;align-items:flex-end;gap:1px;height:62px;border-bottom:1px solid var(--edge2)}
+.lt-b{flex:1 0 6px;min-width:6px;min-height:3px;padding:0;border:0;border-radius:2px 2px 0 0;background:var(--sel);opacity:.4;cursor:pointer;user-select:none;-webkit-user-select:none}
+.lt-b:hover{opacity:.8}
+.lt-b.on{opacity:1;box-shadow:0 0 6px rgba(55,224,255,.6)}
+.lt-b:disabled{background:var(--edge2);opacity:.6;min-height:1px;cursor:default}
+.lt-b:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+.lt-eje{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--txt3);margin-top:2px}
+.lt-pie{font-size:11px;line-height:1.5;color:var(--txt3)}
+.lt-pie b{color:var(--txt);font-weight:600}
+.lt-pie button{background:var(--bg2);border:1px solid var(--edge);border-radius:6px;color:var(--txt2);font-family:inherit;font-size:11px;padding:2px 8px;margin-left:6px;cursor:pointer}
+.lt-pie button:hover{border-color:var(--sel);color:var(--txt)}
+/* alertas de GBIF: capa aparte, no cuentan como error */
+.qc-dot.alerta{background:transparent;border:1.5px solid var(--err);border-radius:50%}
+.qc-dot.alerta.media{border-color:var(--falta)}
+.rev-card.alerta{border-left-color:var(--err)}
+.rev-card.alerta .rev-n{color:var(--err);background:rgba(255,123,114,.12)}
+.rev-card.alerta.media{border-left-color:var(--falta)}
+.rev-card.alerta.media .rev-n{color:var(--falta);background:rgba(201,162,39,.14)}
+.rev-card.alerta.info{border-left-color:var(--edge2)}
+.rev-card.alerta.info .rev-n{color:var(--txt2);background:var(--bg2)}
+.v-flag.alerta{background:rgba(255,123,114,.08);border-color:rgba(255,123,114,.35);color:var(--err)}
+.v-flag.alerta.media{background:rgba(201,162,39,.12);border-color:rgba(201,162,39,.45);color:#e2c15a}
+.v-flag.alerta b{color:var(--txt)}
+@media (max-width:820px), (max-width:950px) and (max-height:520px) and (orientation:landscape){
+  .filtro-aviso{bottom:calc(var(--tira) + 52px + env(safe-area-inset-bottom));flex-wrap:wrap;font-size:12px}
+  .lt-b{flex-basis:14px;min-width:14px}
+}
 </style>
 </head>
 <body>
@@ -524,7 +584,7 @@ body.capas-off .layers-panel{display:none}
     <span class="hoja-txt" id="hojaTxt">Panel de datos</span>
   </button>
   <div class="masthead">
-    <div class="kicker">VISIONCORE · v30</div>
+    <div class="kicker">VISIONCORE · v31</div>
     <h1>Visor Darwin Core</h1>
     <p class="sub">Carga archivos DwC (plantilla SiB Colombia o descargas de GBIF), los mapea y revisa su calidad. Toca un ejemplar para volar a su punto de colecta.</p>
   </div>
@@ -565,14 +625,26 @@ body.capas-off .layers-panel{display:none}
             <button class="mode-tab on" data-m="group" onclick="setColorMode('group')">Grupo</button>
             <button class="mode-tab" data-m="elev" onclick="setColorMode('elev')">Altitud</button>
             <button class="mode-tab" data-m="time" onclick="setColorMode('time')">Hora</button>
+            <button class="mode-tab" data-m="tipo" onclick="setColorMode('tipo')" title="Colorear por tipo de registro: espécimen, iNaturalist, observación…">Origen</button>
           </div>
           <div class="legend" id="legend"></div>
+          <div class="tipos" id="tipos" aria-label="Tipo de registro"></div>
           <div class="elev-scale" id="elevScale" style="display:none"></div>
           <div class="time-panel" id="timePanel" style="display:none">
             <div class="time-head"><span id="timeIcon">🌙</span><span id="timeLabel">24:00 · todo el día</span></div>
             <input type="range" id="timeSlider" min="0" max="1440" value="1440" step="10" aria-label="Mostrar los ejemplares colectados hasta esta hora del día">
             <div class="time-marks"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
             <button class="time-reset" id="timeReset">▶ mostrar todo</button>
+          </div>
+          <div class="linea" id="linea" style="display:none">
+            <div class="lt-top"><span class="tipos-t">Línea de tiempo</span>
+              <select id="lsel" aria-label="Agrupar la línea de tiempo por año, lustro o década">
+                <option value="anio">por año</option>
+                <option value="lustro">por lustro</option>
+                <option value="decada">por década</option>
+              </select></div>
+            <div class="lt-scroll"><div class="lt-in" id="ltIn"><div class="lt-barras" id="ltBarras" role="group" aria-label="Registros por periodo: toca una barra para filtrar"></div><div class="lt-eje" id="ltEje"></div></div></div>
+            <div class="lt-pie" id="ltPie"></div>
           </div>
           <div class="search">
             <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
@@ -582,7 +654,12 @@ body.capas-off .layers-panel{display:none}
             <label for="gsel">AGRUPAR:</label>
             <select id="gsel" aria-label="Agrupar la lista de ejemplares">
               <option value="fam">Por familia</option>
+              <option value="gen">Por género</option>
+              <option value="sp">Por especie (como está escrita)</option>
+              <option value="acc">Por especie aceptada</option>
+              <option value="ds">Por conjunto de datos</option>
               <option value="mun">Por localidad</option>
+              <option value="tipo">Por tipo de registro</option>
               <option value="cls">Por grupo</option>
               <option value="none">Sin agrupar</option>
             </select>
@@ -597,7 +674,7 @@ body.capas-off .layers-panel{display:none}
         <div class="list" id="list"></div>
       </div>
     </section>
-    <footer class="pie">VisionCore v30 · UPTC</footer>
+    <footer class="pie">VisionCore v31 · UPTC</footer>
   </div>
 </aside>
 <button class="aside-toggle" id="asideToggle" onclick="toggleAside()" title="Ocultar/mostrar panel" aria-label="Ocultar o mostrar el panel lateral">‹</button>
@@ -621,11 +698,14 @@ body.capas-off .layers-panel{display:none}
       <button class="lyr-btn" id="btnCSV" onclick="exportDwCcsv()" title="Todos los registros cargados, con todas las columnas originales">↓ DwC .csv</button>
       <button class="lyr-btn" id="btnGeo" onclick="exportGeoJSON()" title="Todos los registros cargados que tienen coordenadas">↓ GeoJSON</button>
       <button class="lyr-btn" id="btnCorr" onclick="exportCorrecciones()" title="Una fila por hallazgo: errores, campos vacíos y requisitos del SiB">↓ Correcciones</button>
+      <button class="lyr-btn" id="btnCorrAp" onclick="exportDwCcorregido()" title="Darwin Core .xlsx igual al original, con las correcciones seguras ya escritas y una hoja Cambios con cada una. El archivo original no se toca">↓ DwC corregido</button>
     </div>
+    <label class="qc-chk" id="genWrap" style="display:none" title="Redondea latitud y longitud a 1 decimal en los registros de especies amenazadas (UICN VU, EN, CR) y llena dataGeneralizations e informationWithheld. Vale para DwC .xlsx, .csv, GeoJSON, exportar estos y DwC corregido"><input type="checkbox" id="chkGen"> generalizar coordenadas de especies amenazadas (0,1°)</label>
     <div class="tile-attr" id="expNota">Se exporta todo lo cargado, no solo lo que muestran la búsqueda o los filtros.</div>
     <div class="tile-attr">Teselas: Esri (Dark Gray Canvas, World Imagery, World Street Map) · OpenTopoMap · datos © OpenStreetMap y colaboradores</div>
   </div>
   <div class="credit" id="credit"></div>
+  <div class="filtro-aviso" id="filtroAviso" role="status" aria-live="polite"></div>
   <button class="sound-tgl" id="stgl" aria-pressed="true" title="Sonido al abrir una ficha">♪ sonido</button>
   <div class="voucher" id="voucher"></div>
   <div class="revision" id="revision" role="dialog" aria-modal="true" aria-labelledby="revTitulo"></div>
@@ -635,6 +715,10 @@ body.capas-off .layers-panel{display:none}
 <script>
 // ===== Utilidades de seguridad y rendimiento =====
 function esc(s){if(s==null)return '';const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};return String(s).replace(/[&<>"']/g,c=>m[c]||c);}
+const RX_NO_ALNUM=/[^A-Za-z0-9]/g,RX_SOLO_ALNUM=/^[A-Za-z0-9]*$/,RX_BASURA=/[\u0000-\u001f\u200b-\u200f\ue000-\uf8ff]/g; // para norm() y limpio()
+const RX_NA=/^n\.?\s?\/?\s?a\.?$/i; // "NA", "N/A", "n.a.": una celda así dice "no hay dato", no es un dato
+// diccionario sin prototipo: con {} una celda que diga "constructor" encuentra la función de Object y revienta la carga
+function tabla(o){return Object.assign(Object.create(null),o);}
 function debounce(fn,ms){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),ms);};}
 // Números con separador de miles colombiano (4.315). Se escribe a mano porque toLocaleString('es')
 // deja sin punto los números de cuatro cifras según el navegador. No usar con años.
@@ -645,13 +729,24 @@ let DATA=[]; // sin datos incrustados: los de los colegas salieron del archivo p
 const SIL={rept:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M70 20c6-3 13-1 16 4 2 4 1 8-2 10l-4-3c2-1 2-3 1-5-2-3-6-3-9-1-5 3-6 9-4 14 3 7 2 14-4 19-7 6-17 5-24-1-5-4-11-4-16 0-4 3-5 8-2 12l-5 4c-5-6-4-15 3-20 7-5 16-4 22 1 4 4 10 4 14 0 4-3 5-9 3-13-3-7-1-15 6-19l9-6z" fill="currentColor"/><circle cx="76" cy="24" r="2.4" fill="#0c1015"/></svg>`,amph:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M50 26c-8 0-13 6-13 14 0 5 2 9 2 14 0 6-3 10-3 15 0 7 6 11 14 11s14-4 14-11c0-5-3-9-3-15 0-5 2-9 2-14 0-8-5-14-13-14z"/><circle cx="43" cy="30" r="5.5"/><circle cx="57" cy="30" r="5.5"/><path d="M37 40c-7-5-14-9-21-6-5 2-6 8-2 10 2 1 4 0 5-2 2-3 6-3 10-1 3 2 6 4 8 5M63 40c7-5 14-9 21-6 5 2 6 8 2 10-2 1-4 0-5-2-2-3-6-3-10-1-3 2-6 4-8 5M40 74c-6 4-12 10-12 17 0 5 5 7 8 3 2-3 0-6 3-10 2-3 5-5 7-7M60 74c6 4 12 10 12 17 0 5-5 7-8 3-2-3 0-6-3-10-2-3-5-5-7-7"/></g></svg>`};
 const GROUPS={'Reptilia':{key:'rept',nm:'Reptiles',col:'#e0a24a',freq:180},'Amphibia':{key:'amph',nm:'Anfibios',col:'#4fd39a',freq:640},'Indeterminado':{key:'otro',nm:'Sin determinar',col:'#8899a6',freq:320}};
 SIL.otro=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M50 9L91 50 50 91 9 50z"/><path d="M50 33c7 0 12 5 12 11 0 7-8 8-8 14" fill="none" stroke="#0c1015" stroke-width="7" stroke-linecap="round"/><circle cx="54" cy="70" r="4.6" fill="#0c1015"/></svg>`;
-const off=new Set(); let active=null; let query=''; let soundOn=true; let groupBy='fam'; const closedGroups=new Set();
+let qcFilter=null,verDudosas=false; // filtro por hallazgo y "mostrar coordenadas dudosas" (arriba: buildMarkers los lee al arrancar)
+let periodo=null,granLinea='anio'; // filtro de la línea de tiempo: {a,b} = años inicial y final (incluidos); y su escala (anio, lustro, decada)
+const off=new Set(),offTipo=new Set(); let active=null; let query=''; let soundOn=true; let groupBy='fam'; const closedGroups=new Set();
 
 let colorMode='group';
 let timeCut=1440; // minutos del día hasta donde se muestran ejemplares (1440 = todo)
 let sources=[];
 const SRC_COLORS=['#4fd39a','#e0a24a','#37e0ff','#c77dff','#ff6b9d','#ffd166'];
-function elevOf(r){const m=(r.elev||'').match(/\d+/);return m?parseInt(m[0]):null;}
+// primer color de la paleta que ninguna fuente cargada esté usando (con sources.length se repetía al quitar una del medio); si ya se usan todos, se cicla
+function colorFuente(){const usados=new Set(sources.map(s=>s.color));return SRC_COLORS.find(c=>!usados.has(c))||SRC_COLORS[sources.length%SRC_COLORS.length];}
+// "2.820" en Colombia es 2820 m (el punto es de miles): punto seguido de exactamente 3 cifras, sin cero a la izquierda y con un valor
+// plausible (<= 6.000 m). "2.5" y "10.500" no cumplen y se leen como antes (2 y 10): el primer número entero de la celda.
+function elevOf(r){
+  const s=r.elev||'';
+  const k=s.match(/^\D*([1-9]\d{0,2})\.(\d{3})(?![\d]|[.,]\d)/);
+  if(k&&+(k[1]+k[2])<=6000)return +(k[1]+k[2]);
+  const m=s.match(/\d+/);return m?parseInt(m[0]):null;
+}
 let elevMin=0,elevMax=1,elevSorted=[];
 function computeElevRange(){const es=DATA.map(elevOf).filter(v=>v!=null);if(es.length){[elevMin,elevMax]=minMax(es);elevSorted=es.slice().sort((a,b)=>a-b);}else{elevMin=0;elevMax=1;elevSorted=[];}}
 // posición 0..1 de un valor según su RANGO entre los datos (percentil), no lineal
@@ -675,6 +770,7 @@ function elevColor(e){
 function markerColor(r){
   if(colorMode==='elev')return elevColor(elevOf(r));
   if(colorMode==='time')return timeColor(hourOf(r));
+  if(colorMode==='tipo')return (TIPOS_REG[r.tipo]||TIPOS_REG.otro).col;
   return GROUPS[r.cls]?GROUPS[r.cls].col:'#889';
 }
 // ----- hora -----
@@ -757,6 +853,14 @@ function aplicarLimites(encuadrar){
     return;
   }
   limData=L.latLngBounds(pts);
+  // con un filtro por hallazgo el mapa va suelto: el registro problemático puede estar fuera de Colombia
+  // (antes, al mostrar las dudosas o cargar otro archivo con el filtro puesto, los límites volvían y lo escondían)
+  if(qcFilter){
+    map.setMaxBounds(null);map.setMinZoom(3);
+    if(cont)cont.style.display='';
+    if(encuadrar)enfocarFiltro();
+    return;
+  }
   // un solo punto (o todos casi encima) deja un rectangulo sin area: se le da medio grado
   const sw=limData.getSouthWest(),ne=limData.getNorthEast(),c=limData.getCenter();
   const dLat=Math.max(ne.lat-sw.lat,.5)/2, dLon=Math.max(ne.lng-sw.lng,.5)/2;
@@ -809,10 +913,16 @@ function buildMarkers(){
   // el resaltado de búsqueda y la selección se calculan al crear el icono: Leaflet recrea el
   // elemento cada vez que un punto sale de un grupo, y lo que se le pegara después se perdía
   const q=query.trim().toLowerCase(),qn=norm(query);
+  const th=qcFilter?predHallazgo(qcFilter):null;
   DATA.forEach((r,i)=>{
     if(r.lat==null||r.lon==null)return;
-    if(r.cok===false&&!verDudosas)return; // coordenada imposible: no se dibuja salvo que se pida
+    // con un filtro de hallazgo puesto, se muestran solo esos registros, incluidas las coordenadas
+    // dudosas (si el problema es la coordenada, hay que verla donde cayó)
+    if(th&&!th(r))return;
+    if(r.cok===false&&!verDudosas&&!qcFilter)return; // coordenada imposible: no se dibuja salvo que se pida
     if(off.has(r.cls))return;             // grupo apagado en la leyenda
+    if(offTipo.has(r.tipo||'otro'))return; // tipo de registro apagado
+    if(periodo){const y=anioDe(r);if(y==null||y<periodo.a||y>periodo.b)return;} // fuera del periodo de la línea de tiempo
     if(colorMode==='time'&&timeCut<1440){const hr=hourOf(r);if(hr==null||hr*60>timeCut)return;}
     const hl=q?(coincide(r,q,qn)?'hit':'dim'):'';
     const m=L.marker([r.lat,r.lon],{icon:iconoDe(r,i,hl,active===i),title:(r.sci||'Sin nombre científico')+' · '+r.id,alt:r.sci||'Sin nombre científico',hl});
@@ -820,6 +930,7 @@ function buildMarkers(){
     markers[i]=m; cluster.addLayer(m);
   });
   map.addLayer(cluster);
+  renderFiltroAviso(); // el "N en el mapa" del aviso sale de aquí: se actualiza con cada cambio del mapa (leyenda, búsqueda, hora…)
 }
 function iconoDe(r,i,hl,sel){
   const g=GROUPS[r.cls]||GROUPS['Indeterminado'];
@@ -915,7 +1026,9 @@ function nEspecies(){return new Set(DATA.map(r=>r.sci).filter(Boolean)).size;}
 // Los botones de exportar no sirven de nada sin registros.
 function renderExportState(){
   const hay=DATA.length>0;
-  ['btnXLSX','btnCSV','btnGeo','btnCorr'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!hay;});
+  ['btnXLSX','btnCSV','btnGeo','btnCorr','btnCorrAp'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!hay;});
+  // la casilla de generalizar solo existe si la verificación de nombres marcó alguna especie amenazada
+  {const w=document.getElementById('genWrap'),amen=hay&&hayAmenazadas();if(w)w.style.display=amen?'':'none';const c=document.getElementById('chkGen');if(c&&!amen)c.checked=false;}
   const n=document.getElementById('expNota');
   if(n)n.textContent=hay?'Se exporta todo lo cargado ('+fmtN(DATA.length)+' registros), no solo lo que muestran la búsqueda o los filtros.':'Carga un archivo para poder exportar.';
 }
@@ -933,9 +1046,11 @@ function setColorMode(m){
   colorMode=m;
   document.querySelectorAll('.mode-tab').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   document.getElementById('legend').style.display=(m==='group')?'flex':'none';
+  document.getElementById('tipos').classList.toggle('modo',m==='tipo');
   document.getElementById('elevScale').style.display=(m==='elev')?'block':'none';
   document.getElementById('timePanel').style.display=(m==='time')?'block':'none';
   if(m==='elev')renderElevScale();
+  renderTipos();
   // al salir del modo Hora se reinicia TODO el barrido (valor, etiqueta y botón), no solo el corte
   if(m!=='time')resetHora(false);
   buildMarkers();
@@ -946,29 +1061,126 @@ function renderElevScale(){
   document.getElementById('elevScale').innerHTML=`<div class="elev-bar"></div><div class="elev-labels"><span>${fmtN(q(0))} m</span><span>${fmtN(q(0.5))} m</span><span>${fmtN(q(1))} m</span></div><div class="elev-note">color repartido entre los ejemplares (percentiles)</div>`;
 }
 function renderStats(){document.getElementById('stats').innerHTML=`<div class="stat"><b>${fmtN(DATA.length)}</b><span>ejemplares</span></div><div class="stat"><b>${fmtN(nEspecies())}</b><span>especies</span></div><div class="stat"><b>${fmtN(new Set(DATA.map(r=>r.mun).filter(Boolean)).size)}</b><span>localidades</span></div>`;}
+function renderTipos(){
+  const el=document.getElementById('tipos');if(!el)return;
+  const ct={};DATA.forEach(r=>{const k=r.tipo||'otro';ct[k]=(ct[k]||0)+1;});
+  const ks=Object.keys(TIPOS_REG).filter(k=>ct[k]);
+  [...offTipo].forEach(k=>{if(!ct[k])offTipo.delete(k);});
+  // con un solo tipo (un Excel de colección) no hay nada que filtrar, salvo en el modo Origen
+  if(ks.length<2&&colorMode!=='tipo'){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='';
+  el.innerHTML='<div class="tipos-t">Tipo de registro</div>'+ks.map(k=>{const t=TIPOS_REG[k],o=offTipo.has(k);
+    return '<button class="tipo-chip'+(o?' off':'')+'" data-k="'+k+'" aria-pressed="'+(!o)+'" title="Mostrar u ocultar: '+esc(t.nm)+'"><span class="tdot" style="background:'+t.col+'"></span><span class="tnm">'+esc(t.nm)+'</span><span class="tct">'+fmtN(ct[k])+'</span></button>';}).join('');
+  el.querySelectorAll('.tipo-chip').forEach(b=>b.onclick=()=>{const k=b.dataset.k;offTipo.has(k)?offTipo.delete(k):offTipo.add(k);renderTipos();buildMarkers();renderList();});
+}
+function variosTipos(){const p=DATA.length?(DATA[0].tipo||'otro'):'';return DATA.some(r=>(r.tipo||'otro')!==p);}
 function renderLegend(){const el=document.getElementById('legend');el.innerHTML='';Object.entries(GROUPS).forEach(([k,g])=>{const ct=DATA.filter(r=>r.cls==k).length;if(!ct&&k==='Indeterminado')return;const row=document.createElement('div');row.className='legend-row'+(off.has(k)?' off':'');row.setAttribute('role','button');row.tabIndex=0;row.setAttribute('aria-pressed',String(!off.has(k)));row.title='Mostrar u ocultar '+g.nm.toLowerCase();row.innerHTML=`<div class="sil" style="color:${g.col}">${SIL[g.key]}</div><span class="nm">${g.nm}</span><span class="ct">${fmtN(ct)}</span>`;row.onclick=()=>{off.has(k)?off.delete(k):off.add(k);row.classList.toggle('off');row.setAttribute('aria-pressed',String(!off.has(k)));buildMarkers();renderList();};el.appendChild(row);});}
 // Un codigo se escribe de mil formas (UPTC-Re-0388, UPTC Re 0388, uptcre388) y nadie teclea
 // los acentos al buscar. norm() ya quita tildes, espacios y signos, asi que se compara con el
 // texto crudo (para "Pristi mantis" literal) y tambien con las dos partes normalizadas.
 function camposBusca(r){const ig=r.idxN?r.idxN.gbifid:null;return[r.sci,r.fam,r.ord,r.gen,r.vern,r.mun,r.cpob,r.loc,r.vloc,r.dept,r.id,r.cat,r.rec,r.colc,r.by,r.ident,r.occ,(ig==null||!r.raw)?'':cell(r.raw[ig])];}
+// Los campos de búsqueda de un registro no cambian después de leerlo: se pasan a minúscula y por norm()
+// una sola vez (antes, cada tecla repetía eso por cada registro).
+function textosBusca(r){
+  if(!r._bs){const c=camposBusca(r).map(x=>x||'');r._bs={l:c.map(x=>x.toLowerCase()),n:c.map(x=>x?norm(x):'')};}
+  return r._bs;
+}
 function coincide(r,q,qn){
-  const c=camposBusca(r);
-  if(q&&c.some(x=>(x||'').toLowerCase().includes(q)))return true;
-  return qn.length>=2&&c.some(x=>x&&norm(x).includes(qn));
+  const b=textosBusca(r);
+  if(q&&b.l.some(x=>x.includes(q)))return true;
+  return qn.length>=2&&b.n.some(x=>x&&x.includes(qn));
 }
-function match(r){
-  if(off.has(r.cls))return false;
-  if(qcFilter&&!tieneHallazgo(r,qcFilter))return false;
-  const q=query.trim().toLowerCase();
-  if(!q)return true;
-  return coincide(r,q,norm(query));
+// Devuelve la función que dice si un registro pasa los filtros de la lista (grupo, tipo, hallazgo y búsqueda).
+// Se arma una vez por pasada: el texto de búsqueda y el filtro de hallazgo no se recalculan por registro.
+function creaFiltro(){
+  const q=query.trim().toLowerCase(),qn=norm(query),th=qcFilter?predHallazgo(qcFilter):null;
+  return r=>{
+    if(off.has(r.cls))return false;
+    if(offTipo.has(r.tipo||'otro'))return false;
+    if(th&&!th(r))return false;
+    if(periodo){const y=anioDe(r);if(y==null||y<periodo.a||y>periodo.b)return false;}
+    if(!q)return true;
+    return coincide(r,q,qn);
+  };
 }
-function keyOf(r){if(groupBy=='fam')return r.fam||'(sin familia)';if(groupBy=='mun')return r.mun||'(sin localidad)';if(groupBy=='cls')return GROUPS[r.cls]?GROUPS[r.cls].nm:r.cls;return '__ALL__';}
+// ----- línea de tiempo -----
+// Año de un registro: el inicial de su fecha. "2015", "2015-05" y los rangos ("2019-10-19/23") cuentan por
+// su año de inicio; sin fecha (o con una fecha ilegible) devuelve null y no entra en ninguna barra.
+function anioDe(r){
+  if(r._an===undefined){const m=/^(\d{4})(?!\d)/.exec(r.date||'');const y=m?+m[1]:0;r._an=(y>=1800&&y<=2100)?y:null;}
+  return r._an;
+}
+function anchoBarra(){return granLinea==='lustro'?5:granLinea==='decada'?10:1;}
+function claveBarra(y){const w=anchoBarra();return Math.floor(y/w)*w;}
+function rotuloBarra(k){const w=anchoBarra();return w===1?String(k):k+'–'+String(k+w-1).slice(-2);}
+function rotuloPeriodo(p){return p.a===p.b?String(p.a):p.a+'–'+p.b;}
+// alFinal: tras cambiar los datos o la escala, el panel se corre hasta el final (lo más reciente, donde casi siempre están los datos)
+function renderLinea(alFinal){
+  const box=document.getElementById('linea');if(!box)return;
+  if(!DATA.length){box.style.display='none';return;}
+  box.style.display='';
+  const w=anchoBarra(),ct=new Map();let con=0,sin=0,lo=Infinity,hi=-Infinity;
+  DATA.forEach(r=>{const y=anioDe(r);if(y==null){sin++;return;}con++;const k=claveBarra(y);ct.set(k,(ct.get(k)||0)+1);if(k<lo)lo=k;if(k>hi)hi=k;});
+  const bar=document.getElementById('ltBarras'),eje=document.getElementById('ltEje'),pie=document.getElementById('ltPie'),inn=document.getElementById('ltIn');
+  let b='',e='';
+  if(con){
+    let max=0;ct.forEach(v=>{if(v>max)max=v;});
+    let n=0;
+    for(let k=lo;k<=hi;k+=w){
+      const c=ct.get(k)||0,on=periodo&&k+w-1>=periodo.a&&k<=periodo.b;n++;
+      const txt=rotuloBarra(k)+': '+fmtN(c)+' registro'+(c===1?'':'s');
+      b+='<button class="lt-b'+(on?' on':'')+'" data-k="'+k+'"'+(c?'':' disabled')+' style="height:'+(c?Math.max(5,Math.round(Math.sqrt(c/max)*100)):0)+'%" title="'+txt+'" aria-label="'+txt+'" aria-pressed="'+(!!on)+'"></button>';
+    }
+    inn.style.minWidth='max(100%,'+(n*7)+'px)';
+    e='<span>'+rotuloBarra(lo)+'</span><span>'+rotuloBarra(hi)+'</span>';
+  }else inn.style.minWidth='';
+  bar.innerHTML=b;eje.innerHTML=e;
+  if(alFinal){const sc=inn.parentNode;sc.scrollLeft=sc.scrollWidth;}
+  let p=con?'<b>'+fmtN(con)+'</b> con fecha · ':'Ningún registro tiene fecha · ';
+  p+='<b>'+fmtN(sin)+'</b> sin fecha'+(sin&&con?' (no están en ninguna barra)':'');
+  if(periodo)p+='<br>Periodo <b>'+esc(rotuloPeriodo(periodo))+'</b><button onclick="soltarPeriodo()">quitar filtro</button>';
+  else if(con)p+='<br>Toca una barra para filtrar; con Mayúsculas+clic se extiende el periodo. La altura va en raíz cuadrada: así se ven los años con pocos registros.';
+  pie.innerHTML=p;
+}
+function aplicarPeriodo(){renderLinea();renderList();buildMarkers();}
+function soltarPeriodo(){periodo=null;aplicarPeriodo();}
+// clic en una barra: la elige sola; el mismo clic otra vez la suelta; con Mayúsculas el periodo se extiende hasta esa barra
+function clicBarra(k,extender){
+  const a=k,b=k+anchoBarra()-1;
+  if(extender&&periodo)periodo={a:Math.min(periodo.a,a),b:Math.max(periodo.b,b)};
+  else if(periodo&&periodo.a===a&&periodo.b===b)periodo=null;
+  else periodo={a,b};
+  aplicarPeriodo();
+}
+(function(){
+  const bar=document.getElementById('ltBarras'),sel=document.getElementById('lsel');
+  if(bar)bar.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.lt-b');if(!b||b.disabled)return;clicBarra(+b.dataset.k,e.shiftKey);});
+  // otra escala cambia las barras: el periodo elegido ya no corresponde a ninguna, así que se suelta
+  if(sel)sel.addEventListener('change',e=>{granLinea=e.target.value;const habia=!!periodo;periodo=null;renderLinea(true);if(habia){renderList();buildMarkers();}});
+})();
+// Especie aceptada: el nombre que ya calcula el visor. Si se verificaron los nombres, el del catálogo (el aceptado
+// de un sinónimo, el bien escrito de uno mal escrito); si no, el aceptado de GBIF; si no hay, el nombre escrito.
+function especieAceptada(r){
+  const m=NOMBRES[nombreConsulta(r.sci)];
+  if(m&&!m.error&&m.tipo!=='NONE'&&m.nombre){
+    if(m.estado==='SYNONYM'&&m.aceptado)return m.aceptado;
+    if(/^(SPECIES|SUBSPECIES)$/.test(m.rango))return m.nombre;
+  }
+  if(r.acc)return canonicoGbif(r.acc);
+  return r.sci||'';
+}
+// Conjunto de datos: datasetName, si no el título del conjunto en GBIF (leído de dataset/<datasetKey>.xml), si no datasetID.
+function nombreConjunto(r){return r.ds||r.dsTit||r.dsId||'';}
+// para agrupar y contar: si el registro no dice a qué conjunto pertenece, el archivo del que salió
+function conjuntoDe(r){return nombreConjunto(r)||r.__src||'';}
+function generoDe(r){return r.gen||((r.sci||'').split(' ')[0])||'';}
+function keyOf(r){if(groupBy=='fam')return r.fam||'(sin familia)';if(groupBy=='gen')return generoDe(r)||'(sin género)';if(groupBy=='sp')return r.sci||'(sin nombre científico)';if(groupBy=='acc')return especieAceptada(r)||'(sin nombre científico)';if(groupBy=='ds')return conjuntoDe(r)||'(sin conjunto de datos)';if(groupBy=='tipo')return (TIPOS_REG[r.tipo]||TIPOS_REG.otro).nm;if(groupBy=='mun')return r.mun||'(sin localidad)';if(groupBy=='cls')return GROUPS[r.cls]?GROUPS[r.cls].nm:r.cls;return '__ALL__';}
 function renderList(){
   const el=document.getElementById('list');el.innerHTML='';
-  const vis=DATA.map((r,i)=>({r,i})).filter(o=>match(o.r));
+  const f=creaFiltro(),varios=variosTipos();
+  const vis=[];DATA.forEach((r,i)=>{if(f(r))vis.push({r,i});});
   const lb=document.getElementById('listBadge');if(lb)lb.textContent=fmtN(vis.length);
-  const groups={};
+  const groups=tabla(); // las claves salen del archivo (familia, localidad…): sin prototipo para que "constructor" no rompa
   vis.forEach(o=>{const k=keyOf(o.r);(groups[k]=groups[k]||[]).push(o);});
   const keys=Object.keys(groups).sort((a,b)=>groups[b].length-groups[a].length||a.localeCompare(b));
   keys.forEach(k=>{
@@ -976,32 +1188,42 @@ function renderList(){
     const repCls=items[0].r.cls;const g=GROUPS[repCls]||{col:'#889'};
     const wrap=document.createElement('div');wrap.className='grp'+(closedGroups.has(k)?' closed':'');
     if(groupBy=='none'){
-      items.forEach(o=>wrap.appendChild(itemEl(o)));
+      items.forEach(o=>wrap.appendChild(itemEl(o,varios)));
     }else{
       const h=document.createElement('div');h.className='grp-h';
-      const dot=groupBy=='mun'?'':`<span class="gdot" style="background:${g.col}"></span>`;
-      h.innerHTML=`${CARET}${dot}<span class="gnm" style="${groupBy=='mun'?'font-style:normal':''}">${esc(k)}</span><span class="gct">${fmtN(items.length)}</span>`;
+      const tcol=groupBy=='tipo'?(TIPOS_REG[items[0].r.tipo]||TIPOS_REG.otro).col:g.col;
+      const dot=groupBy=='mun'?'':`<span class="gdot" style="background:${tcol}"></span>`;
+      const recta=groupBy=='mun'||groupBy=='tipo'||groupBy=='cls'||groupBy=='ds'||k.startsWith('(');
+      h.innerHTML=`${CARET}${dot}<span class="gnm" style="${recta?'font-style:normal':''}">${esc(k)}</span><span class="gct">${fmtN(items.length)}</span>`;
       h.setAttribute('role','button');h.tabIndex=0;h.setAttribute('aria-expanded',String(!closedGroups.has(k)));
       h.onclick=()=>{closedGroups.has(k)?closedGroups.delete(k):closedGroups.add(k);wrap.classList.toggle('closed');h.setAttribute('aria-expanded',String(!closedGroups.has(k)));};
       wrap.appendChild(h);
       const body=document.createElement('div');body.className='grp-body';
-      items.forEach(o=>body.appendChild(itemEl(o)));
+      items.forEach(o=>body.appendChild(itemEl(o,varios)));
       wrap.appendChild(body);
     }
     el.appendChild(wrap);
   });
 }
-function itemEl(o){
+function itemEl(o,varios){
   const{r,i}=o;const g=GROUPS[r.cls]||GROUPS['Indeterminado'];
   const it=document.createElement('div');it.className='item'+(active===i?' active':'');it.dataset.i=i;
   it.setAttribute('role','button');it.tabIndex=0;
-  const sub=groupBy=='fam'?(r.mun):(r.fam);
+  const sub=(groupBy=='fam'||groupBy=='gen'||groupBy=='sp'||groupBy=='acc')?(r.mun||r.loc):(r.fam);
+  const tag=varios&&groupBy!=='tipo'?`<span class="ttag" style="color:${(TIPOS_REG[r.tipo]||TIPOS_REG.otro).col}">${esc((TIPOS_REG[r.tipo]||TIPOS_REG.otro).corto)}</span>`:'';
   const nombre=r.sci?`<div class="sci">${esc(r.sci)}</div>`:'<div class="sci sin">Sin nombre científico</div>';
-  it.innerHTML=`<div class="isil" style="color:${g.col}">${SIL[g.key]}</div><div class="txt">${nombre}<div class="meta"><span class="num">${esc(r.id)}</span>${sub?' · '+esc(sub):''}</div></div>`;
+  it.innerHTML=`<div class="isil" style="color:${g.col}">${SIL[g.key]}</div><div class="txt">${nombre}<div class="meta"><span class="num">${esc(r.id)}</span>${sub?' · '+esc(sub):''}${tag}</div></div>`;
   it.onclick=()=>openV(i,true);
   return it;
 }
 function clearSel(){if(active!=null)marcarSel(active,false);document.querySelectorAll('.mk.sel').forEach(e=>e.classList.remove('sel'));}
+// enlaces a la fuente: la ficha en GBIF (por gbifID) y la observación original si occurrenceID es una dirección web
+function enlacesRegistro(r){
+  const a=[];
+  if(/^\d+$/.test(r.gbifId||''))a.push('<a href="https://www.gbif.org/occurrence/'+r.gbifId+'" target="_blank" rel="noopener noreferrer">ver en GBIF ↗</a>');
+  if(/^https?:\/\/[^\s"'<>]+$/i.test(r.occ||''))a.push('<a href="'+esc(r.occ)+'" target="_blank" rel="noopener noreferrer">'+(r.tipo==='inat'?'ver en iNaturalist ↗':'ver la fuente ↗')+'</a>');
+  return a.length?'<div class="v-row"><div class="k">Fuente</div><div class="val v-links">'+a.join(' · ')+'</div></div>':'';
+}
 function fmtCoord(lat,lon){if(lat==null)return '—';return Math.abs(lat).toFixed(5)+'° '+(lat>=0?'N':'S')+', '+Math.abs(lon).toFixed(5)+'° '+(lon>=0?'E':'W');}
 // Ficha del ejemplar. Todo lo que viene del Excel pasa por esc(): vt() escapa el texto, y vr()
 // recibe HTML que ya se armó escapado. (Antes la altitud, la fecha y la hora iban sin escapar y
@@ -1037,9 +1259,9 @@ function openV(i,fly){
   // pie: lo que dice el archivo, sin inventar. Antes, sin dato, salía "PreservedSpecimen" y "WGS84".
   const pie=has?`<div class="v-foot"><span>${r.basis?esc(r.basis):''}</span><span>${r.datum?esc(r.datum):'<span class="v-nd">datum no indicado</span>'}</span></div>`:`<div class="nocoord">⚠ Sin georreferencia — no aparece en el mapa</div>`;
   v.innerHTML=`<div class="v-band" style="background:${g.col}"></div><div class="v-head"><button class="v-close" onclick="closeV()" aria-label="Cerrar la ficha">✕</button><div class="v-icon" style="color:${g.col}">${SIL[g.key]}</div><div class="v-htxt"><div class="v-code">${esc(r.id)}${codigo2?' · '+codigo2:''}</div>${nombre}<div class="v-rank">${taxon}</div></div></div>`+
-    `${r.notes?`<div class="v-desc"><span class="lbl">Dónde se encontró</span>${esc(r.notes)}</div>`:''}`+qcBlock(r)+nomBlock(r)+
-    `<div class="v-body">${r.acc?vr('Nombre aceptado',esc(r.acc)+' <span class="v-nd">(según GBIF, el nombre del registro es un sinónimo)</span>'):''}${vr('Grupo',`<span class="badge" style="background:${g.col}22;color:${g.col}">${g.nm}</span>`)}${vr('Localidad',lugar)}${vr('Coordenadas',coord)}${vr('Elevación',elevTxt)}${vr('Colecta',fechaTxt)}${vr('Personas',gente)}${vr('Ejemplar',bicho)}${vt('Hábitat',r.hab)}${vt('Método',r.meth)}${vt('Preparación',r.prep)}${vt('Tipo nomenclatural',r.typ)}${vt('Comportamiento',r.behav)}${vt('Medidas',r.dyn)}${r.occ?vr('occurrenceID','<span class="v-mono">'+esc(r.occ)+'</span>'):''}</div>`+
-    sibBlock(r)+`${extraBlq}${pie}`;
+    `${r.notes?`<div class="v-desc"><span class="lbl">Dónde se encontró</span>${esc(r.notes)}</div>`:''}`+qcBlock(r)+nomBlock(r)+alertaBlock(r)+
+    `<div class="v-body">${vr('Registro',`<span class="badge" style="background:${(TIPOS_REG[r.tipo]||TIPOS_REG.otro).col}22;color:${(TIPOS_REG[r.tipo]||TIPOS_REG.otro).col}">${esc((TIPOS_REG[r.tipo]||TIPOS_REG.otro).nm)}</span>${r.inatInv?' <span class="v-nd">grado de investigación</span>':''}`)}${vr('Conjunto de datos',nombreConjunto(r)?esc(nombreConjunto(r))+(r.dsTit&&r.dsTit!==nombreConjunto(r)?'<br><span class="v-sub">'+esc(r.dsTit)+'</span>':''):(r.dsKey?'<span class="v-mono">'+esc(r.dsKey)+'</span>':''))}${enlacesRegistro(r)}${r.acc?vr('Nombre aceptado',esc(r.acc)+' <span class="v-nd">(según GBIF, el nombre del registro es un sinónimo)</span>'):''}${vr('Grupo',`<span class="badge" style="background:${g.col}22;color:${g.col}">${g.nm}</span>`)}${vr('Localidad',lugar)}${vr('Coordenadas',coord)}${vr('Elevación',elevTxt)}${vr('Colecta',fechaTxt)}${vr('Personas',gente)}${vr('Ejemplar',bicho)}${vt('Hábitat',r.hab)}${vt('Método',r.meth)}${vt('Preparación',r.prep)}${vt('Tipo nomenclatural',r.typ)}${vt('Comportamiento',r.behav)}${vt('Medidas',r.dyn)}${r.occ?vr('occurrenceID','<span class="v-mono">'+esc(r.occ)+'</span>'):''}</div>`+
+    sibBlock(r)+alertaInfo(r)+`${extraBlq}${pie}`;
   v.setAttribute('role','dialog');v.setAttribute('aria-label','Ficha del ejemplar '+r.id);v.tabIndex=-1;
   hacerArrastrable(v,v.querySelector('.v-head'));
   v.classList.add('show');v.scrollTop=0;
@@ -1074,6 +1296,9 @@ function closeV(){
 // buscar: la lista y el mapa se recalculan juntos (el resaltado va dentro del icono de cada punto)
 document.getElementById('q').addEventListener('input',debounce(e=>{query=e.target.value;renderList();buildMarkers();},150));
 document.getElementById('gsel').addEventListener('change',e=>{groupBy=e.target.value;closedGroups.clear();renderList();});
+// al arrastrar el deslizador llegan decenas de eventos por segundo: se redibuja el mapa una vez por cuadro
+let marcPend=false;
+function pedirMarcadores(){if(marcPend)return;marcPend=true;requestAnimationFrame(()=>{marcPend=false;buildMarkers();});}
 function fmtHora(min){const h=Math.floor(min/60),m=Math.round(min%60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
 // deja el barrido horario en "todo el día": valor, etiqueta y botón a la vez
 function resetHora(redibujar){
@@ -1090,7 +1315,7 @@ function resetHora(redibujar){
     const ic=document.getElementById('timeIcon'),ph=dayPhase(timeCut/60);
     if(timeCut>=1440){ic.textContent='🌙';lb.textContent='24:00 · todo el día';rst.classList.remove('active');}
     else{ic.textContent=ph.ic;lb.textContent=fmtHora(timeCut)+' · '+ph.lbl;rst.classList.add('active');}
-    buildMarkers();
+    pedirMarcadores();
   });
   rst.onclick=()=>resetHora(true);
 })();
@@ -1098,32 +1323,35 @@ document.getElementById('stgl').onclick=function(){soundOn=!soundOn;this.classLi
 // ====== CARGA DE EXCEL (SiB Colombia / Darwin Core) ======
 // ====== TAXONOMIA: tablas de referencia ======
 // norm() quita tildes, espacios y signos: compara "Gymnophthalmidae " con "gymnophthalmidae"
-function norm(v){return String(v==null?'':v).normalize('NFD').replace(new RegExp('[\\u0300-\\u036f]','g'),'').replace(/[^A-Za-z0-9]/g,'').toLowerCase();}
+// Las marcas de acento que deja NFD no son A-Za-z0-9, así que el segundo replace ya las quita:
+// no hace falta el primero ni construir una expresión regular nueva en cada llamada (se llama miles de veces).
+// (Las expresiones están arriba, en las utilidades: norm() corre al arrancar, antes de llegar a esta línea.)
+function norm(v){const s=String(v==null?'':v);return (RX_SOLO_ALNUM.test(s)?s:s.normalize('NFD').replace(RX_NO_ALNUM,'')).toLowerCase();}
 
 const FAM_ANF=['Allophrynidae','Aromobatidae','Bufonidae','Caeciliidae','Centrolenidae','Ceratophryidae','Craugastoridae','Dendrobatidae','Eleutherodactylidae','Hemiphractidae','Hylidae','Hylodidae','Leptodactylidae','Microhylidae','Phyllomedusidae','Pipidae','Plethodontidae','Ranidae','Rhinatrematidae','Siphonopidae','Strabomantidae','Telmatobiidae','Typhlonectidae'];
 const FAM_REP=['Alligatoridae','Alopoglossidae','Amphisbaenidae','Anguidae','Aniliidae','Anomalepididae','Boidae','Charinidae','Chelidae','Chelydridae','Colubridae','Corytophanidae','Crocodylidae','Anolidae','Diploglossidae','Dipsadidae','Elapidae','Emydidae','Gekkonidae','Geoemydidae','Gymnophthalmidae','Hoplocercidae','Iguanidae','Kinosternidae','Leiosauridae','Leptotyphlopidae','Mabuyidae','Natricidae','Phyllodactylidae','Podocnemididae','Polychrotidae','Anolidae','Scincidae','Sphaerodactylidae','Teiidae','Testudinidae','Tropidophidae','Tropiduridae','Typhlopidae','Viperidae'];
-const FAM2CLS={},FAM_CANON={};
+const FAM2CLS=tabla(),FAM_CANON=tabla();
 FAM_ANF.forEach(f=>{FAM2CLS[norm(f)]='Amphibia';FAM_CANON[norm(f)]=f;});
 FAM_REP.forEach(f=>{FAM2CLS[norm(f)]='Reptilia';FAM_CANON[norm(f)]=f;});
-const FAM_TYPO={aromabatidae:'Aromobatidae',bufoniade:'Bufonidae',centronalidae:'Centrolenidae',ceratophrydae:'Ceratophryidae',geckonidae:'Gekkonidae',gymnolphthalmidae:'Gymnophthalmidae',igunidae:'Iguanidae',leptotyplopidae:'Leptotyphlopidae',spherodactylidae:'Sphaerodactylidae',dendrobatide:'Dendrobatidae',hylidade:'Hylidae'};
+const FAM_TYPO=tabla({aromabatidae:'Aromobatidae',bufoniade:'Bufonidae',centronalidae:'Centrolenidae',ceratophrydae:'Ceratophryidae',geckonidae:'Gekkonidae',gymnolphthalmidae:'Gymnophthalmidae',igunidae:'Iguanidae',leptotyplopidae:'Leptotyphlopidae',spherodactylidae:'Sphaerodactylidae',dendrobatide:'Dendrobatidae',hylidade:'Hylidae'});
 // Nombres de familia que ya no se usan. Los anolis: la Reptile Database (fuente de reptiles del
 // Catalogue of Life) los pasó de Dactyloidae a Anolidae en 2023. Hasta la v27 el visor tenía esto
 // al revés y marcaba Anolidae como no vigente. Polychrotidae sigue siendo válida, pero solo para
 // Polychrus: con Anolis es un nombre viejo (ver la condición en parseWorkbook).
-const FAM_OLD={dactyloidae:'Anolidae'};
-const ORD2CLS={anura:'Amphibia',caudata:'Amphibia',gymnophiona:'Amphibia',squamata:'Reptilia',sauria:'Reptilia',serpentes:'Reptilia',ophidia:'Reptilia',testudines:'Reptilia',chelonia:'Reptilia',crocodilia:'Reptilia',crocodylia:'Reptilia',rhynchocephalia:'Reptilia'};
-const CLS_ALIAS={amphibia:'Amphibia',anfibia:'Amphibia',anfibios:'Amphibia',amphibians:'Amphibia',reptilia:'Reptilia',reptiles:'Reptilia',reptil:'Reptilia',reptila:'Reptilia'};
+const FAM_OLD=tabla({dactyloidae:'Anolidae'});
+const ORD2CLS=tabla({anura:'Amphibia',caudata:'Amphibia',gymnophiona:'Amphibia',squamata:'Reptilia',sauria:'Reptilia',serpentes:'Reptilia',ophidia:'Reptilia',testudines:'Reptilia',chelonia:'Reptilia',crocodilia:'Reptilia',crocodylia:'Reptilia',rhynchocephalia:'Reptilia'});
+const CLS_ALIAS=tabla({amphibia:'Amphibia',anfibia:'Amphibia',anfibios:'Amphibia',amphibians:'Amphibia',reptilia:'Reptilia',reptiles:'Reptilia',reptil:'Reptilia',reptila:'Reptilia'});
 // Vocabularios sugeridos por la plantilla del SiB v4.0 (hoja Definiciones):
 //   sex: "Hembra Hermafrodita Macho Desconocido"
 //   lifeStage: "Huevo Juvenil Adulto Cigoto Embrion Larva ... Pupa ..."
 // "IND" no esta en la lista: se sugiere "Desconocido". Son vocabularios recomendados, no
 // obligatorios, asi que salirse de ellos es un requisito de publicacion, no un error del dato.
-const SEXO_OK={macho:'Macho',hembra:'Hembra',hermafrodita:'Hermafrodita',desconocido:'Desconocido',
+const SEXO_OK=tabla({macho:'Macho',hembra:'Hembra',hermafrodita:'Hermafrodita',desconocido:'Desconocido',
   ind:'Desconocido',indeterminado:'Desconocido',indet:'Desconocido',nd:'Desconocido',
-  male:'Macho',female:'Hembra',unknown:'Desconocido',hermaphrodite:'Hermafrodita',m:'Macho',f:'Hembra',h:'Hembra'};
-const ETAPA_OK={adulto:'Adulto',juvenil:'Juvenil',huevo:'Huevo',huevos:'Huevo',larva:'Larva',renacuajo:'Larva',
+  male:'Macho',female:'Hembra',unknown:'Desconocido',hermaphrodite:'Hermafrodita',m:'Macho',f:'Hembra',h:'Hembra'});
+const ETAPA_OK=tabla({adulto:'Adulto',juvenil:'Juvenil',huevo:'Huevo',huevos:'Huevo',larva:'Larva',renacuajo:'Larva',
   embrion:'Embrión',cigoto:'Cigoto',pupa:'Pupa',adult:'Adulto',juvenile:'Juvenil',egg:'Huevo',eggs:'Huevo',
-  tadpole:'Larva',larval:'Larva',embryo:'Embrión'};
+  tadpole:'Larva',larval:'Larva',embryo:'Embrión'});
 // fuera de la lista y sin equivalente seguro (se marcan, pero no se sugiere nada)
 // subadulto, cria, neonato: el manual no los trae
 
@@ -1156,9 +1384,11 @@ const QC_TYPES={
   genero_no_concuerda:{s:'err',n:'El género no concuerda con el nombre científico'},
   epiteto_no_concuerda:{s:'err',n:'El epíteto no concuerda con el nombre científico'},
   id_duplicado:{s:'err',n:'Número de catálogo repetido'},
+  catalogo_formato:{s:'sib',n:'Número de catálogo escrito de varias formas'},
   coord_intercambiadas:{s:'err',n:'Latitud y longitud intercambiadas'},
   coord_grados_faltantes:{s:'err',n:'A la coordenada le faltan los grados'},
   coord_reconstruida:{s:'err',n:'Coordenada sin separador decimal (reconstruida)'},
+  coord_sin_punto:{s:'err',n:'Coordenada sin punto decimal en las columnas de latitud y longitud'},
   coord_ilegible:{s:'err',n:'Coordenada ilegible'},
   coord_fuera_rango:{s:'err',n:'Coordenada fuera de rango'},
   coord_fuera_colombia:{s:'err',n:'Coordenada cae fuera de Colombia'},
@@ -1206,14 +1436,18 @@ const QC_TYPES={
   nom_solo_genero:{s:'nom',n:'El catálogo solo reconoce el género'},
   nom_familia_distinta:{s:'nom',n:'La familia no es la del catálogo'},
   nom_otro_grupo:{s:'nom',n:'El nombre corresponde a otro grupo'},
-  nom_amenazada:{s:'nom',n:'Especie amenazada (UICN)'}
+  nom_amenazada:{s:'nom',n:'Especie amenazada (UICN)'},
+  // alertas de GBIF: capa aparte (s:'alerta'). No son errores del dato ni entran en el conteo "con error".
+  // Las banderas de la columna issue se agregan más abajo, en la sección ALERTAS DE GBIF (una por código, con clave ag_CODIGO).
+  al_repetido:{s:'alerta',nivel:'media',n:'Posible registro repetido'},
+  al_obs_colectado:{s:'alerta',nivel:'media',n:'Dice observación, pero el ejemplar se colectó'}
 };
 
 // ====== ENCABEZADOS ======
 // La plantilla SiB trae el termino DwC en la fila 1 y la etiqueta en espanol en la fila 2.
 // Si a una columna le pisaron el termino (al archivo de anfibios le quedo "Sin etiqueta"
 // donde va recordNumber), la etiqueta en espanol permite recuperarla.
-const LBL2TERM={
+const LBL2TERM=tabla({
  'numerodecatalogo':'catalogNumber','numeroderegistro':'recordNumber','iddelregistrobiologico':'occurrenceID',
  'nombrecientifico':'scientificName','clase':'class','orden':'order','familia':'family','genero':'genus',
  'epitetoespecifico':'specificEpithet','categoriadeltaxon':'taxonRank','autoriadelnombrecientifico':'scientificNameAuthorship',
@@ -1232,9 +1466,9 @@ const LBL2TERM={
  'notasdecampo':'fieldNotes','comentariosdelregistrobiologico':'occurrenceRemarks','comentariosdelevento':'eventRemarks',
  'comentariosdelaubicacion':'locationRemarks','comentariosdelorganismo':'organismRemarks','comportamiento':'behavior',
  'propiedadesdinamicas':'dynamicProperties','tiponomenclatural':'typeStatus','nombrecomun':'vernacularName'
-};
+});
 const TERMINOS=['catalogNumber','recordNumber','occurrenceID','scientificName','class','order','family','genus','specificEpithet','taxonRank','scientificNameAuthorship','decimalLatitude','decimalLongitude','verbatimLatitude','verbatimLongitude','verbatimCoordinates','verbatimCoordinateSystem','geodeticDatum','verbatimElevation','minimumElevationInMeters','maximumElevationInMeters','eventDate','eventTime','verbatimEventDate','year','month','day','country','stateProvince','county','municipality','locality','verbatimLocality','recordedBy','identifiedBy','sex','lifeStage','habitat','samplingProtocol','preparations','collectionCode','institutionCode','individualCount','organismQuantity','basisOfRecord','fieldNotes','occurrenceRemarks','eventRemarks','locationRemarks','organismRemarks','behavior','dynamicProperties','typeStatus','vernacularName','gbifID','elevation'];
-const TERM_SET={};TERMINOS.forEach(t=>TERM_SET[norm(t)]=t);
+const TERM_SET=tabla();TERMINOS.forEach(t=>TERM_SET[norm(t)]=t);
 
 // Excel guarda fechas y horas como numeros; SheetJS los entrega como Date.
 // - Una hora sola (eventTime) llega como el 30/12/1899 a esa hora: se devuelve "HH:MM".
@@ -1242,14 +1476,21 @@ const TERM_SET={};TERMINOS.forEach(t=>TERM_SET[norm(t)]=t);
 // - Las fechas se arman con la hora LOCAL. toISOString() usa UTC y en zonas al este de
 //   Greenwich (Espana, por ejemplo) corria todas las fechas un dia hacia atras.
 function cell(v){
+  if(v==null)return '';
+  if(typeof v==='string')return v.trim();
   if(v instanceof Date){
     if(isNaN(v))return '';
     if(v.getFullYear()<1900)return String(v.getHours()).padStart(2,'0')+':'+String(v.getMinutes()).padStart(2,'0');
     return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
   }
-  return v==null?'':String(v).trim();
+  return String(v).trim();
 }
-function limpio(v){return String(v==null?'':v).split('').filter(function(c){var k=c.charCodeAt(0);return k>=32&&!(k>=0x200b&&k<=0x200f)&&!(k>=0xe000&&k<=0xf8ff);}).join('').trim();}
+// Celda de texto: como cell(), pero "NA", "N/A" o "n.a." cuentan como vacía (no hay dato). No se usa en las coordenadas:
+// ahí un "NA" sigue siendo una coordenada ilegible, como dice su hallazgo.
+function celdaTxt(v){const s=cell(v);return RX_NA.test(s)?'':s;}
+const TERM_COORD=new Set(['decimalLatitude','decimalLongitude','verbatimLatitude','verbatimLongitude','verbatimCoordinates']);
+// quita caracteres de control, de ancho cero y de uso privado (lo que dejan los Excel copiados de la web)
+function limpio(v){return String(v==null?'':v).replace(RX_BASURA,'').trim();}
 
 // ====== COORDENADAS ======
 const RX_GRADO=/[°º˚]/;
@@ -1294,7 +1535,7 @@ function leerCoord(raw,ejeHint){
   if(/^\s*-/.test(t)||L==='S'||L==='W'||L==='O')v=-Math.abs(v);
   return{v,eje,iss};
 }
-// Numeros a los que se les perdio el separador decimal (5675859) o vienen pegados como DDMMSS.s (060445.4)
+// Numeros a los que se les perdio el separador decimal (5123456) o vienen pegados como DDMMSS.s (060445.4)
 function reconstruir(t,eje){
   const conPunto=t.match(/^(\d{5,7})[.,](\d{1,2})[^\d]*$/);
   if(conPunto){
@@ -1387,8 +1628,9 @@ function parseFecha(v,y,mo,da){
     if(!anioOk(Y))iss.push({t:'fecha_improbable',d:iso,v:iso});
     return{d:iso,iss,sib};
   }
-  // numero de serie de Excel en una celda con formato General (44270 = 2021-03-15)
-  if(typeof v==='number'&&v>2000&&v<80000&&XLSX.SSF&&XLSX.SSF.parse_date_code){
+  // numero de serie de Excel en una celda con formato General (44270 = 2021-03-15).
+  // Un entero que ya es un año posible (2011) es el año, no la serie: antes salía 1905-07-03.
+  if(typeof v==='number'&&v>2000&&v<80000&&!(Number.isInteger(v)&&anioOk(v))&&XLSX.SSF&&XLSX.SSF.parse_date_code){
     const pc=XLSX.SSF.parse_date_code(v);
     if(pc&&fechaOk(pc.y,pc.m,pc.d)){const iso=arma(pc.y,pc.m,pc.d);sib.push({t:'fecha_no_iso',d:String(v)+' -> '+iso,v:String(v),sug:iso});return{d:iso,iss,sib};}
   }
@@ -1445,7 +1687,7 @@ function parseFecha(v,y,mo,da){
       iss.push({t:'fecha_improbable',d:t.slice(0,30),v:t.slice(0,30)});return{d:t.slice(0,12),iss,sib};
     }
     // mes escrito en palabras: "marzo 2019", "15 de marzo de 2019", "15-mar-2019"
-    {const MESES={ene:1,feb:2,mar:3,abr:4,may:5,jun:6,jul:7,ago:8,sep:9,set:9,oct:10,nov:11,dic:12,jan:1,apr:4,aug:8,dec:12};
+    {const MESES=tabla({ene:1,feb:2,mar:3,abr:4,may:5,jun:6,jul:7,ago:8,sep:9,set:9,oct:10,nov:11,dic:12,jan:1,apr:4,aug:8,dec:12});
      // también "2-Mar-71" (día-mes-año de dos cifras, como lo exportan muchos museos)
      const w=norm(t).match(/^(\d{1,2})?(?:de)?([a-z]{3})[a-z]*(?:de|del)?(\d{4}|\d{2})$/);
      if(w&&MESES[w[2]]&&(w[3].length===4||w[1])){const yy=+w[3],Y=w[3].length===2?(yy>(new Date().getFullYear()%100)+1?1900+yy:2000+yy):yy,M=MESES[w[2]],D=w[1]?+w[1]:0;
@@ -1527,9 +1769,9 @@ const SIB_VOCAB={
 };
 // equivalencias frecuentes que se pueden corregir solas
 const SIB_SINONIMOS={
-  occurrenceStatus:{presente:'present',ausente:'absent'},
-  continent:{southamerica:'América del Sur',sudamerica:'América del Sur',suramerica:'América del Sur',americadelsur:'América del Sur',northamerica:'América del Norte'},
-  taxonRank:{especies:'Especie',species:'Especie',genero:'Género',genus:'Género',familia:'Familia',family:'Familia',subespecie:'Subespecie',subspecies:'Subespecie',orden:'Orden',order:'Orden'}
+  occurrenceStatus:tabla({presente:'present',ausente:'absent'}),
+  continent:tabla({southamerica:'América del Sur',sudamerica:'América del Sur',suramerica:'América del Sur',americadelsur:'América del Sur',northamerica:'América del Norte'}),
+  taxonRank:tabla({especies:'Especie',species:'Especie',genero:'Género',genus:'Género',familia:'Familia',family:'Familia',subespecie:'Subespecie',subspecies:'Subespecie',orden:'Orden',order:'Orden'})
 };
 // basisOfRecord -> type que la acompana (hoja Vocabulario)
 const SIB_BASIS_TYPE={PreservedSpecimen:['PhysicalObject'],LivingSpecimen:['PhysicalObject'],MaterialSample:['PhysicalObject'],FossilSpecimen:['PhysicalObject'],HumanObservation:['Event','Sound'],MachineObservation:['StillImage','MovingImage','Sound']};
@@ -1561,7 +1803,7 @@ function revisarSiB(r,V,origen){
   ['basisOfRecord','type','occurrenceStatus','continent','taxonRank'].forEach(t=>{
     const x=V(t);if(!x)return;
     const lista=SIB_VOCAB[t];if(lista.indexOf(x)>=0)return;
-    const exacto=lista.find(o=>norm(o)===norm(x))||(SIB_SINONIMOS[t]||{})[norm(x)]||'';
+    const exacto=lista.find(o=>norm(o)===norm(x))||(SIB_SINONIMOS[t]||tabla())[norm(x)]||'';
     add(t==='taxonRank'?'sib_vocabulario_taxonrank':'sib_vocabulario',t,x+(exacto?' -> '+exacto:''),x,exacto);
   });
   const cc=V('countryCode'),pais=V('country');
@@ -1625,10 +1867,78 @@ function canonicoGbif(sci,gen,epi,inf){
   for(let i=1;i<w.length;i++){if(/^[a-zà-ÿ][a-zà-ÿ-]*\.?$/.test(w[i])&&!/^(in|ex|et|de|van|von|da|du|del|y|and)$/.test(w[i]))out.push(w[i]);else break;}
   return out.join(' ');
 }
-function parseWorkbook(wb){
+// ====== TIPO DE REGISTRO ======
+// GBIF reúne especímenes de museo, observaciones de ciencia ciudadana (sobre todo iNaturalist),
+// muestras de tejido y grabaciones. Se distingue con basisOfRecord y, para iNaturalist, con la
+// institución, el conjunto de datos o el occurrenceID.
+const TIPOS_REG={
+  especimen:{nm:'Espécimen de colección',corto:'espécimen',col:'#ffd166'},
+  inat:{nm:'Observación de iNaturalist',corto:'iNaturalist',col:'#4fd39a'},
+  observacion:{nm:'Otra observación en campo',corto:'observación',col:'#37e0ff'},
+  muestra:{nm:'Muestra de tejido o ADN',corto:'muestra',col:'#c77dff'},
+  maquina:{nm:'Cámara o grabadora',corto:'cámara/audio',col:'#ff6b9d'},
+  otro:{nm:'Otro o sin dato',corto:'sin dato',col:'#8899a6'}
+};
+function tipoRegistro(basis,inst,ds,occ){
+  if(/inaturalist/.test(norm(inst)+'|'+norm(ds)+'|'+norm(occ)))return 'inat';
+  const b=norm(basis);
+  if(/^(preservedspecimen|fossilspecimen|livingspecimen)$/.test(b))return 'especimen';
+  if(b==='materialsample')return 'muestra';
+  if(b==='machineobservation')return 'maquina';
+  if(b==='humanobservation')return 'observacion';
+  return 'otro';
+}
+// ====== NÚMERO DE CATÁLOGO ======
+// 'En proceso de catalogación', 's/n': no es un número de catálogo, no se compara
+const RX_CAT_SINNUM=/^(en proceso(?: de catalogaci[oó]n)?|sin (?:catalogar|n[uú]mero|cat[aá]logo)|s\.?\/?n\.?|n\.?\/?a\.?|no aplica|pendiente)$/i;
+// Clave para decir "es el mismo catálogo": sin espacios, guiones ni mayúsculas (norm) y sin los ceros a la izquierda del número final,
+// así "MUS- Am-0042", "MUS-AM 0042" y "mus-am-42" son el mismo.
+function catClave(c){
+  const n=norm(c),m=/^(.*?)(\d+)$/.exec(n);
+  return m?m[1]+m[2].replace(/^0+(?=\d)/,''):n;
+}
+// Dentro de un mismo archivo (y conjunto de datos, en GBIF), el catálogo de una serie ("UPTC-Am-") debería escribirse siempre igual.
+// Se separa cada número en prefijo + número final. Serie = el prefijo sin espacios, guiones ni mayúsculas ("MUS-Am-" y "MUS-AM " son la
+// misma serie; "MUS-R-" es otra, y no se compara). Forma mayoritaria: el prefijo más frecuente (si hay empate no se decide nada) y el ancho del
+// número: con ceros de relleno (0042) o sin ellos (42), según qué haya más. Un número que ya pasa del ancho no es una incoherencia (12345
+// entre 0042). Cada fila que no coincide trae como propuesta la forma de la mayoría. No se aplica sola al exportar: el catálogo es un identificador.
+function marcarFormatoCatalogo(out){
+  const series=new Map();
+  out.forEach(r=>{
+    const c=r.cat;if(!c||RX_CAT_SINNUM.test(c.trim()))return;
+    const m=/^(.*\D)?(\d+)\s*$/.exec(c);if(!m)return;
+    const pref=m[1]||'',dig=m[2],k=(r.dsKey||'')+'|'+norm(pref);
+    let s=series.get(k);if(!s){s={p:new Map(),rs:[]};series.set(k,s);}
+    s.p.set(pref,(s.p.get(pref)||0)+1);
+    s.rs.push({r,pref,dig,pad:dig.length>1&&dig[0]==='0'});
+  });
+  series.forEach(s=>{
+    if(s.rs.length<2)return;
+    const ps=[...s.p.entries()].sort((a,b)=>b[1]-a[1]);
+    if(ps.length>1&&ps[0][1]===ps[1][1])return; // sin mayoría clara no se propone nada
+    const majPref=ps[0][0];
+    const ws=new Map();s.rs.forEach(x=>{if(x.pad)ws.set(x.dig.length,(ws.get(x.dig.length)||0)+1);});
+    const wl=[...ws.entries()].sort((a,b)=>b[1]-a[1]);
+    const Wp=wl.length&&(wl.length===1||wl[0][1]>wl[1][1])?wl[0][0]:0;
+    const P=s.rs.filter(x=>x.pad).length,Q=Wp?s.rs.filter(x=>!x.pad&&x.dig.length<Wp).length:s.rs.filter(x=>!x.pad).length;
+    // 'con' = relleno de ceros hasta Wp; 'sin' = números sin ceros a la izquierda; '' = sin criterio (el número se deja como está)
+    const estilo=!P?'':(Wp&&P>Q?'con':(!Wp?'':(Q>P?'sin':'')));
+    s.rs.forEach(x=>{
+      const cuerpo=x.dig.replace(/^0+(?=\d)/,'');
+      const num=estilo==='con'?cuerpo.padStart(Wp,'0'):estilo==='sin'?cuerpo:x.dig;
+      const sug=majPref+num,c=x.r.cat.trim();
+      if(sug!==c)x.r.sib.push({t:'catalogo_formato',col:'catalogNumber',d:c+' -> '+sug,v:c,sug});
+    });
+  });
+}
+function parseWorkbook(wb){const it=parseWorkbookGen(wb);let x;while(!(x=it.next()).done);return x.value;}
+// Generador: parseWorkbook lo corre de un tirón (lo usan el ejemplo y las pruebas); cargarArchivos lo avanza de a pedazos y cede al
+// navegador entre uno y otro para pintar el avance (cada yield trae {fase, n, m}).
+function* parseWorkbookGen(wb){
+  let tY=Date.now();
   const elec=elegirHoja(wb);
   const aoa=elec.filas||[];
-  if(!aoa.length)return{recs:[],flaggedCount:0,noCoord:0,issues:[]};
+  if(!aoa.length)return{recs:[],flaggedCount:0,noCoord:0};
   const terms=(aoa[0]||[]).map(cell);
   // La plantilla del SiB trae los terminos DwC en la fila 1 y las etiquetas en espanol en la
   // fila 2. Si un archivo llega sin esa segunda fila, lo que hay en aoa[1] ya es el primer
@@ -1651,7 +1961,7 @@ function parseWorkbook(wb){
   // nombre DwC de CADA columna (no solo de las 54 que interpreta el lector). Si la fila 1 se
   // pisó ("Sin etiqueta"), se recupera por la etiqueta en espanol de la fila 2.
   const terminos=terms.map((t,i)=>{const k=Object.keys(col).find(x=>col[x]===i);return k||t||'';});
-  const idxN={};terminos.forEach((t,i)=>{const k=norm(t);if(k&&idxN[k]==null)idxN[k]=i;});
+  const idxN=tabla();terminos.forEach((t,i)=>{const k=norm(t);if(k&&idxN[k]==null)idxN[k]=i;});
   // Descarga de GBIF: trae gbifID y columnas que solo agrega GBIF al interpretar (datasetKey,
   // taxonKey, lastInterpreted...). Sus valores ya pasaron por GBIF: el nombre científico trae
   // la autoría, la clasificación es la del nombre aceptado, los vocabularios van en inglés y en
@@ -1668,17 +1978,19 @@ function parseWorkbook(wb){
   for(let i=0;i<anchoEnc;i++){
     if(usadas.has(i))continue;
     const nom=(labels[i]||'').trim()||(terms[i]||'').trim()||('columna '+letraCol(i));
-    sobran.push({i,nom,term:(terms[i]||'').trim()});
+    const term=(terms[i]||'').trim();
+    sobran.push({i,nom,term,nomN:norm(nom),termN:norm(term)});
   }
-  const out=[],issues=[];
+  const out=[];
   let flaggedCount=0,noCoord=0,auto=0;
   const vistos=new Set();
   for(let n=inicio;n<aoa.length;n++){
+    if(((n-inicio)&63)===0&&Date.now()-tY>90){tY=Date.now();yield {fase:'revisando',n:n-inicio,m:aoa.length-inicio};}
     const fila=aoa[n]||[];
-    const g=t=>{const i=col[t];const v=(i==null?null:fila[i]);return (v==null||String(v).trim()==='')?null:v;};
+    const g=t=>{const i=col[t];const v=(i==null?null:fila[i]);if(v==null)return null;const s=String(v).trim();return (s===''||(RX_NA.test(s)&&!TERM_COORD.has(t)))?null:v;};
     const extra=[];
-    sobran.forEach(o=>{const v=cell(fila[o.i]);if(v&&norm(v)!==norm(o.nom)&&norm(v)!==norm(o.term))extra.push([o.nom,v,o.term]);});
-    const gx=t=>{const i=idxN[norm(t)];return i==null?'':cell(fila[i]);};
+    sobran.forEach(o=>{const v=cell(fila[o.i]);if(!v)return;const vn=norm(v);if(vn!==o.nomN&&vn!==o.termN)extra.push([o.nom,v,o.term]);});
+    const gx=t=>{const i=idxN[norm(t)];return i==null?'':celdaTxt(fila[i]);};
     let sci=cell(g('scientificName')),autGbif='',acc='';
     if(esGbif&&sci){
       // GBIF escribe "Hyla labialis Peters, 1863": se separa el nombre de la autoría
@@ -1706,9 +2018,9 @@ function parseWorkbook(wb){
     // occurrenceID distintos, o el catálogo 1234 de dos museos diferentes, salían como duplicados.
     // en GBIF un publicador puede subir varios proyectos en un mismo conjunto de datos (datasetName/datasetID)
     {const dsk=esGbif?[gx('datasetKey'),gx('datasetID'),gx('datasetName')].join('|'):'';
-     // 'En proceso de catalogación', 's/n': no es un número de catálogo, no se compara
-     const catOk=cat&&!/^(en proceso(?: de catalogaci[oó]n)?|sin (?:catalogar|n[uú]mero|cat[aá]logo)|s\.?\/?n\.?|n\.?\/?a\.?|no aplica|pendiente)$/i.test(cat.trim());
-     const clave=catOk?['c',gx('institutionCode'),gx('collectionCode'),dsk,cat].map(norm).join('|')
+     const catOk=cat&&!RX_CAT_SINNUM.test(cat.trim());
+     // catClave: además de espacios, guiones y mayúsculas, ignora los ceros a la izquierda (MUS-Am-0042 = MUS-Am-42)
+     const clave=catOk?['c',gx('institutionCode'),gx('collectionCode'),dsk].map(norm).join('|')+'|'+catClave(cat)
        :occ?'o|'+norm(dsk)+'|'+norm(occ):(/^SIN-ID-/.test(id)?'':'i|'+norm(dsk)+'|'+norm(id));
      if(clave&&vistos.has(clave))iss.push({t:'id_duplicado',d:id,v:id});
      if(clave)vistos.add(clave);}
@@ -1759,6 +2071,25 @@ function parseWorkbook(wb){
     }
     if(!par){const q=armarPar(g('decimalLatitude'),g('decimalLongitude'));if(q.lat!=null)par=q;else if(q.iss.length)issDec=q.iss;}
     if(!par){const q=armarPar(g('verbatimLatitude'),g('verbatimLongitude'));if(q.lat!=null)par=q;else if(q.iss.length&&!issDec)issDec=q.iss;}
+    // Con la coordenada ya elegida, las columnas de latitud y longitud pueden traer el número sin punto decimal (5123456):
+    // leerCoord lo reconstruye, pero cuando la coordenada sale de otra columna (la original, o las otras columnas) ese
+    // aviso se perdía y el Excel seguía con el error. Aquí se deja como hallazgo. El valor de la coordenada no cambia
+    // (no entra en par.iss), así que el punto sigue en el mapa. Se mira celda por celda (con el otro eje ilegible el
+    // par entero no se reconstruye, pero la celda sigue mal). Si la coordenada salió de celdas reconstruidas, ya tiene su aviso.
+    if(par&&!par.iss.some(x=>x.t==='coord_reconstruida')){
+      const sinPunto=(a,b)=>leerCoord(a,'lat').iss.concat(leerCoord(b,'lon').iss).some(x=>x.t==='coord_reconstruida');
+      const cols=[['decimalLatitude','decimalLongitude'],['verbatimLatitude','verbatimLongitude']].find(p=>sinPunto(g(p[0]),g(p[1])));
+      if(cols){
+        const orig=cell(g(cols[0]))+' / '+cell(g(cols[1]));
+        // ok: al reconstruir esas celdas sale la misma coordenada (a menos de 0,001°) que la original: solo entonces el Excel corregido las reescribe
+        const rc=armarPar(g(cols[0]),g(cols[1]));
+        const ok=rc.lat!=null&&Math.abs(rc.lat-par.lat)<0.001&&Math.abs(rc.lon-par.lon)<0.001;
+        // la propuesta es la misma celda con el punto en su sitio (5123456 -> 5.123456), no la lectura de otra columna:
+        // así no se cambia ningún dígito que anotó el colector
+        const bien=ok?String(rc.lat)+' / '+String(rc.lon):par.lat.toFixed(6)+' / '+par.lon.toFixed(6);
+        iss.push({t:'coord_sin_punto',col:cols[0]+' / '+cols[1],d:orig+' -> '+bien,v:orig,sug:bien,ok});
+      }
+    }
     let lat=null,lon=null,cok=false;
     if(par){
       lat=par.lat;lon=par.lon;
@@ -1827,21 +2158,32 @@ function parseWorkbook(wb){
       behav:cell(g('behavior'))||cell(g('organismRemarks')),
       dyn:cell(g('dynamicProperties')),
       cls_raw,flagged,extra,iss,sib,raw:fila});
-    iss.forEach(x=>issues.push({fila:n+1,id,cat,rec,sci,fam,cls_excel:clsX,cls_final:cls,t:x.t,d:x.d,v:x.v,sug:x.sug}));
   }
   // capa SiB: origen deducido de basisOfRecord (se puede cambiar desde la interfaz)
-  const occVistos={};
-  out.forEach(r=>{
-    const V=t=>{const i=idxN[norm(t)];return i==null?'':cell(r.raw[i]);};
+  const occVistos=tabla(); // el occurrenceID viene del archivo: con {} un "constructor" tumbaba la carga entera
+  const titulosDs=wb.titulosDs||null; // títulos de los conjuntos de datos, si el .zip de GBIF traía la carpeta dataset/
+  for(let ri=0;ri<out.length;ri++){
+    if((ri&63)===0&&Date.now()-tY>90){tY=Date.now();yield {fase:'requisitos',n:ri,m:out.length};}
+    const r=out[ri];
+    const V=t=>{const i=idxN[norm(t)];return i==null?'':celdaTxt(r.raw[i]);};
     r.origen=origenPorBase(V('basisOfRecord'));
     r.idxN=idxN;
     r.occ=V('occurrenceID');
-    if(esGbif){r.sib=[];return;}
+    r.ds=V('datasetName');r.gbifId=V('gbifID');
+    // conjunto de datos: clave de GBIF, su título (leído del .zip, si venía) y datasetID
+    r.dsKey=V('datasetKey');r.dsId=V('datasetID');r.dsTit=(titulosDs&&r.dsKey&&titulosDs[r.dsKey])||'';
+    r.tipo=tipoRegistro(V('basisOfRecord'),V('institutionCode'),r.ds||r.dsTit,r.occ);
+    // iNaturalist: solo las de "grado de investigación" llegan a GBIF con ese conjunto de datos
+    r.inatInv=r.tipo==='inat'&&/research.?grade|grado de investigaci/i.test(r.ds||r.dsTit);
+    if(esGbif){r.sib=[];continue;}
     if(r.occ){const k=r.occ.trim();(occVistos[k]=occVistos[k]||[]).push(r);}
     revisarSiB(r,V,r.origen).forEach(x=>r.sib.push(x));
-  });
+  }
+  // capa SiB, no error: escribir el catálogo de dos formas no hace falso el dato, pero conviene unificarlo antes de publicar
+  // (y en una descarga de GBIF no aplica: esos registros ya están publicados)
+  if(!esGbif)marcarFormatoCatalogo(out);
   Object.keys(occVistos).forEach(k=>{if(occVistos[k].length>1)occVistos[k].forEach(r=>r.sib.push({t:'sib_occurrenceid_repetido',col:'occurrenceID',d:k+' ('+occVistos[k].length+' filas)',v:k,sug:''}));});
-  return {recs:out,flaggedCount,noCoord,issues,hoja:elec.nombre,otrasHojas:elec.otras,terminos,etiquetas:labels,idxN,esGbif};
+  return {recs:out,flaggedCount,noCoord,hoja:elec.nombre,otrasHojas:elec.otras,terminos,etiquetas:labels,idxN,esGbif};
 }
 
 
@@ -1849,23 +2191,114 @@ function parseWorkbook(wb){
 // ====== MULTI-ARCHIVO ======
 function rebuildFromSources(){
   DATA=[];
-  sources.forEach(s=>{ s.recs.forEach(r=>{ r.__src=s.name; }); DATA=DATA.concat(s.recs); });
+  sources.forEach(s=>{ s.recs.forEach(r=>{ r.__src=s.name; r.__fuente=s; }); DATA=DATA.concat(s.recs); });
   if(nombresInfo)aplicarNombres(); // nombres ya consultados valen para las fuentes nuevas
+  calcularAlertas(); // repetidos y observación/colectado miran todos los registros juntos, así que se recalculan con cada cambio de fuentes
+  calcularPersonas(); // las escrituras de una misma persona se buscan entre todas las fuentes
   computeElevRange(); closeV(); closedGroups.clear();
+  periodo=null; // la línea de tiempo se reinicia al cambiar las fuentes (el periodo elegido ya no vale)
   // un filtro de calidad que ya no tiene ningún registro (se quitó la fuente, se cargó el ejemplo) se suelta
-  if(qcFilter&&!DATA.some(r=>tieneHallazgo(r,qcFilter)))qcFilter=null;
-  buildMarkers(); renderStats(); renderLegend(); renderList(); renderQC(); renderSintesis(); renderVacio(); renderHojaTira(); renderExportState();
+  if(qcFilter&&!DATA.some(predHallazgo(qcFilter)))qcFilter=null;
+  buildMarkers(); renderStats(); renderLegend(); renderTipos(); renderLinea(true); renderList(); renderQC(); renderSintesis(); renderVacio(); renderHojaTira(); renderExportState();
   if(colorMode==='elev')renderElevScale();
   const by=[...new Set(sources.map(s=>s.recs[0]?.by).filter(Boolean))];
   document.getElementById('credit').textContent='Datos: '+(by.join(' · ')||'—')+' · '+fmtN(DATA.length)+' registros DwC';
   renderSources();
   aplicarLimites(true);
 }
-let qcFilter=null,verDudosas=false;
 function toggleDudosas(el){verDudosas=el.checked;buildMarkers();renderQC();aplicarLimites(false);}
 function top5(campo,n){
-  const c={};DATA.forEach(r=>{const k=(r[campo]||'').trim();if(k)c[k]=(c[k]||0)+1;});
+  const c=tabla();DATA.forEach(r=>{const k=(r[campo]||'').trim();if(k)c[k]=(c[k]||0)+1;});
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,n||5);
+}
+// ====== MISMAS PERSONAS ESCRITAS DISTINTO (recordedBy, identifiedBy) ======
+// No es un error: no entra en "con error" ni en los hallazgos. Sale en la Síntesis, en la revisión y en el Excel de correcciones.
+// Es conservador, sin parecidos difusos. Dos escrituras son la misma persona solo si:
+//  1. Tienen las mismas palabras, en el mismo orden de nombre y apellido, sin tildes, mayúsculas, puntos ni guiones ("Pérez, Juan" = "JUAN PEREZ" =
+//     "Juan Pérez"; "Pérez Gómez, Juan" = "Juan Pérez Gómez"). "J. A. Pérez" y "A. J. Pérez" no son lo mismo. O
+//  2. Tienen el mismo apellido y las mismas iniciales, una de ellas con el nombre completo y la otra solo con iniciales
+//     ("J. Pérez" = "Pérez, J." = "Juan Pérez"). Si en el archivo hay dos nombres completos distintos con esas iniciales y ese apellido
+//     (Juan Pérez y Jairo Pérez) no se une nada: no se sabe cuál es.
+// Los nombres de tres palabras o más sin coma ni iniciales ("Juan Carlos Pérez") no se parten en nombre y apellido: solo valen por la regla 1.
+// Las listas se parten por "|", ";", "&" y " y ". La coma no separa personas, porque "Apellido, N." la usa dentro del nombre.
+const RX_SEP_PERSONAS=/(\s*[|;│&]\s*|\s+y\s+)/i;
+const sinTildes=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+// los espacios repetidos se juntan antes de partir (así el separador no se enreda con tiradas largas de espacios)
+function personasDe(txt){return String(txt||'').replace(/\s+/g,' ').split(RX_SEP_PERSONAS).map((x,i)=>i%2?x:x.trim());}
+function analizaPersona(txt){
+  const s=sinTildes(txt).toLowerCase().replace(/[^a-z0-9,\s'-]/g,' ');
+  const toks=a=>a.split(/\s+/).filter(Boolean);
+  const todas=s.replace(/,/g,' ').split(/[\s-]+/).filter(Boolean);
+  if(!todas.length)return null;
+  let sur=null,giv=null;
+  const i=s.indexOf(',');
+  if(i>=0){sur=toks(s.slice(0,i));giv=toks(s.slice(i+1).replace(/,/g,' '));}
+  else{
+    const t=toks(s),n=t.length;let L=0,T=0;
+    while(L<n&&t[L].length===1)L++;
+    while(T<n&&t[n-1-T].length===1)T++;
+    if(L>0&&L<n){giv=t.slice(0,L);sur=t.slice(L);}
+    else if(T>0&&T<n){sur=t.slice(0,n-T);giv=t.slice(n-T);}
+    else if(n===2){giv=[t[0]];sur=[t[1]];}
+  }
+  if(!giv||!sur||!sur.length||!giv.length)return {exacta:todas.join(' ')}; // sin partir: las palabras como vienen
+  const sig=sur.join(' ').replace(/-/g,' ');
+  const inis=giv.map(x=>x[0]).join('');
+  const completo=giv.every(x=>x.length>1),abrev=giv.every(x=>x.length===1);
+  // clave de la regla 1: nombre y luego apellido, sea cual sea el orden en que se escribió
+  return {exacta:giv.concat(sur).join(' ').replace(/-/g,' '),sur:sig,inis,completo,abrev,conComa:i>=0};
+}
+let PERS={grupos:[],sug:new Map(),nReg:0};
+function calcularPersonas(){
+  const vars=new Map(); // texto de la persona tal como está escrito -> {n registros, a: análisis}
+  DATA.forEach(r=>{
+    const vistas=new Set();
+    [r.by,r.ident].forEach(c=>{personasDe(c).forEach((x,i)=>{
+      if(i%2||!x||vistas.has(x))return;vistas.add(x);
+      let v=vars.get(x);if(!v){v={t:x,n:0,a:analizaPersona(x)};vars.set(x,v);}
+      v.n++;
+    });});
+  });
+  // 1. misma clave exacta -> misma entidad
+  const ents=new Map();
+  vars.forEach(v=>{if(!v.a)return;let e=ents.get(v.a.exacta);if(!e){e={vs:[]};ents.set(v.a.exacta,e);}e.vs.push(v);});
+  const grupoDe=new Map(); // entidad -> grupo final (lista de entidades)
+  ents.forEach(e=>{e.g=[e];grupoDe.set(e,e.g);
+    // análisis de la entidad: el de la variante con coma, si hay; si no, el de la más frecuente
+    const b=e.vs.slice().sort((x,y)=>(y.a.sur?1:0)-(x.a.sur?1:0)||(y.a.conComa?1:0)-(x.a.conComa?1:0)||y.n-x.n)[0];e.a=b.a;});
+  // 2. mismo apellido + mismas iniciales, una completa y otra abreviada
+  const cubos=new Map();
+  ents.forEach(e=>{const a=e.a;if(!a.sur||(!a.completo&&!a.abrev))return;const k=a.sur+'|'+a.inis;let c=cubos.get(k);if(!c){c={comp:[],abr:[]};cubos.set(k,c);}(a.completo?c.comp:c.abr).push(e);});
+  cubos.forEach(c=>{
+    if(c.comp.length>1)return; // dos nombres completos distintos con las mismas iniciales: no se sabe cuál es
+    const todos=c.comp.concat(c.abr);if(todos.length<2)return;
+    const dest=todos[0].g;
+    todos.slice(1).forEach(e=>{if(e.g===dest)return;e.g.forEach(x=>{x.g=dest;dest.push(x);grupoDe.set(x,dest);});});
+  });
+  const grupos=[],sug=new Map();let nReg=0;
+  new Set(grupoDe.values()).forEach(g=>{
+    const vs=[];g.forEach(e=>e.vs.forEach(v=>vs.push({t:v.t,n:v.n})));
+    if(vs.length<2)return;
+    vs.sort((a,b)=>b.n-a.n||b.t.length-a.t.length||(a.t<b.t?-1:a.t>b.t?1:0));
+    const m=vs[0].t,tot=vs.reduce((a,v)=>a+v.n,0);
+    grupos.push({sug:m,vars:vs,total:tot,otras:vs.length-1});
+    vs.forEach(v=>{if(v.t!==m)sug.set(v.t,m);});
+    nReg+=tot;
+  });
+  grupos.sort((a,b)=>b.total-a.total||(a.sug<b.sug?-1:1));
+  PERS={grupos,sug,nReg};
+}
+// Cambia en un texto de personas cada escritura que no sea la sugerida (los separadores quedan como estaban)
+function personasUnificadas(txt){let cambio=false;const o=personasDe(txt).map((x,i)=>{if(i%2)return x;const m=PERS.sug.get(x);if(m){cambio=true;return m;}return x;}).join('');return cambio?o:String(txt||'');}
+function bloquePersonas(max){
+  if(!PERS.grupos.length)return '';
+  const gs=PERS.grupos.slice(0,max);
+  let h='<div class="qc-title">Mismas personas escritas distinto</div><p class="pers-nota">'+fmtN(PERS.grupos.length)+' persona'+(PERS.grupos.length===1?'':'s')+' con más de una escritura. No es un error: no cuenta en «con error». Se sugiere la escritura más frecuente.</p>';
+  gs.forEach(g=>{
+    h+='<div class="pers-g"><div class="syn-row"><b>'+esc(g.sug)+'</b><span class="n">sugerida</span></div>'+g.vars.map(v=>'<div class="syn-row pers-v"><span>'+esc(v.t)+'</span><span class="n">'+fmtN(v.n)+' reg.</span></div>').join('')+'</div>';
+  });
+  if(PERS.grupos.length>max)h+='<p class="pers-nota">y '+fmtN(PERS.grupos.length-max)+' más (están todas en el Excel de correcciones)</p>';
+  return h;
 }
 function renderSintesis(){
   const el=document.getElementById('synPanel');if(!el)return;
@@ -1878,12 +2311,18 @@ function renderSintesis(){
   h+=fila('Municipios',' ',fmtN(new Set(DATA.map(r=>r.mun).filter(Boolean)).size));
   h+=fila('Colectores',' ',fmtN(new Set(DATA.map(r=>r.by).filter(Boolean)).size));
   h+=fila('Determinadores',' ',fmtN(new Set(DATA.map(r=>r.ident).filter(Boolean)).size));
+  {const ct={};DATA.forEach(r=>{const k=r.tipo||'otro';ct[k]=(ct[k]||0)+1;});
+   if(Object.keys(ct).length>1)h+='<div class="qc-title">Tipo de registro</div>'+Object.keys(TIPOS_REG).filter(k=>ct[k]).map(k=>'<div class="syn-row"><b><span class="tdot" style="background:'+TIPOS_REG[k].col+'"></span>'+esc(TIPOS_REG[k].nm)+'</b><span class="n">'+fmtN(ct[k])+'</span></div>').join('')+'<div class="qc-title">Lo demás</div>';}
   const sinNombre=DATA.filter(r=>!r.sci).length;
   if(sinNombre)h+=fila('Sin nombre científico',' ',fmtN(sinNombre));
   if(anios.length){const [a0,a1]=minMax(anios);h+=fila('Años',a0+' – '+a1,fmtN(anios.length)+' reg.');}
+  {const ct=tabla();DATA.forEach(r=>{const k=conjuntoDe(r);if(k)ct[k]=(ct[k]||0)+1;});
+   const ks=Object.entries(ct).sort((a,b)=>b[1]-a[1]);
+   if(ks.length>1)h+='<div class="qc-title">Conjuntos de datos</div>'+ks.slice(0,5).map(([k,n])=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${fmtN(n)}</span></div>`).join('')+(ks.length>5?`<div class="syn-row"><b>y ${fmtN(ks.length-5)} más</b><span class="n"></span></div>`:'');}
   h+='<div class="qc-title">Especies más registradas</div>'+top5('sci').map(([k,n])=>`<div class="syn-row"><b><i>${esc(k)}</i></b><span class="n">${fmtN(n)}</span></div>`).join('');
   h+='<div class="qc-title">Municipios con más registros</div>'+top5('mun').map(([k,n])=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${fmtN(n)}</span></div>`).join('');
   h+='<div class="qc-title">Quién colectó</div>'+top5('by',4).map(([k,n])=>`<div class="syn-row"><b>${esc(k)}</b><span class="n">${fmtN(n)}</span></div>`).join('');
+  h+=bloquePersonas(5);
   el.innerHTML=h;
 }
 function qcAll(){const a=[];DATA.forEach(r=>(r.iss||[]).forEach(x=>a.push({r,x})));return a;}
@@ -1894,7 +2333,12 @@ function claveSib(x){return x.t==='sib_obligatorio'?'sib_obligatorio:'+(x.col||'
 function esClaveSib(k){return /^sib_obligatorio:/.test(k)||((QC_TYPES[k]||{}).s==='sib');}
 function bloqueaClave(k){return /^sib_obligatorio:/.test(k)?true:!!(QC_TYPES[k]||{}).bloquea;}
 function nombreClave(k){const m=/^sib_obligatorio:(.*)$/.exec(k);return m?'Falta '+m[1]:(QC_TYPES[k]||{n:k}).n;}
-function tieneHallazgo(r,k){if(/^nom_/.test(k))return (r.nom||[]).some(x=>x.t===k);return esClaveSib(k)?(r.sib||[]).some(x=>claveSib(x)===k):(r.iss||[]).some(x=>x.t===k);}
+function predHallazgo(k){
+  if(/^a[gl]_/.test(k))return r=>(r.alerta||[]).some(x=>x.t===k);
+  if(/^nom_/.test(k))return r=>(r.nom||[]).some(x=>x.t===k);
+  if(esClaveSib(k))return r=>(r.sib||[]).some(x=>claveSib(x)===k);
+  return r=>(r.iss||[]).some(x=>x.t===k);
+}
 function sibBloquea(x){return !!(QC_TYPES[x.t]||{}).bloquea;}
 // listo = ningún requisito que impida publicar. Con propuestas = todos los que impiden publicar traen propuesta.
 function sibCifras(){
@@ -1905,18 +2349,20 @@ function sibCifras(){
   return {listos,conProp,total,gbif:DATA.length-total};
 }
 // los que vienen del lector (fecha, sexo, etapa, occurrenceID repetido) no dependen del origen: se conservan
-const SIB_DEL_LECTOR=new Set(['fecha_no_iso','vocabulario_sexo','vocabulario_etapa','sib_occurrenceid_repetido']);
+const SIB_DEL_LECTOR=new Set(['fecha_no_iso','vocabulario_sexo','vocabulario_etapa','sib_occurrenceid_repetido','catalogo_formato']);
 function cambiarOrigen(iFuente,origen){
   const s=sources[iFuente];if(!s||!SIB_ORIGENES[origen])return;
   s.origen=origen;
   s.recs.forEach(r=>{
-    const V=t=>{const i=r.idxN[norm(t)];return i==null?'':cell(r.raw[i]);};
+    const V=t=>{const i=r.idxN[norm(t)];return i==null?'':celdaTxt(r.raw[i]);};
     if(r.gbif)return;
     r.origen=origen;
     r.sib=(r.sib||[]).filter(x=>SIB_DEL_LECTOR.has(x.t)).concat(revisarSiB(r,V,origen));
   });
-  if(qcFilter&&!DATA.some(r=>tieneHallazgo(r,qcFilter)))qcFilter=null;
+  const habiaFiltro=!!qcFilter;
+  if(qcFilter&&!DATA.some(predHallazgo(qcFilter)))qcFilter=null;
   renderQC();renderList();
+  if(habiaFiltro){buildMarkers();if(!qcFilter)aplicarLimites(false);} // el filtro de hallazgo cambió de registros (o se soltó)
   if(active!=null&&DATA[active])openV(active,false);
   if(document.getElementById('revision').classList.contains('show'))abrirRevision('sib',{foco:'origen'+iFuente});
 }
@@ -1928,20 +2374,25 @@ function cambiarOrigen(iFuente,origen){
 // El emparejamiento por semejanza lo hace GBIF, no el visor.
 const GBIF_MATCH='https://api.gbif.org/v2/species/match';
 const COL_CHECKLIST='7ddf754f-d193-4cc9-b351-99906754a03b';
-let NOMBRES={};              // nombre consultado -> resumen de la respuesta
+let NOMBRES=tabla();         // nombre consultado -> resumen de la respuesta
 let nombresInfo=null;        // {fecha, total, fallos} de la ultima verificacion
 let verificando=false;
-function nombreConsulta(sci){
+// tal=true: el nombre tal como se escribió (con el epíteto en mayúscula si lo traía); por defecto, el epíteto va en minúscula
+function nombreConsulta(sci,tal){
   const w=String(sci||'').replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
   if(!w.length)return '';
   // "Pristimantis sp1", "Rhinella aff. horribilis": de lo unico que hay certeza es del genero
   if(w.length>1&&/^(sp|spp|sp\d+|aff|cf|indet|nov)\.?\d*\.?$/i.test(w[1]))return w[0];
   // GBIF trae el autor pegado ("Anolis heterodermus Duméril, 1851"): se corta antes del autor
   const out=[w[0]];
-  if(w[1]&&!/^[(\[]|[,\d]/.test(w[1]))out.push(w[1]);
+  if(w[1]&&!/^[(\[]|[,\d]/.test(w[1]))out.push(tal||!RX_EPITETO.test(w[1])?w[1]:w[1].toLowerCase());
   if(out.length===2&&w[2]&&/^[a-zà-ÿ][a-zà-ÿ-]*\.?$/.test(w[2]))out.push(w[2]);
   return out.join(' ');
 }
+// un epíteto de verdad: letras y guiones ("signatus", "x-signatus"); lo demás (autoría, "sp.") se deja como viene
+const RX_EPITETO=/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ-]*$/;
+// rangos a los que sí se puede pedir cuentas (el catálogo reconoció el nombre o su género); por encima de género no hay nada que comparar
+const RX_RANGO_BAJO=/^(SPECIES|SUBSPECIES|VARIETY|FORM|GENUS|SUBGENUS)$/;
 function resumirMatch(q,j){
   const u=j&&j.usage,a=j&&j.acceptedUsage,d=(j&&j.diagnostics)||{},cl={};
   ((j&&j.classification)||[]).forEach(c=>{cl[c.rank]=c.name;});
@@ -1971,8 +2422,9 @@ async function verificarNombres(){
   const total=nombresPendientes().length,err=nombresPendientes().filter(q=>NOMBRES[q]&&NOMBRES[q].error).length;
   nombresInfo={fecha:new Date(),total,fallos:err};
   aplicarNombres();
+  calcularAlertas(); // la especie aceptada cambió con los nombres verificados
   verificando=false;
-  renderQC();renderList();
+  renderQC();renderList();renderExportState();
   if(active!=null&&DATA[active])openV(active,false);
   abrirRevision('nom');
 }
@@ -1986,10 +2438,15 @@ function hallazgosNombre(r){
   if(!q||!m||m.error)return [];
   const out=[],add=(t,d,v,sug)=>out.push({t,d,v,sug});
   if(m.tipo==='NONE'||!m.nombre){add('nom_no_encontrado',q,q,'');return out;}
+  // HIGHERRANK: el catálogo no tiene el nombre y devolvió un grupo superior ("Leptodactylus" -> Chordata, un filo). Eso no es una
+  // corrección ni dice nada de la familia: antes salía "mal escrito -> Chordata". Un género solo (sp., cf.) no se juzga; un binomio sí está sin encontrar.
+  if(m.tipo==='HIGHERRANK'&&!RX_RANGO_BAJO.test(m.rango)){if(q.split(' ').length>=2)add('nom_no_encontrado',q,q,'');return out;}
+  const qo=nombreConsulta(r.sci,true); // como se escribió: si solo cambia una mayúscula, se avisa
   if(m.clase&&!/^(Amphibia|Reptilia)$/.test(m.clase))add('nom_otro_grupo',q+' → '+m.nombre+' ('+m.clase+')',q,'');
   const pideEspecie=q.split(' ').length>=2;
   if(pideEspecie&&m.rango&&!/^(SPECIES|SUBSPECIES)$/.test(m.rango))add('nom_solo_genero',q+' → solo '+m.nombre,q,'');
   else if(norm(m.nombre)!==norm(q))add('nom_mal_escrito',q+' → '+m.nombre,q,m.nombre);
+  else if(qo!==q&&m.nombre===q)add('nom_mal_escrito',qo+' → '+m.nombre+' (solo mayúsculas)',qo,m.nombre);
   if(m.estado==='SYNONYM'&&m.aceptado)add('nom_sinonimo',m.nombre+' → '+m.aceptado,m.nombre,m.aceptado);
   const fl=familiaLocal(r);
   if(m.familia&&fl&&norm(fl)!==norm(m.familia))add('nom_familia_distinta',fl+' → '+m.familia,fl,m.familia);
@@ -2002,10 +2459,12 @@ const IUCN_TXT={VU:'Vulnerable',EN:'En peligro',CR:'En peligro crítico'};
 function nomResumen(){
   const t={};
   DATA.forEach(r=>(r.nom||[]).forEach(x=>{
-    if(!t[x.t])t[x.t]={t:x.t,n:0,nombres:{}};
+    if(!t[x.t])t[x.t]={t:x.t,n:0,nombres:tabla()};
     const g=t[x.t];g.n++;
-    const k=x.t==='nom_familia_distinta'?(x.v+'→'+x.sug+'|'+nombreConsulta(r.sci)):nombreConsulta(r.sci);
-    if(!g.nombres[k])g.nombres[k]={q:nombreConsulta(r.sci),v:x.v,sug:x.sug,d:x.d,n:0};
+    // en un mal escrito, x.v es el nombre tal como está en el archivo (puede ser solo una mayúscula)
+    const q=x.t==='nom_mal_escrito'?x.v:nombreConsulta(r.sci);
+    const k=x.t==='nom_familia_distinta'?(x.v+'→'+x.sug+'|'+q):q;
+    if(!g.nombres[k])g.nombres[k]={q,v:x.v,sug:x.sug,d:x.d,n:0};
     g.nombres[k].n++;
   }));
   const orden=['nom_mal_escrito','nom_sinonimo','nom_familia_distinta','nom_solo_genero','nom_no_encontrado','nom_otro_grupo','nom_amenazada'];
@@ -2025,6 +2484,8 @@ function bloqueNombres(){
   qs.forEach(q=>{const m=NOMBRES[q];if(m&&!m.error)porNombre[q]=m;});
   const ok=qs.filter(q=>{const m=porNombre[q];return m&&m.tipo!=='NONE'&&norm(m.nombre)===norm(q)&&m.estado!=='SYNONYM';}).length;
   h+='<p class="sib-cifra">Nombres aceptados tal cual: <b>'+fmtN(ok)+'</b> de '+fmtN(qs.length)+'</p>';
+  const sinJuzgar=qs.filter(q=>{const m=porNombre[q];return m&&m.tipo==='HIGHERRANK'&&!RX_RANGO_BAJO.test(m.rango)&&q.split(' ').length<2;}).length;
+  if(sinJuzgar)h+='<p class="sib-aviso">'+fmtN(sinJuzgar)+' nombre'+(sinJuzgar===1?'':'s')+' de solo género (sp., cf.) no se juzga'+(sinJuzgar===1?'':'n')+': el catálogo respondió con un grupo superior (un filo, por ejemplo) y eso no es una corrección.</p>';
   h+='<p class="sib-aviso">Comparado con el Catalogue of Life a través de GBIF el '+nombresInfo.fecha.toLocaleDateString('es-CO')+' a las '+nombresInfo.fecha.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}).replace(/\.$/,'')+'. La taxonomía cambia: otra consulta más adelante puede dar otro resultado. Si la colección sigue otra autoridad a propósito, estos hallazgos son para revisar, no para cambiar a ciegas.</p>';
   if(nombresInfo.fallos)h+='<p class="sib-aviso" style="color:var(--err)">'+fmtN(nombresInfo.fallos)+' nombres no se pudieron consultar (sin conexión o GBIF no respondió). <button class="lyr-btn" onclick="verificarNombres()">reintentar</button></p>';
   h+='</div>';
@@ -2120,6 +2581,12 @@ function renderQC(){
   if(errs.length)h+='<div class="qc-title">Errores y contradicciones</div>'+errs.map(filaQ).join('');
   if(fals.length)h+='<div class="qc-title">Campos sin dato</div>'+fals.map(filaQ).join('');
   if(sibs.length)h+='<div class="qc-title">Requisitos del SiB</div>'+sibs.map(k=>fila(k,cSib[k],' sib'+(bloqueaClave(k)?' bloquea':''),nombreClave(k))).join('');
+  // alertas de GBIF: capa aparte, no cuentan como error. Aquí solo las de nivel alta y media; las informativas están en la revisión.
+  {const ac=alertaCifras(),nv=k=>(QC_TYPES[k]||{}).nivel||'info',fu=Object.keys(ac.porClave).filter(k=>nv(k)!=='info').sort((a,b)=>ac.porClave[b]-ac.porClave[a]);
+   if(Object.keys(ac.porClave).length){
+     h+='<button class="qc-sib" onclick="abrirRevision(\'gbif\')" title="Ver las alertas de GBIF: no cuentan como error">Alertas de GBIF: <b>'+fmtN(ac.regFuertes)+'</b> registros<span>ver</span></button>';
+     if(fu.length)h+='<div class="qc-title">Alertas (no cuentan como error)</div>'+fu.slice(0,8).map(k=>fila(k,ac.porClave[k],' alerta '+nv(k),(QC_TYPES[k]||{n:k}).n)).join('')+(fu.length>8?'<div class="rev-mas">y '+fmtN(fu.length-8)+' tipos más, en la revisión</div>':'');
+   }}
   const dud=DATA.filter(r=>r.cok===false&&r.lat!=null).length;
   if(dud)h+=`<label class="qc-chk"><input type="checkbox" ${verDudosas?'checked':''} onchange="toggleDudosas(this)"> mostrar en el mapa las ${fmtN(dud)} coordenadas dudosas</label>`;
   h+='<div class="qc-btns"><button class="lyr-btn" onclick="exportCorrecciones()" title="Una fila por hallazgo: errores, campos vacíos y requisitos del SiB">Correcciones (.xlsx)</button>'+(qcFilter?'<button class="lyr-btn" onclick="setQCFilter(null)">quitar filtro</button>':'')+'</div>';
@@ -2127,9 +2594,37 @@ function renderQC(){
 }
 function setQCFilter(t){
   qcFilter=(t&&t!==qcFilter)?t:null;
-  renderQC();renderList();
+  renderQC();renderList();buildMarkers();
+  if(qcFilter){
+    // se sueltan los límites del mapa: el problema puede estar fuera de Colombia
+    map.setMaxBounds(null);
+    enfocarFiltro();
+  }else aplicarLimites(false);
   const sec=document.getElementById('sec-list');if(sec){sec.classList.remove('closed');const h=sec.querySelector('.sec-h');if(h)h.setAttribute('aria-expanded','true');}
 }
+function enfocarFiltro(){
+  const f=creaFiltro();
+  const pts=DATA.filter(r=>r.lat!=null&&f(r)).map(r=>[r.lat,r.lon]);
+  if(pts.length)map.flyToBounds(L.latLngBounds(pts).pad(.15),{maxZoom:13,duration:.6});
+}
+function nombreFiltro(k){return /^sib_obligatorio:/.test(k)?nombreClave(k):(QC_TYPES[k]||{n:k}).n;}
+function renderFiltroAviso(){
+  const el=document.getElementById('filtroAviso');if(!el)return;
+  const partes=[];
+  if(qcFilter)partes.push('<b>'+esc(nombreFiltro(qcFilter))+'</b>');
+  if(offTipo.size)partes.push('sin '+[...offTipo].map(k=>esc((TIPOS_REG[k]||{}).corto||k)).join(', '));
+  if(periodo)partes.push('periodo <b>'+esc(rotuloPeriodo(periodo))+'</b>');
+  if(!partes.length||!DATA.length){el.classList.remove('show');el.innerHTML='';return;}
+  const vis=DATA.filter(creaFiltro()),enMapa=Object.keys(markers).length;
+  el.innerHTML='<span class="fa-t">Filtro</span>'+partes.join(' · ')+'<span class="fa-n">'+fmtN(vis.length)+' registro'+(vis.length===1?'':'s')+(vis.length!==enMapa?' · '+fmtN(enMapa)+' en el mapa':'')+'</span><button class="fa-x" onclick="exportarFiltrados()" title="Darwin Core .xlsx solo con los '+fmtN(vis.length)+' registros que pasan el filtro">↓ exportar estos</button><button class="fa-x" onclick="quitarFiltros()" aria-label="Quitar el filtro">✕ quitar</button>';
+  el.classList.add('show');
+}
+// Darwin Core .xlsx solo con lo que pasa el filtro actual (hallazgo, tipo de registro, periodo, grupo y búsqueda): el mismo formato de exportDwCxlsx
+function exportarFiltrados(){
+  const recs=DATA.filter(creaFiltro());
+  if(recs.length)exportDwCxlsx(recs,'_filtrado');
+}
+function quitarFiltros(){offTipo.clear();periodo=null;renderTipos();renderLinea();if(qcFilter)setQCFilter(null);else{buildMarkers();renderList();}}
 function renderSources(){
   const el=document.getElementById('sources'); el.innerHTML='';
   sources.forEach((s,i)=>{
@@ -2308,6 +2803,37 @@ function zipElegir(ents){
     ||arch.filter(e=>/\.(csv|tsv|txt)$/.test(base(e))&&!/^(verbatim|multimedia|rights|citations|identification|measurementorfact|resourcerelationship|extendedmeasurementorfact|readme)/.test(base(e))).sort((a,b)=>b.tam-a.tam)[0]
     ||null;
 }
+// Títulos de los conjuntos de datos. Una descarga DwC-A de GBIF trae un EML por conjunto en dataset/<datasetKey>.xml;
+// el título está en <title>, dentro de <dataset>. Con DOMParser (que no baja nada de la red); si el XML no se puede
+// leer como XML, una expresión regular. Lo que sale es texto: quien lo muestre lo pasa por esc().
+function tituloEML(xml){
+  let t='';
+  try{
+    if(typeof DOMParser!=='undefined'){
+      const d=new DOMParser().parseFromString(xml,'application/xml');
+      if(!d.getElementsByTagName('parsererror').length){
+        const ds=d.getElementsByTagName('dataset')[0];
+        if(ds)for(const c of ds.children){if(c.localName==='title'){t=c.textContent;break;}}
+      }
+    }
+  }catch(e){}
+  if(!t){
+    const m=/<dataset[\s>][\s\S]*?<title[^>]*>([\s\S]*?)<\/title>/i.exec(xml);
+    if(m)t=m[1].replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]*>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+  }
+  return t.replace(/\s+/g,' ').trim().slice(0,300);
+}
+async function titulosDeZip(u8,ents){
+  const out=tabla(),rx=/(?:^|\/)dataset\/([^\/]+)\.xml$/i,dec=new TextDecoder('utf-8');
+  let n=0;
+  for(const e of ents){
+    const m=rx.exec(e.nombre);
+    if(!m||e.cifrado||e.tam>8e6||n>=5000)continue;
+    n++;
+    try{const t=tituloEML(dec.decode(await zipLeer(u8,e)));if(t)out[m[1]]=t;}catch(err){} // un EML dañado no tumba la carga
+  }
+  return out;
+}
 // Abre cualquier archivo que acepte el visor y devuelve un libro para parseWorkbook.
 // El tipo se decide por la extensión y por los primeros bytes, no solo por el nombre.
 async function abrirLibro(u8,nombreArchivo){
@@ -2323,7 +2849,11 @@ async function abrirLibro(u8,nombreArchivo){
     const ent=zipElegir(ents);
     if(!ent)throw new Error('el .zip no trae occurrence.txt ni otro archivo .csv, .tsv o .txt');
     const r=deTexto(await zipLeer(u8,ent),ent.nombre.split('/').pop());
-    r.dentro=ent.nombre;return r;
+    r.dentro=ent.nombre;
+    // descarga DwC-A de GBIF: los títulos de los conjuntos de datos van en el libro, para que parseWorkbook los ponga en cada registro
+    const tit=await titulosDeZip(u8,ents);r.nTitulos=Object.keys(tit).length;
+    if(r.nTitulos)r.wb.titulosDs=tit;
+    return r;
   }
   if(ext==='zip')throw new Error('el .zip está vacío o dañado');
   if(['txt','csv','tsv','tab'].includes(ext)&&!esExcelViejo(u8))return deTexto(u8,nombreArchivo);
@@ -2341,54 +2871,78 @@ async function abrirLibro(u8,nombreArchivo){
   return deTexto(u8,nombreArchivo);
 }
 // Carga uno o varios archivos: desde el botón o soltándolos sobre la página.
+// Un archivo a la vez, en el orden en que se eligieron, con el avance en pantalla (leyendo, abriendo, interpretando, revisando N de M).
+// Entre fases se le cede el turno al navegador para que pinte; el trabajo sigue siendo el mismo hilo de siempre (sin Workers: así funciona
+// con doble clic, desde file://). XLSX.read (abrir el libro) no se puede partir: es el único tramo que bloquea sin pintar.
+// Una tanda nueva espera a que termine la anterior: dos tandas a la vez ya no se mezclan.
+// Ojo: no con setTimeout ni requestAnimationFrame. Con la pestaña en segundo plano (o la ventana tapada) el navegador los frena a uno
+// por segundo y un archivo de miles de filas tardaba minutos. Un mensaje (MessageChannel) o scheduler.yield no se frena, y entre
+// un mensaje y otro el navegador sigue pintando cuando le toca el cuadro, así que el avance se ve igual.
+const cede=(typeof scheduler!=='undefined'&&scheduler.yield)?()=>scheduler.yield():()=>new Promise(res=>{const c=new MessageChannel();c.port1.onmessage=()=>res();c.port2.postMessage(0);});
+const leerArchivo=f=>new Promise((res,rej)=>{const rd=new FileReader();rd.onload=()=>res(new Uint8Array(rd.result));rd.onerror=()=>rej(new Error('el navegador no pudo leer el archivo'));rd.readAsArrayBuffer(f);});
+let cargaEnCurso=Promise.resolve(),archivosEnEspera=0;
 function cargarArchivos(lista){
   const files=[...(lista||[])]; if(!files.length)return;
-  const st=document.getElementById('loadStatus'); st.textContent='Leyendo…'; qcFilter=null;
-  // cada archivo se lee por su lado; los resultados se suman en el orden en que se eligieron,
-  // no en el que terminan de leerse (antes el orden y los colores cambiaban de una vez a otra)
-  const res=new Array(files.length);let done=0;
-  const terminar=()=>{
-    if(++done<files.length)return;
-    const buenas=[],malas=[],repetidas=[];
-    res.forEach((x,i)=>{
-      const f=files[i];
-      if(!x||x.error){malas.push({f:f.name,razon:x?x.error:'el navegador no pudo leer el archivo'});return;}
-      if(!x.recs.length){malas.push({f:f.name,razon:x.razon});return;}
-      const firma=firmaFuente(x.recs);
-      if(sources.some(s=>s.firma===firma)){repetidas.push(f.name);return;}
-      sources.push({name:x.name,count:x.recs.length,color:SRC_COLORS[sources.length%SRC_COLORS.length],recs:x.recs,firma,terminos:x.terminos,etiquetas:x.etiquetas,origen:(x.recs[0]||{}).origen||'otros'});
-      buenas.push({f:f.name,n:x.recs.length,hoja:x.hoja,otras:x.otrasHojas||[],tipo:x.tipo,dentro:x.dentro});
-    });
-    rebuildFromSources();
-    let msg='';
-    if(buenas.length)msg+='<span class="ok">'+fmtN(DATA.length)+' registros en total ('+fmtN(sources.length)+' fuente'+(sources.length>1?'s':'')+')</span>';
-    buenas.forEach(x=>{if(x.tipo==='gbif')msg+='<br><span class="ok">'+esc(x.f)+': descarga de GBIF'+(x.dentro?' ('+esc(x.dentro)+')':'')+', '+fmtN(x.n)+' registros</span>';
-      else if(x.tipo&&x.tipo!=='excel')msg+='<br><span class="ok">'+esc(x.f)+': texto separado por '+(x.tipo==='tsv'?'tabuladores':x.tipo==='csv;'?'punto y coma':'comas')+', '+fmtN(x.n)+' registros</span>';
-      if(x.otras&&x.otras.length)msg+='<br><span class="warn">En <b>'+esc(x.f)+'</b> leí la hoja «'+esc(x.hoja)+'»; el libro trae otra hoja con datos que no cargué: '+esc(x.otras.join(', '))+'</span>';});
-    repetidas.forEach(n=>{msg+=(msg?'<br>':'')+'<span class="warn">Ese archivo ya estaba cargado, no lo volví a sumar: '+esc(n)+'</span>';});
-    malas.forEach(m=>{msg+=(msg?'<br>':'')+'<span class="warn">No pude leer <b>'+esc(m.f)+'</b>: '+esc(m.razon)+'</span>';});
-    if(!msg)msg='<span class="warn">No se cargó ningún registro.</span>';
-    st.innerHTML=msg;
-    if(buenas.length)abrirRevisionInicial();
-  };
-  files.forEach((f,idx)=>{
-    const rd=new FileReader();
-    rd.onload=async ev=>{
-      try{
-        const u8=new Uint8Array(ev.target.result);
-        const {wb,tipo,dentro}=await abrirLibro(u8,f.name);
-        const {recs,hoja,otrasHojas,terminos,etiquetas}=parseWorkbook(wb);
-        const name=f.name.replace(/\.(xlsx|xls|csv|tsv|tab|txt|zip)$/i,'').replace(/Darwin[_ ]?Core[-_ ]?/i,'').replace(/Plantilla[_ ]?de[_ ]?registros[_ ]?/i,'').slice(0,28);
-        res[idx]={recs,hoja,otrasHojas,terminos,etiquetas,name,tipo,dentro,razon:recs.length?'':porQueNoSirvio(wb,recs)};
-      }catch(err){
-        res[idx]={error:'no se pudo leer ('+(err&&err.message||err)+')'};
-      }
-      terminar();
-    };
-    // sin esto, si el navegador no puede leer el archivo, "Leyendo…" se quedaba para siempre
-    rd.onerror=()=>{res[idx]={error:'el navegador no pudo leer el archivo'};terminar();};
-    rd.readAsArrayBuffer(f);
+  archivosEnEspera+=files.length;
+  cargaEnCurso=cargaEnCurso.then(()=>cargarLote(files)).catch(e=>{
+    const st=document.getElementById('loadStatus');st.setAttribute('aria-live','polite');st.innerHTML='<span class="warn">La carga se interrumpió: '+esc(e&&e.message||e)+'</span>';
   });
+}
+async function cargarLote(files){
+  archivosEnEspera-=files.length;
+  const st=document.getElementById('loadStatus');
+  st.setAttribute('aria-live','off'); // el avance cambia varias veces por segundo: el lector de pantalla solo anuncia el resultado final
+  const pinta=(i,txt)=>{st.textContent='Archivo '+(i+1)+' de '+files.length+' · '+files[i].name.slice(0,40)+' · '+txt+(archivosEnEspera?' (hay '+archivosEnEspera+' más en espera)':'');};
+  // cada archivo se lee por su lado; los resultados se suman en el orden en que se eligieron
+  const res=new Array(files.length);
+  for(let i=0;i<files.length;i++){
+    const f=files[i];
+    try{
+      pinta(i,'leyendo…');await cede();
+      const u8=await leerArchivo(f);
+      pinta(i,'abriendo el archivo…');await cede();
+      const {wb,tipo,dentro,nTitulos}=await abrirLibro(u8,f.name);
+      pinta(i,'interpretando…');await cede();
+      const it=parseWorkbookGen(wb);let x;
+      while(!(x=it.next()).done){
+        const p=x.value;
+        pinta(i,(p.fase==='revisando'?'revisando ':'revisando requisitos del SiB, ')+fmtN(p.n)+' de '+fmtN(p.m));
+        await cede();
+      }
+      const {recs,hoja,otrasHojas,terminos,etiquetas}=x.value;
+      const name=f.name.replace(/\.(xlsx|xls|csv|tsv|tab|txt|zip)$/i,'').replace(/Darwin[_ ]?Core[-_ ]?/i,'').replace(/Plantilla[_ ]?de[_ ]?registros[_ ]?/i,'').slice(0,28);
+      res[i]={recs,hoja,otrasHojas,terminos,etiquetas,name,tipo,dentro,nTitulos,razon:recs.length?'':porQueNoSirvio(wb,recs)};
+    }catch(err){
+      res[i]={error:'no se pudo leer ('+(err&&err.message||err)+')'};
+    }
+  }
+  st.setAttribute('aria-live','polite');
+  const buenas=[],malas=[],repetidas=[];
+  res.forEach((x,i)=>{
+    const f=files[i];
+    if(!x||x.error){malas.push({f:f.name,razon:x?x.error:'el navegador no pudo leer el archivo'});return;}
+    if(!x.recs.length){malas.push({f:f.name,razon:x.razon});return;}
+    const firma=firmaFuente(x.recs);
+    if(sources.some(s=>s.firma===firma)){repetidas.push(f.name);return;}
+    sources.push({name:x.name,count:x.recs.length,color:colorFuente(),recs:x.recs,firma,terminos:x.terminos,etiquetas:x.etiquetas,origen:(x.recs[0]||{}).origen||'otros'});
+    buenas.push({f:f.name,n:x.recs.length,hoja:x.hoja,otras:x.otrasHojas||[],tipo:x.tipo,dentro:x.dentro,titulos:x.nTitulos||0});
+  });
+  // solo si entró algo nuevo se rehace todo: un archivo que falla no suelta el filtro por hallazgo ni el periodo
+  if(buenas.length){
+    st.textContent='Uniendo los registros y calculando alertas…';await cede();
+    qcFilter=null;
+    rebuildFromSources();
+  }
+  let msg='';
+  if(buenas.length)msg+='<span class="ok">'+fmtN(DATA.length)+' registros en total ('+fmtN(sources.length)+' fuente'+(sources.length>1?'s':'')+')</span>';
+  buenas.forEach(x=>{if(x.tipo==='gbif')msg+='<br><span class="ok">'+esc(x.f)+': descarga de GBIF'+(x.dentro?' ('+esc(x.dentro)+')':'')+', '+fmtN(x.n)+' registros'+(x.titulos?', '+fmtN(x.titulos)+' títulos de conjuntos de datos':'')+'</span>';
+    else if(x.tipo&&x.tipo!=='excel')msg+='<br><span class="ok">'+esc(x.f)+': texto separado por '+(x.tipo==='tsv'?'tabuladores':x.tipo==='csv;'?'punto y coma':'comas')+', '+fmtN(x.n)+' registros</span>';
+    if(x.otras&&x.otras.length)msg+='<br><span class="warn">En <b>'+esc(x.f)+'</b> leí la hoja «'+esc(x.hoja)+'»; el libro trae otra hoja con datos que no cargué: '+esc(x.otras.join(', '))+'</span>';});
+  repetidas.forEach(n=>{msg+=(msg?'<br>':'')+'<span class="warn">Ese archivo ya estaba cargado, no lo volví a sumar: '+esc(n)+'</span>';});
+  malas.forEach(m=>{msg+=(msg?'<br>':'')+'<span class="warn">No pude leer <b>'+esc(m.f)+'</b>: '+esc(m.razon)+'</span>';});
+  if(!msg)msg='<span class="warn">No se cargó ningún registro.</span>';
+  st.innerHTML=msg;
+  if(buenas.length)abrirRevisionInicial();
 }
 document.getElementById('fileIn').addEventListener('change',e=>{cargarArchivos(e.target.files);e.target.value='';});
 // Arrastrar y soltar: la pantalla vacía lo promete. Sin esto el navegador abría o descargaba el
@@ -2427,9 +2981,11 @@ const QC_INFO={
  genero_no_concuerda:{col:'genus',que:'El género de la columna genus no es el mismo que el del nombre científico.',porque:'A veces es un error de tipeo, pero a veces son dos identificaciones distintas en la misma fila: alguien redeterminó el ejemplar y no actualizó todas las columnas.',como:'Decide cuál de los dos es el bueno y deja las dos columnas iguales. Si fue una redeterminación, actualiza también familia, orden e identifiedBy.'},
  epiteto_no_concuerda:{col:'specificEpithet',que:'El epíteto específico no coincide con la segunda palabra del nombre científico.',porque:'Mismo caso del género: o es tipeo, o el ejemplar se redeterminó a medias.',como:'Deja las dos columnas iguales. Si el ejemplar se redeterminó, actualiza todas las columnas taxonómicas.'},
  id_duplicado:{col:'catalogNumber',que:'Ese número de catálogo aparece en más de una fila.',porque:'Puede ser un lote (el manual del SiB permite repetir catalogNumber cuando los ejemplares están agrupados en un frasco o caja) o una fila copiada por error. Lo que sí debe ser único para publicar es occurrenceID.',como:'Busca las filas con ese número. Si es un lote, deja el número y dale a cada fila un occurrenceID distinto; si es la misma fila copiada, bórrala; si son ejemplares distintos, corrige el número.'},
+ catalogo_formato:{col:'catalogNumber',que:'El número de catálogo está escrito distinto al de la mayoría de su serie: otro separador, otras mayúsculas, un espacio de más o un cero de más (o de menos) en el número.',porque:'Para GBIF y el SiB "MUS- Am-0042" y "MUS-Am-0042" son dos catálogos distintos: el mismo ejemplar puede quedar publicado dos veces y la búsqueda por número falla. El visor ya compara sin espacios, guiones, mayúsculas ni ceros a la izquierda para marcar los repetidos, pero la base los publica tal cual.',como:'Escribe todos los catálogos de la serie con la forma que se propone (la que usa la mayoría). Antes confirma contra el frasco o la etiqueta cuál es la forma oficial de la colección: si la mayoría está mal escrita, corrige la mayoría. El visor no cambia este identificador en el Excel de correcciones aplicadas.'},
  coord_intercambiadas:{col:'decimalLatitude / decimalLongitude',que:'La latitud tiene el valor de la longitud y viceversa.',porque:'El punto cae al otro lado del mundo. En Colombia la latitud va entre 0 y 13 y la longitud entre −67 y −79: si ves 73 en la latitud, están cruzadas.',como:'Intercambia los dos valores y revisa las letras: N/S son de latitud, E/W (u O) de longitud.'},
  coord_grados_faltantes:{col:'verbatimLatitude / verbatimLongitude',que:'La coordenada empieza en el símbolo de grados: se perdió el número.',porque:'Sin los grados no hay forma de saber dónde es; el programa no la puede usar.',como:'Búscala en la libreta de campo o en el GPS y vuelve a escribirla completa.'},
  coord_reconstruida:{col:'verbatimLatitude / verbatimLongitude',que:'El número venía sin punto decimal y el programa lo reconstruyó (5432109 se leyó como 5.432109).',porque:'La reconstrucción es una suposición razonable, no un dato: por eso el punto no se dibuja en el mapa hasta que alguien lo confirme.',como:'Confirma el valor contra la fuente original y escríbelo con su punto decimal.'},
+ coord_sin_punto:{col:'decimalLatitude / decimalLongitude',que:'Las columnas de latitud y longitud traen el número sin punto decimal (5123456 en vez de 5.123456). El visor usó la coordenada original (verbatimCoordinates), que sí está bien escrita, y leyó esas columnas solo para compararlas. Cubre también el número pegado en un solo bloque (060445.4).',porque:'Un número así no es una coordenada: si el archivo se publica o se abre en otro programa, el punto cae lejísimos o no se lee. Antes el visor lo reconstruía en silencio y el error seguía en el Excel.',como:'Escribe el valor con su punto decimal en esas columnas (5.675859 y −76.597636). Si el Excel guardó los números sin separador, revisa el formato regional de las celdas.'},
  coord_ilegible:{col:'verbatimLatitude / verbatimLongitude',que:'En la celda hay algo que no es una coordenada (texto, NA, números pegados sin formato).',porque:'El ejemplar no aparece en ningún mapa ni sirve para análisis espacial.',como:'Escribe la coordenada en grados decimales (5.53214) o en grados-minutos-segundos con sus símbolos (5°26\'32.7"N). Si no existe el dato, deja la celda vacía en vez de poner NA.'},
  coord_fuera_rango:{col:'decimalLatitude / decimalLongitude',que:'El valor no puede ser una coordenada: pasa de 90 en latitud o de 180 en longitud.',porque:'Es un dato imposible, no un dato dudoso.',como:'Revisa la celda: casi siempre es un separador decimal perdido o dos coordenadas pegadas.'},
  coord_fuera_colombia:{col:'decimalLatitude / decimalLongitude',que:'La coordenada es válida pero cae fuera de Colombia, casi siempre en mar abierto.',porque:'Si el ejemplar dice country = Colombia, el punto y el país se contradicen. Un grado de longitud mal digitado son unos 110 km, suficiente para sacar al ejemplar de la costa sin que se note.',como:'Revisa el signo (Colombia siempre va con longitud negativa y casi siempre con latitud positiva) y el hemisferio. Si el ejemplar sí es de otro país, corrige la columna country.'},
@@ -2480,6 +3036,262 @@ const QC_INFO={
  sin_localidad:{col:'locality',que:'La fila no tiene ni localidad ni municipio.',porque:'Sin nombre de sitio no se puede verificar la coordenada ni georreferenciar si falta.',como:'Complétala desde la etiqueta. El municipio va en county y el nombre del sitio en locality.'}
 };
 
+// ====== ALERTAS DE GBIF ======
+// Capa aparte, como la del SiB: son avisos, no errores del dato. Viven en r.alerta (no en r.iss), así que no entran
+// en "con error", ni en las cifras de errores, ni en las pestañas de errores y vacíos. Tienen su propia pestaña.
+//  - Banderas de la columna issue de GBIF (solo en descargas de GBIF), traducidas y clasificadas en tres niveles:
+//      alta: el dato casi seguro está mal o no se pudo usar (coordenada en el país equivocado, en 0,0, con signo o ejes
+//            cambiados; nombre que GBIF no encuentra; fecha inválida);
+//      media: GBIF duda del dato o lo interpretó con pérdida (nombre por semejanza, fechas o elevaciones improbables,
+//            incertidumbre mal escrita, instituciones que no cuadran);
+//      informativa: lo que GBIF hizo al leer el registro sin que el dato esté mal (redondear la coordenada, deducir el
+//            continente o el estado de la ocurrencia, no hallar un identificador). Es lo más frecuente.
+//    Una bandera que la tabla no conoce queda como informativa, con su código.
+//  - Posible registro repetido y "dice observación, pero el ejemplar se colectó": valen para cualquier archivo; los dos
+//    cuentan como nivel media.
+// Formato de cada bandera: CODIGO|nivel|Título|Qué pasó
+const GBIF_BANDERAS=[
+ 'COUNTRY_COORDINATE_MISMATCH|alta|La coordenada cae fuera del país indicado|La coordenada y el país del registro no coinciden: el punto está en otro país.',
+ 'CONTINENT_COORDINATE_MISMATCH|alta|La coordenada cae fuera del continente indicado|La coordenada y el continente del registro no coinciden.',
+ 'ZERO_COORDINATE|alta|Coordenada en 0, 0|La latitud y la longitud valen 0: es un punto en el mar frente a África, casi siempre un valor de relleno.',
+ 'PRESUMED_SWAPPED_COORDINATE|alta|Latitud y longitud parecen intercambiadas|GBIF cree que la latitud y la longitud están cruzadas.',
+ 'PRESUMED_NEGATED_LONGITUDE|alta|A la longitud le falta (o le sobra) el signo menos|GBIF cree que el signo de la longitud está al revés.',
+ 'PRESUMED_NEGATED_LATITUDE|alta|A la latitud le falta (o le sobra) el signo menos|GBIF cree que el signo de la latitud está al revés.',
+ 'COORDINATE_INVALID|alta|Coordenada inválida|GBIF no pudo leer la latitud o la longitud como un número.',
+ 'COORDINATE_OUT_OF_RANGE|alta|Coordenada fuera de rango|La latitud pasa de 90 o la longitud pasa de 180.',
+ 'COORDINATE_REPROJECTION_FAILED|alta|No se pudo pasar la coordenada a WGS84|El datum indicado no permitió convertir la coordenada.',
+ 'TAXON_MATCH_NONE|alta|GBIF no encontró el nombre científico|El nombre no se parece a ninguno de la taxonomía de GBIF, así que el registro queda sin clasificar.',
+ 'RECORDED_DATE_INVALID|alta|Fecha de colecta inválida|GBIF no pudo leer la fecha del evento.',
+ 'COUNTRY_INVALID|alta|País no reconocido|El país del registro no es uno que GBIF conozca.',
+ 'BASIS_OF_RECORD_INVALID|alta|basisOfRecord no válido|La base del registro no está en el vocabulario de GBIF.',
+ 'INTERPRETATION_ERROR|alta|Error al interpretar el registro|GBIF no pudo interpretar el registro.',
+ 'TAXON_MATCH_FUZZY|media|Nombre emparejado por semejanza|GBIF no halló el nombre tal cual y lo emparejó con uno parecido.',
+ 'TAXON_MATCH_HIGHERRANK|media|El nombre solo se emparejó con un grupo superior|GBIF no halló la especie y dejó el registro en un género, una familia u otro grupo mayor.',
+ 'TAXON_MATCH_AGGREGATE|media|El nombre se emparejó con un agregado|GBIF lo dejó en un complejo de especies, no en una especie concreta.',
+ 'RECORDED_DATE_MISMATCH|media|La fecha no cuadra con year, month y day|La fecha completa y las columnas de año, mes y día dicen cosas distintas.',
+ 'RECORDED_DATE_UNLIKELY|media|Fecha improbable|La fecha está en el futuro o es anterior a 1700.',
+ 'ELEVATION_UNLIKELY|media|Altitud improbable|La altitud queda fuera de lo razonable.',
+ 'ELEVATION_MIN_MAX_SWAPPED|media|Altitud mínima y máxima intercambiadas|La mínima es mayor que la máxima.',
+ 'ELEVATION_NON_NUMERIC|media|Altitud que no es un número|GBIF no pudo leer la altitud.',
+ 'DEPTH_UNLIKELY|media|Profundidad improbable|La profundidad queda fuera de lo razonable.',
+ 'DEPTH_MIN_MAX_SWAPPED|media|Profundidad mínima y máxima intercambiadas|La mínima es mayor que la máxima.',
+ 'DEPTH_NON_NUMERIC|media|Profundidad que no es un número|GBIF no pudo leer la profundidad.',
+ 'COORDINATE_UNCERTAINTY_METERS_INVALID|media|Incertidumbre de la coordenada inválida|coordinateUncertaintyInMeters no es un número válido (¿trae unidades?).',
+ 'COORDINATE_PRECISION_INVALID|media|Precisión de la coordenada inválida|coordinatePrecision no es un valor válido.',
+ 'COORDINATE_ACCURACY_INVALID|media|Exactitud de la coordenada inválida|La exactitud de la coordenada no es un valor válido.',
+ 'COORDINATE_REPROJECTION_SUSPICIOUS|media|La conversión de datum movió demasiado la coordenada|Pasar la coordenada a WGS84 la desplazó más de lo esperable.',
+ 'CONTINENT_INVALID|media|Continente no reconocido|El continente del registro no está en el vocabulario de GBIF.',
+ 'CONTINENT_COUNTRY_MISMATCH|media|El continente y el país no coinciden|El continente indicado no es el del país.',
+ 'COUNTRY_MISMATCH|media|El país y su código no coinciden|country y countryCode dicen países distintos.',
+ 'GEODETIC_DATUM_INVALID|media|Datum geodésico inválido|geodeticDatum no es un datum que GBIF reconozca.',
+ 'INDIVIDUAL_COUNT_INVALID|media|Número de individuos inválido|individualCount no es un entero válido.',
+ 'INDIVIDUAL_COUNT_CONFLICTS_WITH_OCCURRENCE_STATUS|media|El número de individuos contradice la presencia|Dice que está ausente pero cuenta individuos, o al revés.',
+ 'OCCURRENCE_STATUS_UNPARSABLE|media|Presencia o ausencia ilegible|occurrenceStatus no se pudo interpretar.',
+ 'TYPE_STATUS_INVALID|media|Tipo nomenclatural inválido|typeStatus no está en el vocabulario de GBIF.',
+ 'IDENTIFIED_DATE_INVALID|media|Fecha de identificación inválida|dateIdentified no se pudo leer.',
+ 'IDENTIFIED_DATE_UNLIKELY|media|Fecha de identificación improbable|dateIdentified está en el futuro o es muy antigua.',
+ 'GEOREFERENCED_DATE_INVALID|media|Fecha de georreferenciación inválida|georeferencedDate no se pudo leer.',
+ 'GEOREFERENCED_DATE_UNLIKELY|media|Fecha de georreferenciación improbable|georeferencedDate está en el futuro o es muy antigua.',
+ 'INSTITUTION_COLLECTION_MISMATCH|media|La institución y la colección no cuadran|La colección indicada pertenece a otra institución en el registro de GBIF.',
+ 'FOOTPRINT_WKT_INVALID|media|Polígono (footprintWKT) inválido|El polígono del registro no se pudo leer.',
+ 'FOOTPRINT_WKT_MISMATCH|media|El polígono no coincide con la coordenada|footprintWKT y la coordenada apuntan a sitios distintos.',
+ 'FOOTPRINT_SRS_INVALID|media|Sistema de referencia del polígono inválido|footprintSRS no se pudo interpretar.',
+ 'COORDINATE_ROUNDED|info|Coordenada redondeada por GBIF|GBIF redondeó la coordenada a 6 decimales para guardarla.',
+ 'GEODETIC_DATUM_ASSUMED_WGS84|info|Datum supuesto (WGS84)|El registro no decía el datum y GBIF asumió WGS84.',
+ 'COUNTRY_DERIVED_FROM_COORDINATES|info|País deducido de la coordenada|El registro no traía país y GBIF lo dedujo del punto.',
+ 'CONTINENT_DERIVED_FROM_COORDINATES|info|Continente deducido de la coordenada|El registro no traía continente y GBIF lo dedujo del punto.',
+ 'CONTINENT_DERIVED_FROM_COUNTRY|info|Continente deducido del país|El registro no traía continente y GBIF lo dedujo del país.',
+ 'COORDINATE_REPROJECTED|info|Coordenada convertida a WGS84|GBIF pasó la coordenada de otro datum a WGS84.',
+ 'OCCURRENCE_STATUS_INFERRED_FROM_BASIS_OF_RECORD|info|Presencia deducida del tipo de registro|El registro no decía si el organismo estaba presente y GBIF lo dedujo de basisOfRecord.',
+ 'OCCURRENCE_STATUS_INFERRED_FROM_INDIVIDUAL_COUNT|info|Presencia deducida del número de individuos|El registro no decía si el organismo estaba presente y GBIF lo dedujo de individualCount.',
+ 'INSTITUTION_MATCH_FUZZY|info|Institución emparejada por semejanza|GBIF emparejó institutionCode con una institución de su registro por parecido, no exacta.',
+ 'INSTITUTION_MATCH_NONE|info|Institución que GBIF no encuentra|institutionCode no coincide con ninguna institución del registro de GBIF (GRSciColl).',
+ 'COLLECTION_MATCH_FUZZY|info|Colección emparejada por semejanza|GBIF emparejó collectionCode con una colección de su registro por parecido, no exacta.',
+ 'COLLECTION_MATCH_NONE|info|Colección que GBIF no encuentra|collectionCode no coincide con ninguna colección del registro de GBIF (GRSciColl).',
+ 'AMBIGUOUS_INSTITUTION|info|Institución ambigua|institutionCode coincide con más de una institución del registro de GBIF.',
+ 'AMBIGUOUS_COLLECTION|info|Colección ambigua|collectionCode coincide con más de una colección del registro de GBIF.',
+ 'DIFFERENT_OWNER_INSTITUTION|info|Otra institución propietaria|ownerInstitutionCode es distinto de institutionCode.',
+ 'TAXON_ID_NOT_FOUND|info|Identificador del taxón no encontrado|taxonID no existe en la taxonomía de GBIF.',
+ 'TAXON_CONCEPT_ID_NOT_FOUND|info|Identificador del concepto taxonómico no encontrado|taxonConceptID no existe en la taxonomía de GBIF.',
+ 'SCIENTIFIC_NAME_ID_NOT_FOUND|info|Identificador del nombre no encontrado|scientificNameID no existe en la taxonomía de GBIF.',
+ 'TAXON_MATCH_TAXON_ID_IGNORED|info|taxonID ignorado|GBIF ignoró taxonID porque no coincidía con el nombre.',
+ 'TAXON_MATCH_TAXON_CONCEPT_ID_IGNORED|info|taxonConceptID ignorado|GBIF ignoró taxonConceptID porque no coincidía con el nombre.',
+ 'TAXON_MATCH_SCIENTIFIC_NAME_ID_IGNORED|info|scientificNameID ignorado|GBIF ignoró scientificNameID porque no coincidía con el nombre.',
+ 'MODIFIED_DATE_INVALID|info|Fecha de modificación inválida|El campo modified no se pudo leer.',
+ 'MODIFIED_DATE_UNLIKELY|info|Fecha de modificación improbable|El campo modified está en el futuro o es muy antiguo.',
+ 'DATASET_ID_INVALID|info|datasetID inválido|datasetID no se pudo interpretar.',
+ 'MULTIMEDIA_DATE_INVALID|info|Fecha de la imagen o grabación inválida|La fecha del archivo multimedia no se pudo leer.',
+ 'MULTIMEDIA_URI_INVALID|info|Dirección de la imagen o grabación inválida|La dirección del archivo multimedia no es válida.',
+ 'REFERENCES_URI_INVALID|info|Dirección de referencia inválida|El campo references no trae una dirección web válida.',
+ 'ELEVATION_NOT_METRIC|info|Altitud no métrica|La altitud venía en otras unidades y GBIF la convirtió.',
+ 'DEPTH_NOT_METRIC|info|Profundidad no métrica|La profundidad venía en otras unidades y GBIF la convirtió.',
+ 'NUCLEOTIDE_SEQUENCE_GAPS_REMOVED|info|Huecos quitados de la secuencia|GBIF quitó los guiones (huecos) de la secuencia de nucleótidos.'
+];
+// Por qué importa y cómo se arregla: uno general por nivel y uno propio para las más graves y las más frecuentes
+const ALERTA_GENERAL={
+ alta:{porque:'GBIF vio algo que contradice o invalida el dato. Si el problema es real, el registro aparece en el lugar, la fecha o el taxón equivocados y distorsiona cualquier mapa o análisis.',como:'Compara el registro con la etiqueta o la libreta de campo y corrige el campo que se indica. Si el dato está bien y GBIF se equivocó, no hay nada que cambiar.'},
+ media:{porque:'Es una duda de GBIF, no una contradicción segura: puede ser un error de captura o una limitación de cómo se interpretó el campo.',como:'Revisa el campo contra la fuente original. Si está bien, no hay nada que cambiar.'},
+ info:{porque:'GBIF dejó constancia de algo que hizo al interpretar el registro (redondear, deducir, no encontrar un código). No significa que el dato esté mal.',como:'Normalmente no hay nada que corregir. Se muestra para que se sepa qué cambió GBIF; si te importa el valor original, compáralo con la columna de tu archivo.'}
+};
+const ALERTA_PROPIA={
+ COUNTRY_COORDINATE_MISMATCH:{porque:'El punto cae en un país y el registro dice otro. Un grado de longitud mal escrito son unos 110 km, suficiente para sacar un ejemplar de la frontera o de la costa sin que se note.',como:'Revisa el signo y los dígitos de la coordenada y la columna country. En una especie de frontera, el punto puede estar bien y el país mal.'},
+ ZERO_COORDINATE:{porque:'0, 0 es un punto en el océano. Casi siempre es una celda vacía que se llenó con ceros; el registro aparece en el mar y estorba en cualquier análisis espacial.',como:'Busca la coordenada real. Si no existe, deja las dos celdas vacías en vez de escribir 0.'},
+ PRESUMED_SWAPPED_COORDINATE:{porque:'Con los ejes cruzados el punto cae lejísimos, en otro continente.',como:'Intercambia los valores: la latitud va en decimalLatitude y la longitud en decimalLongitude.'},
+ PRESUMED_NEGATED_LONGITUDE:{porque:'Colombia está al oeste de Greenwich: con la longitud en positivo, el punto se va a África o a Asia.',como:'Ponle el signo menos a la longitud (74.2 pasa a −74.2).'},
+ PRESUMED_NEGATED_LATITUDE:{porque:'Con la latitud en el hemisferio equivocado el punto se refleja al otro lado del ecuador.',como:'Corrige el signo de la latitud: en el norte de Colombia es positiva, en el sur del país puede ser negativa.'},
+ TAXON_MATCH_NONE:{porque:'Sin nombre reconocido, el registro no aparece en ninguna búsqueda por especie ni en los mapas de distribución de GBIF.',como:'Revisa la ortografía del nombre y si es un sinónimo muy antiguo; escribe el nombre aceptado y deja el original en verbatimScientificName.'},
+ RECORDED_DATE_INVALID:{porque:'Sin fecha legible no hay análisis temporal, y GBIF deja el registro sin fecha.',como:'Escribe la fecha en ISO 8601 (AAAA-MM-DD), o solo el año o el mes si no se conoce más.'},
+ COORDINATE_ROUNDED:{porque:'GBIF guarda las coordenadas con 6 decimales (unos 11 cm). Si tu archivo traía más, esos decimales se perdieron; no cambia nada en la práctica.',como:'Nada que corregir.'}
+};
+// Registra cada bandera en el catálogo de hallazgos (clave ag_CODIGO). Las que no están en la tabla quedan como informativas.
+let banderasNuevas=0;
+GBIF_BANDERAS.forEach(l=>{
+  const [cod,nivel,nom,que]=l.split('|'),k='ag_'+cod,g=ALERTA_GENERAL[nivel],p=ALERTA_PROPIA[cod]||{};
+  QC_TYPES[k]={s:'alerta',nivel,n:nom};
+  QC_INFO[k]={col:'issue',que:'GBIF puso la bandera '+cod+'. '+que,porque:p.porque||g.porque,como:p.como||g.como};
+});
+function claveBandera(cod){
+  let k='ag_'+String(cod).toUpperCase().replace(/[^A-Z0-9_]/g,'_').slice(0,60);
+  if(!QC_TYPES[k]){
+    if(banderasNuevas>=200)k='ag_otras'; // un archivo hostil no puede inflar el catálogo sin límite
+    if(!QC_TYPES[k]){
+      if(k!=='ag_otras')banderasNuevas++;
+      const otras=k==='ag_otras';
+      QC_TYPES[k]={s:'alerta',nivel:'info',n:otras?'Otras banderas de GBIF sin traducir':'Bandera de GBIF sin traducir: '+String(cod).slice(0,60)};
+      QC_INFO[k]={col:'issue',que:otras?'GBIF puso banderas que este visor todavía no traduce.':'GBIF puso la bandera '+String(cod).slice(0,60)+', que este visor todavía no traduce.',porque:ALERTA_GENERAL.info.porque,como:ALERTA_GENERAL.info.como};
+    }
+  }
+  return k;
+}
+QC_INFO.al_repetido={col:'catalogNumber / occurrenceID',que:'Hay otro registro de la misma especie, del mismo día y a 100 m o menos, y además coincide el número de catálogo o de campo, o viene de otro conjunto de datos u otro tipo de registro.',porque:'Un mismo ejemplar publicado dos veces (por la colección y por un proyecto, o por dos proyectos) cuenta doble en cualquier resumen y en los modelos de distribución. El agrupamiento de duplicados de GBIF no los une cuando cambian el número de catálogo, la altitud o quien identificó.',como:'Compara los dos registros (ficha en GBIF o fila del Excel). Si son el mismo ejemplar, deja uno solo y anota el otro en associatedOccurrences; si son individuos distintos de una misma salida, no hay nada que corregir. Es una sospecha, no un veredicto.'};
+QC_INFO.al_obs_colectado={col:'basisOfRecord',que:'basisOfRecord dice observación (HumanObservation, Observation o MachineObservation), pero preparations o disposition dicen que el ejemplar se colectó o está en una colección (colecta, ETOH, alcohol, en colección, preserved, voucher…).',porque:'Un registro no puede ser a la vez una observación y un ejemplar de museo. Con la base equivocada el ejemplar no se cuenta como espécimen, no se ubica en su colección y puede aparecer repetido como observación de otro conjunto de datos.',como:'Si el ejemplar está en la colección, cambia basisOfRecord a PreservedSpecimen (y type a PhysicalObject). Si de verdad solo se observó, borra preparations y disposition.'};
+const NIVEL_ALERTA={alta:'alta',media:'media',info:'informativa'};
+const RX_OBSERVACION=/^(humanobservation|observation|machineobservation)$/;
+// preparations o disposition que dicen "el ejemplar existe": colecta, ETOH, alcohol, en colección, in collection, preserved, voucher…
+const RX_COLECTADO=/colect|collect|\betoh\b|etanol|ethanol|alcohol|en colecci[oó]n|in collection|preserved|preservad|voucher|formol|formalin/i;
+const RX_NO_COLECTADO=/\b(no|sin|not|never|nunca)\s+(fue\s+|was\s+|se\s+)?(colect|collect|preserv|guard|deposit)/i;
+// números de catálogo que no son números ("s/n", "en proceso")
+const RX_CAT_NO=/^(sn|na|noaplica|pendiente|sincatalogar|sinnumero|sincatalogo|enproceso.*)$/;
+function catNorm(c){const n=norm(c);return (n.length<2||RX_CAT_NO.test(n))?'':n;}
+function celdaDe(r,t){const i=r.idxN?r.idxN[norm(t)]:null;return (i==null||!r.raw)?'':celdaTxt(r.raw[i]);}
+// conjunto de datos de un registro para comparar: la clave de GBIF, si no su nombre, si no el archivo
+function claveConjunto(r){return r.dsKey||norm(r.ds)||norm(r.dsId)||('f:'+(r.__src||''));}
+// distancia en metros entre dos registros (plana: sirve para decenas de metros)
+function distM(a,b){const dy=(b.lat-a.lat)*110574,dx=(b.lon-a.lon)*111320*Math.cos((a.lat+b.lat)*Math.PI/360);return Math.sqrt(dx*dx+dy*dy);}
+// Por qué dos registros cercanos de la misma especie y día parecen el mismo ejemplar. Vacío si no hay motivo.
+function motivosRepetido(a,b){
+  const m=[],ca=catNorm(a.cat);
+  if(ca&&ca===catNorm(b.cat))m.push('mismo número de catálogo');
+  const ra=norm(a.rec);
+  if(ra&&ra===norm(b.rec))m.push('mismo número de campo');
+  if(claveConjunto(a)!==claveConjunto(b))m.push('otro conjunto de datos');
+  if((a.tipo||'otro')!==(b.tipo||'otro'))m.push('otro tipo de registro');
+  return m;
+}
+// Recalcula todas las alertas. Los repetidos miran todos los registros cargados a la vez (el mismo ejemplar suele estar
+// en el Excel de la colección y en GBIF), así que va sobre DATA y se repite al cambiar las fuentes o verificar nombres.
+function calcularAlertas(){
+  DATA.forEach(r=>{r.alerta=[];});
+  // 1. banderas de GBIF (columna issue, separadas por ;)
+  DATA.forEach(r=>{
+    if(!r.gbif)return;
+    const s=celdaDe(r,'issue');if(!s)return;
+    const vistos=new Set();
+    s.split(';').forEach(c=>{c=c.trim();if(!c||vistos.has(c))return;vistos.add(c);r.alerta.push({t:claveBandera(c),d:'',v:c,sug:''});});
+  });
+  // 2. dice observación, pero el ejemplar se colectó
+  DATA.forEach(r=>{
+    if(!RX_OBSERVACION.test(norm(r.basis)))return;
+    const disp=celdaDe(r,'disposition'),txt=[r.prep,disp].filter(Boolean).join(' | ');
+    if(!txt||!RX_COLECTADO.test(txt)||RX_NO_COLECTADO.test(txt))return;
+    const d=r.basis+(r.prep?'; preparations: '+r.prep:'')+(disp?'; disposition: '+disp:'');
+    r.alerta.push({t:'al_obs_colectado',d:d.slice(0,140),v:d.slice(0,140),sug:'PreservedSpecimen'});
+  });
+  // 3. posible registro repetido: se agrupa por especie y día completo, y dentro de cada grupo se ordena por latitud
+  // y se compara solo con los vecinos a menos de 0,001° (unos 110 m): así rinde con descargas de miles de registros
+  const grupos=new Map();
+  DATA.forEach((r,i)=>{
+    if(r.lat==null||r.lon==null||!/^\d{4}-\d{2}-\d{2}$/.test(r.date||''))return;
+    const q=nombreConsulta(especieAceptada(r));
+    if(q.indexOf(' ')<0)return; // sin nombre, o solo género: no se sabe de qué especie
+    const k=q.toLowerCase()+'|'+r.date,a=grupos.get(k);
+    if(a)a.push(i);else grupos.set(k,[i]);
+  });
+  const dup=new Map(); // índice -> compañeros, cada uno con su etiqueta y sus motivos
+  const anota=(i,j,mot)=>{let o=dup.get(i);if(!o){o=[];dup.set(i,o);}o.push({id:(DATA[j].cat||DATA[j].id)+(DATA[j].gbifId?' [GBIF '+DATA[j].gbifId+']':''),mot});};
+  grupos.forEach(ix=>{
+    if(ix.length<2)return;
+    ix.sort((a,b)=>DATA[a].lat-DATA[b].lat);
+    for(let p=0;p<ix.length;p++){
+      const A=DATA[ix[p]];
+      for(let q=p+1;q<ix.length;q++){
+        const B=DATA[ix[q]];
+        if(B.lat-A.lat>0.001)break;
+        if(distM(A,B)>100)continue;
+        const mot=motivosRepetido(A,B);
+        if(!mot.length)continue;
+        anota(ix[p],ix[q],mot);anota(ix[q],ix[p],mot);
+      }
+    }
+  });
+  dup.forEach((o,i)=>{
+    const d='con '+o.slice(0,3).map(p=>p.id+' ('+p.mot.join(', ')+')').join('; ')+(o.length>3?' y '+fmtN(o.length-3)+' más':'');
+    DATA[i].alerta.push({t:'al_repetido',d,v:d,sug:''});
+  });
+}
+// cifras de las alertas: cuántas hay de cada tipo y cuántos registros tienen alguna de nivel alta/media o solo informativas
+function alertaCifras(){
+  const porClave={};let regFuertes=0,regInfo=0,fuertes=0;
+  DATA.forEach(r=>{
+    const a=r.alerta;if(!a||!a.length)return;
+    let f=false,i=false;
+    a.forEach(x=>{porClave[x.t]=(porClave[x.t]||0)+1;if(((QC_TYPES[x.t]||{}).nivel||'info')==='info')i=true;else{f=true;fuertes++;}});
+    if(f)regFuertes++;if(i)regInfo++;
+  });
+  return {porClave,regFuertes,regInfo,fuertes};
+}
+function alertaResumen(){
+  const t={};
+  DATA.forEach(r=>(r.alerta||[]).forEach(x=>{
+    if(!t[x.t])t[x.t]={k:x.t,t:x.t,nivel:(QC_TYPES[x.t]||{}).nivel||'info',n:0,ej:[]};
+    const g=t[x.t];g.n++;
+    if(g.ej.length<4)g.ej.push({id:r.cat||r.id,fila:r.fila,v:x.d||x.v||'',sug:x.sug||''});
+  }));
+  return Object.values(t).sort((a,b)=>b.n-a.n);
+}
+// alertas fuertes de un registro, para la ficha
+function alertaBlock(r){
+  const fu=(r.alerta||[]).filter(x=>((QC_TYPES[x.t]||{}).nivel||'info')!=='info');
+  if(!fu.length)return '';
+  return '<div class="v-flags">'+fu.map(x=>{const t=QC_TYPES[x.t]||{n:x.t,nivel:'media'};
+    return '<div class="v-flag alerta '+esc(t.nivel)+'">Alerta de GBIF ('+esc(NIVEL_ALERTA[t.nivel]||t.nivel)+'): <b>'+esc(t.n)+'</b>'+(x.d?' · '+esc(x.d):'')+'</div>';}).join('')+'</div>';
+}
+// banderas informativas: plegadas, como los requisitos del SiB
+function alertaInfo(r){
+  const inf=(r.alerta||[]).filter(x=>((QC_TYPES[x.t]||{}).nivel||'info')==='info');
+  if(!inf.length)return '';
+  return '<details class="v-extra v-sib"><summary>Banderas informativas de GBIF ('+fmtN(inf.length)+')</summary><div class="v-body">'+inf.map(x=>'<div class="v-flag">'+esc((QC_TYPES[x.t]||{n:x.t}).n)+'</div>').join('')+'</div></details>';
+}
+function bloqueAlertas(){
+  const ac=alertaCifras(),grupos=alertaResumen(),nGbif=DATA.filter(r=>r.gbif).length;
+  const nReg=DATA.filter(r=>(r.alerta||[]).length).length;
+  let h='<div class="sib-lead">';
+  h+='<p class="sib-cifra">Registros con alguna alerta: <b>'+fmtN(nReg)+'</b> de '+fmtN(DATA.length)+'</p>';
+  h+='<p class="sib-prop">Para revisar (alta o media): <b>'+fmtN(ac.regFuertes)+'</b> registros. Con alguna informativa: '+fmtN(ac.regInfo)+' registros.</p>';
+  h+='<p class="sib-aviso">Esto no son errores del dato: son avisos. No cuentan en «con error» ni en las cifras de errores, y no cambian nada en tu archivo. Las banderas vienen de la columna <b>issue</b> de GBIF'+(nGbif?'':' (solo existe en descargas de GBIF y aquí no hay ninguna cargada)')+'. Los repetidos y los «observación, pero colectado» se calculan con cualquier archivo.</p>';
+  h+='</div>';
+  if(!grupos.length)return h+'<p class="rev-vacio">Ninguna alerta en los datos cargados.</p>';
+  const bloque=(nivel,tit,sub)=>{
+    const gs=grupos.filter(g=>g.nivel===nivel);
+    h+='<h3 class="rev-bloque">'+tit+'<small>'+sub+'</small></h3>';
+    h+=gs.length?gs.map(g=>tarjetaRev(g,'alerta')).join(''):'<p class="rev-vacio">Ninguna.</p>';
+  };
+  bloque('alta','Alta','Es muy probable que el dato esté mal, o GBIF no pudo usarlo.');
+  bloque('media','Media','Para revisar: GBIF duda, o hay un posible repetido o una base del registro que no cuadra.');
+  bloque('info','Informativas','Lo que GBIF hizo al leer el registro. Normalmente no hay nada que corregir.');
+  return h;
+}
+
 // ====== PANTALLA DE REVISIÓN ======
 // Tres pestañas: errores del dato (err), campos vacíos (falta) y requisitos para publicar en el
 // SiB (sib). La tercera no mueve el conteo "con error": son dos preguntas distintas.
@@ -2517,7 +3329,7 @@ function tarjetaRev(g,capa){
   const esOblig=g.t==='sib_obligatorio';
   const titulo=capa==='sib'?nombreClave(g.k):(tipo.n||g.t);
   const col=esOblig?g.col:info.col;
-  const cls=capa==='falta'?' falta':capa==='sib'?(' sib'+(g.bloquea?' bloquea':' reco')):'';
+  const cls=capa==='falta'?' falta':capa==='sib'?(' sib'+(g.bloquea?' bloquea':' reco')):capa==='alerta'?(' alerta '+esc(g.nivel)):'';
   let h='<div class="rev-card'+cls+'">';
   h+='<div class="rev-card-h"><span class="rev-n">'+fmtN(g.n)+'</span><h3>'+esc(titulo)+'</h3>'+(col?'<code>'+esc(col)+'</code>':'')+'</div>';
   if(esOblig)h+='<p class="rev-q"><b>Qué pasó:</b> la columna '+esc(g.col)+' está vacía o no existe en '+fmtN(g.n)+' registro'+(g.n===1?'':'s')+'. '+esc(info.que||'')+'</p>';
@@ -2525,7 +3337,15 @@ function tarjetaRev(g,capa){
   if(info.porque)h+='<p class="rev-q"><b>Por qué importa:</b> '+esc(info.porque)+'</p>';
   if(info.como)h+='<p class="rev-como"><b>Cómo se arregla:</b> '+esc(info.como)+'</p>';
   const conEj=capa==='sib'?g.ej.filter(e=>e.v||e.sug):g.ej.filter(e=>e.v);
-  if(conEj.length){
+  if(capa==='alerta'){
+    // una alerta no tiene "debería decir": se muestra el detalle (el código de la bandera, o con qué se repite)
+    if(conEj.length){
+      h+='<table class="rev-ej"><tr><th>Registro</th><th>Detalle</th></tr>';
+      conEj.forEach(e=>{h+='<tr><td>'+esc(e.id||('fila '+e.fila))+'</td><td class="mal">'+esc(String(e.v).slice(0,90))+'</td></tr>';});
+      h+='</table>';
+      if(g.n>conEj.length)h+='<p class="rev-mas">y '+fmtN(g.n-conEj.length)+' más</p>';
+    }
+  }else if(conEj.length){
     h+='<table class="rev-ej"><tr><th>Registro</th><th>Dice</th><th>Debería decir</th></tr>';
     conEj.forEach(e=>{h+='<tr><td>'+esc(e.id||('fila '+e.fila))+'</td>'+(e.v?'<td class="mal">'+esc(String(e.v).slice(0,44))+'</td>':'<td class="vacia">(vacía)</td>')+'<td class="bien">'+(e.sug?esc(String(e.sug).slice(0,60)):'<span class="rev-rev">hay que revisarlo a mano</span>')+'</td></tr>';});
     h+='</table>';
@@ -2570,6 +3390,7 @@ function abrirRevision(tab,opt){
   const conf=DATA.filter(r=>r.lat!=null&&r.cok!==false).length;
   const nErr=errs.reduce((a,g)=>a+g.n,0),nFal=fals.reduce((a,g)=>a+g.n,0);
   const nSib=DATA.reduce((a,r)=>a+(r.sib||[]).length,0);
+  const nAl=alertaCifras().fuertes; // las informativas no suman en la cifra de la pestaña
   let h='<div class="rev-box" tabindex="-1"><button class="rev-x" onclick="cerrarRevision()" aria-label="Cerrar la revisión">✕</button>';
   if(!DATA.length){
     h+='<div class="rev-head"><h2 id="revTitulo">Todavía no hay datos cargados</h2><p>Carga un archivo Darwin Core y aquí te digo qué encontré.</p></div></div>';
@@ -2586,19 +3407,23 @@ function abrirRevision(tab,opt){
   }
   h+='</div>';
   const tabB=(k,txt,n)=>'<button class="rev-tab'+(revTab===k?' on':'')+'" role="tab" aria-selected="'+(revTab===k)+'" id="revTab-'+k+'" onclick="abrirRevision(\''+k+'\',{foco:\'revTab-'+k+'\'})">'+txt+' <span class="rt-n">'+fmtN(n)+'</span></button>';
-  h+='<div class="rev-tabs" role="tablist">'+tabB('err','<span class="rt-largo">Para arreglar</span><span class="rt-corto">Errores</span>',nErr)+tabB('falta','<span class="rt-largo">Campos vacíos</span><span class="rt-corto">Vacíos</span>',nFal)+tabB('sib','<span class="rt-largo">Para publicar en el SiB</span><span class="rt-corto">Para el SiB</span>',nSib)+tabB('nom','<span class="rt-largo">Nombres (Catalogue of Life)</span><span class="rt-corto">Nombres</span>',nombresInfo?DATA.reduce((a,r)=>a+(r.nom||[]).length,0):nombresPendientes().length)+'</div>';
+  h+='<div class="rev-tabs" role="tablist">'+tabB('err','<span class="rt-largo">Para arreglar</span><span class="rt-corto">Errores</span>',nErr)+tabB('falta','<span class="rt-largo">Campos vacíos</span><span class="rt-corto">Vacíos</span>',nFal)+tabB('sib','<span class="rt-largo">Para publicar en el SiB</span><span class="rt-corto">Para el SiB</span>',nSib)+tabB('nom','<span class="rt-largo">Nombres (Catalogue of Life)</span><span class="rt-corto">Nombres</span>',nombresInfo?DATA.reduce((a,r)=>a+(r.nom||[]).length,0):nombresPendientes().length)+tabB('gbif','<span class="rt-largo">Alertas de GBIF</span><span class="rt-corto">Alertas</span>',nAl)+'</div>';
   h+='<div class="rev-body" role="tabpanel">';
   if(revTab==='sib'){
     h+=bloqueSib();
   }else if(revTab==='nom'){
     h+=bloqueNombres();
+  }else if(revTab==='gbif'){
+    h+=bloqueAlertas();
   }else{
     const lista=revTab==='err'?errs:fals;
     if(!lista.length)h+='<p class="rev-vacio">Nada en esta pestaña.</p>';
     lista.forEach(g=>{h+=tarjetaRev(g,revTab);});
+    if(revTab==='err')h+=bloquePersonas(30); // aviso, no error: va al final de la pestaña
   }
   h+='</div>';
   h+='<div class="rev-foot"><button class="load-btn" onclick="exportCorrecciones()">Descargar la lista de correcciones (Excel)</button>'+
+     '<button class="load-btn ghost" onclick="exportDwCcorregido()" title="Darwin Core .xlsx con las correcciones seguras ya escritas y una hoja Cambios">Descargar el Excel con las correcciones seguras aplicadas</button>'+
      '<span class="rev-nota">Una fila por hallazgo de todas las pestañas, con la fila del Excel, la columna, lo que dice y lo que debería decir. Ábrelo al lado de tu archivo y ve arreglando.</span></div>';
   h+='</div>';
   cont.innerHTML=h;mostrarRevision(cont,opt);
@@ -2616,7 +3441,7 @@ function cerrarRevision(){
 }
 function revVer(k){focoAntesRev=null;cerrarRevision();qcFilter=null;setQCFilter(k);if(esMovil())toggleHoja(true);}
 function revCopiar(k,b){
-  const ids=[...new Set(DATA.filter(r=>tieneHallazgo(r,k)).map(r=>r.cat||r.id).filter(Boolean))];
+  const ids=[...new Set(DATA.filter(predHallazgo(k)).map(r=>r.cat||r.id).filter(Boolean))];
   const txt=ids.join('\n');
   const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);ta.select();
@@ -2673,7 +3498,7 @@ function datosEjemplo(){
 function cargarEjemplo(){
   if(sources.some(x=>x.firma==='ejemplo'))return; // dos clics no duplican el ejemplo
   const {recs,terminos,etiquetas}=parseWorkbook(datosEjemplo());
-  sources.push({name:'Datos de ejemplo',count:recs.length,color:SRC_COLORS[sources.length%SRC_COLORS.length],recs,firma:'ejemplo',terminos,etiquetas,origen:(recs[0]||{}).origen||'otros'});
+  sources.push({name:'Datos de ejemplo',count:recs.length,color:colorFuente(),recs,firma:'ejemplo',terminos,etiquetas,origen:(recs[0]||{}).origen||'otros'});
   rebuildFromSources();
   document.getElementById('loadStatus').innerHTML='<span class="ok">'+fmtN(recs.length)+' registros de ejemplo (inventados) cargados</span>';
   abrirRevisionInicial();
@@ -2699,82 +3524,218 @@ function download(filename,text,mime){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();
   document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function fuenteDe(r){return sources.find(s=>s.name===r.__src)||{};}
+function fuenteDe(r){return r.__fuente||{};}
 // valor original de una celda, listo para escribir: fechas en ISO, horas en HH:MM, el resto igual
 function valorOriginal(v){
   if(v instanceof Date)return cell(v);
   return v==null?'':v;
 }
+// ===== Correcciones seguras (para el Excel "con correcciones aplicadas") =====
+// Lista blanca. Solo se escribe un valor nuevo en su columna DwC cuando el hallazgo trae una propuesta (sug) y esa propuesta sale de una regla
+// que no depende de criterio: una tabla de equivalencias exactas, una fórmula o una lectura sin ambigüedad. Sale de QC_TYPES / QC_INFO:
+//   - familia_mal_escrita (family): la familia escrita con una letra de más o de menos, a su forma canónica de la tabla de familias.
+//   - sib_vocabulario / sib_vocabulario_taxonrank: el valor ya es el del vocabulario salvo mayúsculas, guion bajo o un sinónimo de la tabla
+//     (presente -> present, species -> Especie). Solo si la sugerencia no está vacía.
+//   - vocabulario_sexo / vocabulario_etapa: equivalencia de la tabla del SiB (macho -> Macho). Si no hay equivalente, no hay sugerencia y no se toca.
+//   - sib_countrycode / sib_language: "co" -> CO, "español" -> es; countryCode vacío con country = Colombia -> CO. Si el código dice otro país, no se toca.
+//   - sib_nombre_mayusculas: solo cuando lo único que cambia es la primera letra del género (pristimantis -> Pristimantis). Si el epíteto
+//     va en mayúscula no se toca: podría ser una autoría.
+//   - sib_elevacion_con_unidad: "2820 msnm" -> 2820, solo con enteros ("2.820 msnm" podría ser 2,82 o 2820: se deja).
+//   - sib_separador_lista: "A; B" o "A │ B" -> "A | B" en recordedBy / identifiedBy.
+//   - fecha_no_iso (eventDate): la fecha se lee sin ambigüedad (la marcada "se asumió día/mes" queda fuera) y se escribe en ISO 8601.
+//   - coord_sin_punto: el número sin punto de decimalLatitude / decimalLongitude, solo cuando al reconstruirlo da la misma coordenada que
+//     la original (verbatimCoordinates) con menos de 0,001°.
+//   - sib_obligatorio con taxonRank vacío: la categoría deducida del nombre (Especie, Subespecie, Género, Familia, Subfamilia). Es la única
+//     que puede agregar una columna al final, si el archivo no la trae, porque el SiB la exige y la deducción es una regla fija del visor.
+//   - sib_obligatorio con type vacío: PhysicalObject para los especímenes de colección (basisOfRecord con un único type posible), solo si la columna existe.
+// Fuera, a propósito: nada que dependa de juicio (sinónimos y nombres mal escritos del Catalogue of Life, cf./aff./sp., coordenadas intercambiadas,
+// reconstruidas, sin hemisferio o fuera de Colombia, altitudes, clase vs. familia, género/epíteto que no concuerdan) ni los identificadores
+// (catalogNumber, occurrenceID: otras bases los citan, que los cambie una persona), ni los nombres de personas (se unifican a mano).
+// Cada cambio se aplica solo si la celda sigue diciendo exactamente lo que vio el hallazgo (antes): así una celda con otra cosa nunca se pisa.
+function correccionesSeguras(r){
+  const out=[],add=(term,antes,despues,regla,o)=>{despues=String(despues==null?'':despues).trim();if(despues!==''&&despues!==antes)out.push(Object.assign({term,antes,despues,regla},o));};
+  (r.iss||[]).concat(r.sib||[]).forEach(x=>{
+    const v=x.v==null?'':String(x.v).trim(),sug=x.sug==null?'':String(x.sug).trim();
+    switch(x.t){
+      case 'familia_mal_escrita':add('family',v,sug,'Familia: ortografía de la tabla de familias');break;
+      case 'sib_vocabulario':case 'sib_vocabulario_taxonrank':
+        if(x.col&&sug)add(x.col,v,sug,'Vocabulario del SiB: equivalencia exacta');break;
+      case 'vocabulario_sexo':add('sex',v,sug,'Vocabulario del SiB: sexo');break;
+      case 'vocabulario_etapa':add('lifeStage',v,sug,'Vocabulario del SiB: etapa de vida');break;
+      case 'sib_countrycode':
+        if(sug==='CO'&&/^(|co|col|colombia)$/i.test(v))add('countryCode',v,'CO','countryCode ISO 3166-1 (CO)');break;
+      case 'sib_language':add('language',v,sug,'language ISO 639-1');break;
+      case 'sib_nombre_mayusculas':
+        if(v&&/^[a-zà-ÿ]/.test(v)&&sug.slice(1)===v.slice(1))add('scientificName',v,sug,'Género con mayúscula inicial');break;
+      case 'sib_elevacion_con_unidad':
+        if(/^-?\d+\s*(m|msnm|m\.s\.n\.m\.?|mts?|metros)\.?$/i.test(v))add('minimumElevationInMeters',v,v.match(/-?\d+/)[0],'Elevación sin unidad',{num:true});break;
+      case 'sib_separador_lista':
+        if(x.col==='recordedBy'||x.col==='identifiedBy')add(x.col,v,sug,'Personas separadas con " | "');break;
+      case 'fecha_no_iso':
+        if(!x.dudosa)add('eventDate',v,sug,'Fecha en ISO 8601');break;
+      case 'coord_sin_punto':{
+        const ts=String(x.col||'').split(' / '),vs=v.split(' / '),ss=sug.split(' / ');
+        if(x.ok&&ts.length===2&&vs.length===2&&ss.length===2){
+          add(ts[0],vs[0],ss[0],'Coordenada con punto decimal',{num:true});add(ts[1],vs[1],ss[1],'Coordenada con punto decimal',{num:true});
+        }break;}
+      case 'sib_obligatorio':
+        if(x.col==='taxonRank'&&/^(Especie|Subespecie|Género|Familia|Subfamilia)$/.test(sug)&&!(sug==='Subespecie'&&/^(nov|sp|spp|cf|aff|indet|inc)$/i.test((r.sci||'').trim().split(/\s+/).pop())))
+          add('taxonRank','',sug,'taxonRank deducido del nombre',{nueva:true});
+        else if(x.col==='type'&&SIB_BASIS_TYPE[r.basis]&&SIB_BASIS_TYPE[r.basis].length===1&&sug===SIB_BASIS_TYPE[r.basis][0])
+          add('type','',sug,'type según basisOfRecord');
+        break;
+    }
+  });
+  return out;
+}
+
+// ===== Especies amenazadas: generalizar las coordenadas al exportar =====
+// La verificación de nombres (nom_amenazada) marca las especies VU, EN y CR de la UICN. Con la casilla encendida, las exportaciones Darwin Core
+// (.xlsx, .csv, GeoJSON, exportar estos y el Excel corregido) redondean lat/lon de esos registros a 0,1° (unos 11 km), vacían las columnas
+// verbatim de coordenadas y escriben dataGeneralizations e informationWithheld (si la columna no existe, se agrega al final).
+// Los hallazgos de la lista de correcciones no se tocan: es un trabajo interno, no una publicación.
+function amenazadaDe(r){const x=(r.nom||[]).find(y=>y.t==='nom_amenazada');return x?String(x.v||'?'):'';}
+function hayAmenazadas(){return DATA.some(r=>amenazadaDe(r));}
+function generalizarOn(){const c=document.getElementById('chkGen');return !!(c&&c.checked&&hayAmenazadas());}
+const redondea1=x=>Math.round(x*10)/10;
+const textoGeneraliza=u=>'Coordenadas generalizadas a 0,1° por especie amenazada (UICN '+u+')';
+const textoReserva=u=>'Coordenadas originales (decimales y verbatim) omitidas por especie amenazada (UICN '+u+')';
+
 // Une los encabezados de todas las fuentes (en el orden en que aparecen) y arma las filas con los
-// valores originales de cada registro.
-function tablaDwC(recs){
-  const cols=[],pos={},etq=[];
-  sources.forEach(s=>(s.terminos||[]).forEach((t,i)=>{
+// valores originales de cada registro. op={corregir, generalizar}: las correcciones seguras y la generalización se escriben sobre esas filas
+// (columnas nuevas al final, solo si hacen falta) y los cambios quedan en T.cambios.
+function tablaDwC(recs,op){
+  op=op||{};
+  const cols=[],pos=tabla(),etq=[];
+  // solo las fuentes de las que sale algún registro: con un filtro, las columnas de un archivo que no aparece serían puro vacío
+  const deAqui=new Set(recs.map(fuenteDe));
+  sources.filter(s=>deAqui.has(s)).forEach(s=>(s.terminos||[]).forEach((t,i)=>{
     const nom=String(t||'').trim();if(!nom)return;const k=norm(nom);if(!k||pos[k]!=null)return;
     pos[k]=cols.length;cols.push(nom);etq.push(((s.etiquetas||[])[i]||'').trim());
   }));
+  const pares=new Map(); // fuente -> [columna del archivo, columna de la tabla]
+  const paresDe=s=>{let p=pares.get(s);if(!p){p=[];(s.terminos||[]).forEach((t,i)=>{const k=norm(t);if(k&&pos[k]!=null)p.push([i,pos[k]]);});pares.set(s,p);}return p;};
   const filas=recs.map(r=>{
     const s=fuenteDe(r),o=new Array(cols.length).fill('');
-    (s.terminos||[]).forEach((t,i)=>{const k=norm(t);if(k&&pos[k]!=null&&o[pos[k]]==='')o[pos[k]]=valorOriginal(r.raw?r.raw[i]:'');});
+    paresDe(s).forEach(([i,j])=>{if(o[j]==='')o[j]=valorOriginal(r.raw?r.raw[i]:'');});
     return o;
   });
-  return {cols,etq,filas};
+  const cambios=[];let nGen=0;
+  const agregadas=new Set();
+  const asegura=t=>{const k=norm(t);if(pos[k]==null){pos[k]=cols.length;agregadas.add(cols.length);cols.push(t);etq.push('');filas.forEach(f=>f.push(''));}return pos[k];};
+  const esCoord=t=>/^(decimal|verbatim)(Latitude|Longitude|Coordinates)$/i.test(t);
+  if(op.corregir){
+    recs.forEach((r,i)=>{
+      const o=filas[i],hechas=new Set(),amen=op.generalizar?amenazadaDe(r):'';
+      correccionesSeguras(r).forEach(c=>{
+        if(amen&&esCoord(c.term))return; // con la generalización encendida no se escribe ni se lista una coordenada exacta de una especie amenazada
+        let j=pos[norm(c.term)];
+        if(j==null){if(!c.nueva)return;j=asegura(c.term);}
+        if(hechas.has(j))return;
+        if(String(o[j]==null?'':o[j]).trim()!==c.antes)return; // la celda ya no dice lo que vio el hallazgo: no se pisa
+        o[j]=c.num&&isFinite(+c.despues)?+c.despues:c.despues;hechas.add(j);
+        cambios.push([r.__src||'',r.fila||'',r.cat||'',cols[j]+(agregadas.has(j)?' (columna agregada)':''),c.antes,c.despues,c.regla]);
+      });
+    });
+  }
+  if(op.generalizar){
+    recs.forEach((r,i)=>{
+      const u=amenazadaDe(r);if(!u||r.lat==null||r.lon==null)return;
+      const o=filas[i];nGen++;
+      o[asegura('decimalLatitude')]=redondea1(r.lat);o[asegura('decimalLongitude')]=redondea1(r.lon);
+      ['verbatimLatitude','verbatimLongitude','verbatimCoordinates'].forEach(t=>{const j=pos[norm(t)];if(j!=null)o[j]='';});
+      const nota=(t,txt)=>{const j=asegura(t),v=String(o[j]==null?'':o[j]).trim();o[j]=v&&v!==txt?v+' | '+txt:txt;};
+      nota('dataGeneralizations',textoGeneraliza(u));nota('informationWithheld',textoReserva(u));
+      cambios.push([r.__src||'',r.fila||'',r.cat||'','decimalLatitude / decimalLongitude','(coordenada exacta: no se muestra)','redondeada a 0,1°','Generalización por especie amenazada (UICN '+u+')']);
+    });
+  }
+  return {cols,etq,filas,cambios,nGen};
 }
-const nombreHallazgo=x=>(QC_TYPES[x.t]||{n:x.t}).n+(x.col&&x.t==='sib_obligatorio'?': '+x.col:'');
-function columnasVisionCore(r){
+const nombreHallazgo=x=>{const t=QC_TYPES[x.t]||{n:x.t};return t.n+(x.col&&x.t==='sib_obligatorio'?': '+x.col:'')+(t.nivel?' ('+(NIVEL_ALERTA[t.nivel]||t.nivel)+')':'');};
+// gen: con la generalización encendida, las coordenadas calculadas de una especie amenazada salen a 0,1°
+function columnasVisionCore(r,gen){
   const errs=(r.iss||[]).filter(x=>(QC_TYPES[x.t]||{}).s==='err'),vac=(r.iss||[]).filter(x=>(QC_TYPES[x.t]||{}).s==='falta');
-  return [r.__src||'',r.fila||'',r.cat||r.id||'',r.sci||'',
-    r.lat==null?'':r.lat,r.lon==null?'':r.lon,r.lat==null?'':(r.cok?'sí':'no'),
+  const g=gen&&amenazadaDe(r)&&r.lat!=null;
+  return [r.__src||'',r.fila||'',r.cat||r.id||'',r.sci||'',(TIPOS_REG[r.tipo]||TIPOS_REG.otro).nm,
+    r.lat==null?'':(g?redondea1(r.lat):r.lat),r.lon==null?'':(g?redondea1(r.lon):r.lon),r.lat==null?'':(r.cok?'sí':'no'),
     r.fam!==r.fam_raw?r.fam:'',r.cls,
     errs.map(nombreHallazgo).join(' | '),vac.map(nombreHallazgo).join(' | '),(r.sib||[]).map(nombreHallazgo).join(' | ')];
 }
-const COLS_VC=['fuente','fila_excel','catalogNumber','scientificName','latitud_decimal_calculada','longitud_decimal_calculada','coordenada_confiable','familia_sugerida','clase_asignada','errores','campos_vacios','requisitos_sib'];
-function nombreSalida(ext){
+const COLS_VC=['fuente','fila_excel','catalogNumber','scientificName','tipo_de_registro','latitud_decimal_calculada','longitud_decimal_calculada','coordenada_confiable','familia_sugerida','clase_asignada','errores','campos_vacios','requisitos_sib'];
+function nombreSalida(ext,suf){
   const base=sources.length===1?sources[0].name:'visioncore_'+sources.length+'_fuentes';
-  return base.replace(/[^\w\-áéíóúñÁÉÍÓÚÑ]+/g,'_').replace(/^_+|_+$/g,'')+'.'+ext;
+  return base.replace(/[^\w\-áéíóúñÁÉÍÓÚÑ]+/g,'_').replace(/^_+|_+$/g,'')+(suf||'')+'.'+ext;
 }
 // Darwin Core en .xlsx: hoja "Plantilla" igual a la del SiB (fila 1 términos, fila 2 etiquetas),
 // y hoja "VisionCore" con lo que calculó el visor, fila por fila.
-function exportDwCxlsx(){
-  if(!DATA.length)return;
-  const T=tablaDwC(DATA);
+// recs: los registros a exportar (por omisión, todos los cargados); suf: sufijo del nombre del archivo; op: {corregir} para el Excel corregido
+function libroDwC(recs,suf,op){
+  const gen=generalizarOn();
+  const T=tablaDwC(recs,{corregir:!!(op&&op.corregir),generalizar:gen});
   const wb=XLSX.utils.book_new();
   const hayEtq=T.etq.some(Boolean);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(hayEtq?[T.cols,T.etq].concat(T.filas):[T.cols].concat(T.filas)),'Plantilla');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([COLS_VC].concat(DATA.map(columnasVisionCore))),'VisionCore');
-  XLSX.writeFile(wb,nombreSalida('xlsx'));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([COLS_VC].concat(recs.map(r=>columnasVisionCore(r,gen)))),'VisionCore');
+  if(op&&op.corregir||T.cambios.length){
+    const ws=XLSX.utils.aoa_to_sheet([['fuente','fila_excel','catalogNumber','columna','antes','despues','regla']].concat(T.cambios));
+    ws['!cols']=[{wch:18},{wch:9},{wch:16},{wch:30},{wch:30},{wch:30},{wch:48}];
+    XLSX.utils.book_append_sheet(wb,ws,'Cambios');
+  }
+  return {wb,nombre:nombreSalida('xlsx',(suf||'')+(gen?'_generalizado':'')),cambios:T.cambios.length};
+}
+function exportDwCxlsx(recs,suf){
+  if(!Array.isArray(recs))recs=DATA;
+  if(!recs.length)return;
+  const L=libroDwC(recs,suf);
+  XLSX.writeFile(L.wb,L.nombre);
+}
+// Darwin Core .xlsx con las correcciones seguras ya escritas (ver correccionesSeguras): mismas columnas y valores del archivo, salvo las celdas
+// que cambian, y una hoja "Cambios" con cada una (antes, después y regla). El archivo original no se toca: esto es un archivo nuevo.
+function exportDwCcorregido(recs,suf){
+  if(!Array.isArray(recs))recs=DATA;
+  if(!recs.length)return;
+  const L=libroDwC(recs,(suf||'')+'_corregido',{corregir:true});
+  XLSX.writeFile(L.wb,L.nombre);
 }
 // Darwin Core en CSV (UTF-8, coma): solo la fila de términos, como la piden el IPT y GBIF.
 function exportDwCcsv(){
   if(!DATA.length)return;
-  const T=tablaDwC(DATA);
+  const gen=generalizarOn();
+  const T=tablaDwC(DATA,{generalizar:gen});
   const txt=[T.cols.map(qCSV).join(',')].concat(T.filas.map(f=>f.map(qCSV).join(','))).join('\r\n');
-  download(nombreSalida('csv'),'\ufeff'+txt,'text/csv;charset=utf-8');
+  download(nombreSalida('csv',gen?'_generalizado':''),'\ufeff'+txt,'text/csv;charset=utf-8');
 }
 function exportGeoJSON(){
   if(!DATA.length)return;
-  const feats=DATA.filter(r=>r.lat!=null&&r.lon!=null).map(r=>({
-    type:'Feature',
-    geometry:{type:'Point',coordinates:[r.lon,r.lat]},
-    properties:{occurrenceID:r.occ||'',catalogNumber:r.cat||'',gbifID:(r.idxN&&r.idxN.gbifid!=null&&r.raw)?cell(r.raw[r.idxN.gbifid]):'',recordNumber:r.rec||'',scientificName:r.sci,class:r.cls,family:r.fam,
+  const gen=generalizarOn();
+  const feats=DATA.filter(r=>r.lat!=null&&r.lon!=null).map(r=>{
+    const u=gen?amenazadaDe(r):'';
+    const p={occurrenceID:r.occ||'',catalogNumber:r.cat||'',gbifID:(r.idxN&&r.idxN.gbifid!=null&&r.raw)?cell(r.raw[r.idxN.gbifid]):'',recordNumber:r.rec||'',scientificName:r.sci,class:r.cls,family:r.fam,
       county:r.mun,locality:r.loc,stateProvince:r.dept,country:r.pais,verbatimElevation:r.elev,
       eventDate:r.date,eventTime:r.time,recordedBy:r.by,identifiedBy:r.ident,
       vc_coordenadaConfiable:r.cok!==false,
-      vc_problemasCoordenada:(r.iss||[]).filter(x=>x.t.indexOf('coord')===0||x.t==='segundos_invalidos'||x.t==='minutos_invalidos'||x.t==='lon_sin_hemisferio').map(x=>(QC_TYPES[x.t]||{n:x.t}).n).join(' | ')||''}
-  }));
-  download(nombreSalida('geojson'),JSON.stringify({type:'FeatureCollection',features:feats},null,2),'application/geo+json');
+      vc_problemasCoordenada:(r.iss||[]).filter(x=>x.t.indexOf('coord')===0||x.t==='segundos_invalidos'||x.t==='minutos_invalidos'||x.t==='lon_sin_hemisferio').map(x=>(QC_TYPES[x.t]||{n:x.t}).n).join(' | ')||''};
+    if(u){p.dataGeneralizations=textoGeneraliza(u);p.informationWithheld=textoReserva(u);}
+    return {type:'Feature',geometry:{type:'Point',coordinates:u?[redondea1(r.lon),redondea1(r.lat)]:[r.lon,r.lat]},properties:p};
+  });
+  download(nombreSalida('geojson',gen?'_generalizado':''),JSON.stringify({type:'FeatureCollection',features:feats},null,2),'application/geo+json');
 }
 // Lista de correcciones en .xlsx: una fila por hallazgo, de las tres capas. En Excel en español
 // un CSV con comas se abre todo en una columna; el .xlsx no tiene ese problema.
 function exportCorrecciones(){
   const filas=[];
-  const capaTxt={err:'error del dato',falta:'campo vacío',sib:'requisito del SiB',nom:'verificación de nombres (Catalogue of Life)'};
+  const capaTxt={err:'error del dato',falta:'campo vacío',sib:'requisito del SiB',nom:'verificación de nombres (Catalogue of Life)',alerta:'alerta de GBIF'};
   DATA.forEach(r=>{
-    (r.iss||[]).concat(r.sib||[],r.nom||[]).forEach(x=>{
+    (r.iss||[]).concat(r.sib||[],r.nom||[],r.alerta||[]).forEach(x=>{
       const info=QC_INFO[x.t]||{},tipo=QC_TYPES[x.t]||{n:x.t};
       filas.push([r.__src||'',r.fila||'',r.cat||r.id||'',r.occ||'',r.sci||'',
         capaTxt[tipo.s]||'',(tipo.bloquea?'sí':''),nombreHallazgo(x),x.col||info.col||'',
         x.v==null?'':String(x.v),x.sug==null?'':String(x.sug),info.como||'']);
+    });
+    // la misma persona escrita de varias formas: no es un error, va en su propia capa
+    [['recordedBy',r.by],['identifiedBy',r.ident]].forEach(([col,val])=>{
+      const u=personasUnificadas(val);
+      if(u!==val)filas.push([r.__src||'',r.fila||'',r.cat||r.id||'',r.occ||'',r.sci||'','escritura de personas (no es un error)','','Misma persona escrita distinto',col,val,u,TEXTO_PERSONAS]);
     });
   });
   if(!filas.length)return;
@@ -2785,7 +3746,8 @@ function exportCorrecciones(){
   XLSX.utils.book_append_sheet(wb,ws,'Correcciones');
   XLSX.writeFile(wb,'correcciones_'+nombreSalida('xlsx'));
 }
-renderStats();renderLegend();renderList();renderSources();renderQC();renderSintesis();renderVacio();renderHojaTira();renderExportState();
+const TEXTO_PERSONAS='Escribe a la misma persona siempre igual. Se sugiere la escritura más frecuente del archivo; confirma que son la misma persona antes de cambiarla.';
+renderStats();renderLegend();renderLinea();renderList();renderSources();renderQC();renderSintesis();renderVacio();renderHojaTira();renderExportState();
 // En pantalla angosta el panel arranca con lo largo recogido, para que se vea la lista sin bajar tanto.
 if(esMovil())['sec-src','sec-qc','sec-syn'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('closed');});
 window.addEventListener('orientationchange',()=>setTimeout(()=>map.invalidateSize({animate:false}),350));
