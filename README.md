@@ -81,6 +81,19 @@ Este repositorio **no contiene datos biológicos reales**, solo un archivo de ej
 
 HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https://leafletjs.com) y [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para el mapa, [SheetJS](https://sheetjs.com) para leer los Excel. Las tres están en `vendor/` con sus licencias; ver [NOTICE](NOTICE).
 
+## Estructura del repositorio
+
+| Ruta | Qué es |
+|---|---|
+| `index.html` | El visor completo. Es la página que publica GitHub Pages. |
+| `vendor/` | Leaflet, Leaflet.markercluster, SheetJS y las tipografías, con sus licencias. `index.html` los carga con rutas relativas: se mueven juntos. |
+| `ejemplo/` | `ejemplo_visioncore.xlsx`, 14 registros inventados para probar. |
+| `docs/` | Imágenes del README. |
+| `.github/` | Plantillas para reportar problemas y proponer mejoras. |
+| `CHANGELOG.md` | Qué cambió en cada versión. Cada versión publicada tiene su [release](https://github.com/tamalete/visioncore/releases). |
+| `POLITICA_DE_DATOS.md`, `SECURITY.md` | Qué datos no entran aquí y cómo está construido el visor por dentro. |
+| `CITATION.cff`, `LICENSE`, `NOTICE` | Cómo citar, licencia y licencias de terceros. |
+
 ## Cómo citar
 
 Ver [CITATION.cff](CITATION.cff).

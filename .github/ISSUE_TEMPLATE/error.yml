@@ -1,0 +1,41 @@
+name: Reportar un error
+description: El visor falla, no lee un archivo o marca algo que no es un error.
+labels: ["error"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No adjuntes datos reales.** Ni el archivo, ni capturas donde se lean números de catálogo, coordenadas o nombres de personas (ver [POLITICA_DE_DATOS.md](https://github.com/tamalete/visioncore/blob/main/POLITICA_DE_DATOS.md)). Si hace falta un archivo, reproduce el problema en una copia de `ejemplo/ejemplo_visioncore.xlsx` con valores inventados.
+  - type: textarea
+    id: que-paso
+    attributes:
+      label: Qué pasó
+      description: Qué hiciste, qué esperabas y qué mostró el visor.
+    validations:
+      required: true
+  - type: textarea
+    id: celda
+    attributes:
+      label: Valor que lo produce
+      description: La columna Darwin Core y un valor inventado con la misma forma (por ejemplo, `decimalLatitude` = `5.53214N`).
+  - type: input
+    id: version
+    attributes:
+      label: Versión del visor
+      description: Aparece arriba a la izquierda (VISIONCORE · vNN).
+    validations:
+      required: true
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador y sistema
+      placeholder: Chrome 140 en Windows 11
+  - type: dropdown
+    id: archivo
+    attributes:
+      label: Tipo de archivo
+      options:
+        - Plantilla Darwin Core del SiB (.xlsx)
+        - CSV / TSV / TXT
+        - Descarga de GBIF (.zip)
+        - Otro
