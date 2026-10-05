@@ -1,0 +1,24 @@
+name: Proponer una mejora
+description: Una revisión nueva, un formato que debería leer o algo que haría más fácil corregir.
+labels: ["mejora"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **No adjuntes datos reales** (ver [POLITICA_DE_DATOS.md](https://github.com/tamalete/visioncore/blob/main/POLITICA_DE_DATOS.md)).
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué problema resuelve
+      description: Qué error de los datos o qué paso del trabajo con la colección.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Qué propones
+  - type: textarea
+    id: fuente
+    attributes:
+      label: Norma o fuente
+      description: Si la regla sale de un manual (plantilla del SiB, Darwin Core, GBIF), el enlace o la sección.
