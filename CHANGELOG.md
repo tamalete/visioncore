@@ -2,6 +2,18 @@
 
 El proyecto se desarrolló como versiones numeradas de un archivo HTML antes de existir como repositorio; esta es la historia resumida. El repositorio arrancó en 0.23.0 porque la versión interna vigente era la v23; la numeración sigue la interna (v30 = 0.30.0). Las versiones intermedias no se publicaron una por una.
 
+## 0.32.0 — 6 de octubre de 2026
+
+- **Más grupos**: además de anfibios y reptiles, peces, aves, mamíferos, insectos, otros artrópodos, moluscos, plantas y hongos, cada uno con su silueta y color en el mapa, la leyenda y la lista. El grupo sale de la familia (anfibios, reptiles y peces tienen tabla de familias), del orden, de la clase, del filo o del reino. Las distintas clases de peces que usan las autoridades (Actinopteri, Actinopterygii, Chondrichthyes, Elasmobranchii, Dipneusti…) se aceptan sin marcarse como incongruentes. La familia solo se juzga en los grupos con tabla.
+- **Pantalla de carga** con el archivo, su tamaño, la fase y una barra de avance; la animación sigue moviéndose mientras el navegador abre un Excel grande y muestra la silueta del grupo que trae el archivo. También al verificar nombres (con botón Cancelar; lo ya consultado se conserva y se puede continuar) y al exportar.
+- **Coordenada contra el país y el departamento**: caer fuera de Colombia ya no es error si el registro dice otro país (canjes, donaciones). Sí se marca cuando la coordenada no cae en el país del registro (`country`, `countryCode` o el nombre del país en la localidad) o, en Colombia, en su departamento, y se propone la corrección de signo o de ejes que la haría caer ahí. Cajas aproximadas con margen de 0,5°.
+- **Encabezados mal escritos**: `minimunElevationMeters`, `lifeSatege` y parecidos se leen como el término Darwin Core correcto, con un solo aviso por archivo para corregirlos antes de publicar.
+- **Horas**: `eventTime` con una fecha (`1899-12-31`, la fecha cero de Excel) se marca como hora perdida, en la capa de campos sin dato (no como error: es común en colecciones históricas). "9 am", "9:30 pm" o "21h" se leen y se propone escribirlas como HH:MM:SS.
+- Falsos positivos quitados: subgénero entre paréntesis ("Poecilia (Allopoecilia) caucana") ya no se toma como autoría ni descuadra el epíteto; sexo o etapa con varios valores en un lote ("Macho, Hembra") propone el separador " | ".
+- Rendimiento con archivos grandes (prueba con 30.000 registros): la lista pinta 200 ejemplares por grupo con un botón "ver más" (de 2,5 s a menos de 0,1 s por filtro) y los puntos entran al mapa de una vez.
+- Quitar una fuente actualiza el mensaje de carga; sin datos, la leyenda muestra todos los grupos.
+- Con los Excel de la UPTC: 4.315 registros, 1.150 con al menos un error (antes 1.087: los 63 nuevos son coordenadas que no caen en el departamento del registro, entre ellas latitudes sin signo menos), 8.736 hallazgos.
+
 ## 0.31.0 — 4 de octubre de 2026
 
 - **Filtros**: al tocar un hallazgo, la lista y el mapa muestran solo esos registros, y el aviso del mapa trae "exportar estos" (Darwin Core .xlsx solo con lo filtrado). **Línea de tiempo** por año, lustro o década: un clic filtra por ese periodo; con Mayúsculas el periodo se extiende.

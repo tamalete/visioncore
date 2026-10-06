@@ -10,7 +10,7 @@ Corre entero en el navegador: una página HTML, sin servidor, sin cuenta, sin in
 
 Publicar un conjunto de datos en el SiB o en GBIF exige que los campos sean coherentes entre sí, y en una colección con miles de registros digitados a lo largo de años esas incoherencias no se ven a simple vista: una rana registrada como reptil, una longitud sin el signo W que manda el punto a África, segundos de coordenada mayores a 60, una familia con una letra cambiada que deja al ejemplar huérfano de taxonomía. VisionCore las busca con reglas deterministas, las explica en español y propone el valor que debería ir.
 
-En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.087 registros, con 8.601 hallazgos entre errores y campos vacíos. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
+En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.150 registros, con 8.736 hallazgos entre errores y campos vacíos. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
 
 ## Cómo se usa
 
@@ -28,15 +28,17 @@ En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 reg
    Para probar primero, usa `ejemplo/ejemplo_visioncore.xlsx`: son 14 registros inventados con errores puestos a propósito.
 4. Se abre la pantalla de revisión, con sus pestañas: errores del dato, campos vacíos, requisitos para publicar en el SiB, alertas de GBIF y, si la pides, verificación de nombres. Desde ahí se exporta.
 
-Se pueden cargar varios archivos a la vez (por ejemplo, la plantilla del SiB y una descarga de GBIF): cada uno queda como una fuente con su color y se puede quitar. Mientras carga, la página muestra el avance de cada archivo.
+Se pueden cargar varios archivos a la vez (por ejemplo, la plantilla del SiB y una descarga de GBIF): cada uno queda como una fuente con su color y se puede quitar. Mientras carga, una pantalla muestra el archivo, la fase y el avance; lo mismo al verificar nombres y al exportar.
 
 En el panel se filtra por grupo, por tipo de registro (espécimen, iNaturalist, otra observación, muestra, cámara o grabadora), por hallazgo y por periodo en una línea de tiempo (año, lustro o década), y la lista se agrupa por familia, género, especie (como está escrita o aceptada), conjunto de datos, localidad o tipo de registro. Lo filtrado se puede exportar aparte.
 
 ## Qué revisa
 
-Hay 62 tipos de hallazgo, más una capa de alertas, agrupados en:
+Reconoce anfibios, reptiles, peces, aves, mamíferos, insectos, otros artrópodos, moluscos, plantas y hongos (por clase, orden, filo o reino). Las tablas de familias, que permiten detectar una familia mal escrita o una clase que no le corresponde, existen para anfibios, reptiles y peces; para los demás grupos no se juzga la familia.
 
-- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido (también cuando el visor tomó la coordenada de otra columna), puntos fuera de Colombia, desacuerdo entre las coordenadas originales y las columnas decimales.
+Hay 66 tipos de hallazgo, más una capa de alertas, agrupados en:
+
+- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido (también cuando el visor tomó la coordenada de otra columna), puntos fuera de Colombia cuando el registro dice Colombia, coordenadas que no caen en el país del registro (`country`, `countryCode` o la localidad) o en su departamento, con la corrección de signo o de ejes que la haría caer ahí, desacuerdo entre las coordenadas originales y las columnas decimales.
 - **Taxonomía** — clase que no concuerda con la familia, órdenes escritos en la columna `class`, familias mal escritas o con nombres no vigentes, género y epíteto que no concuerdan con el nombre científico (en descargas de GBIF, con el nombre aceptado cuando el nombre es un sinónimo).
 - **Duplicados** — el mismo número de catálogo repetido dentro de la misma institución, colección y conjunto de datos (o el mismo `occurrenceID` si no hay catálogo). Dos catálogos que solo difieren en espacios, guiones, mayúsculas o ceros a la izquierda cuentan como el mismo.
 - **Fechas, altitud y vocabularios** — fechas ilegibles o imposibles, `eventDate` que no coincide con `year`, `month` y `day`, altitud escrita en la columna equivocada, en pies o fuera de rango, sexo y etapa de vida fuera del vocabulario del SiB.
