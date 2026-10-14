@@ -2,6 +2,13 @@
 
 El proyecto se desarrolló como versiones numeradas de un archivo HTML antes de existir como repositorio; esta es la historia resumida. El repositorio arrancó en 0.23.0 porque la versión interna vigente era la v23; la numeración sigue la interna (v30 = 0.30.0). Las versiones intermedias no se publicaron una por una.
 
+## 0.34.0 — 14 de octubre de 2026
+
+- **Municipio contra coordenada, con el contorno real de cada municipio** (DANE, MGN 2025, simplificado a cerca de 1 km) en lugar de la distancia al centro. Se compara con todo el territorio del municipio (casco urbano, veredas y zona rural), no con el pueblo. Hasta 3 km fuera del límite no se avisa (por lo simplificado de los límites); de 3 a 10 km es una alerta informativa, «Coordenada en los alrededores del municipio», lo normal cuando se anota el pueblo de referencia; a más de 10 km es una alerta media, «Coordenada fuera del municipio».
+- El aviso dice en qué municipio cae el punto («a unos 44 km del límite de BARRANCABERMEJA; cae en GIRÓN») y lo propone para `county` (y `stateProvince` si es de otro departamento), sin aplicarlo solo; si cae en el mar o al otro lado de la frontera, también lo dice. La ayuda explica que en Darwin Core `county` es el municipio donde está el punto y que el pueblo de referencia va en `locality`. Los puntos que ya son error por estar fuera de Colombia no se avisan otra vez.
+- Comprobado con 30.661 puntos dentro de los municipios del DANE, incluidos sus bordes: ningún aviso falso. Con los Excel de la UPTC los errores no cambian (1.154 con al menos un error); los avisos de municipio pasan de 131 a 172 para revisar y 67 informativos: el círculo de antes dejaba pasar puntos lejos del límite real de los municipios grandes. 58 de los 172 son puntos en el mar cerca de la costa.
+- El visor pasa de 495 KB a 611 KB por los contornos. Pruebas: 93 casos (6 nuevos).
+
 ## 0.33.0 — 13 de octubre de 2026
 
 - **Especies amenazadas de Colombia, sin internet**: la lista nacional de la Resolución 0126 de 2024 del Ministerio de Ambiente (2.104 taxones, CC0) va dentro del visor. La ficha muestra la categoría (CR, EN, VU), la pestaña de nombres trae una tarjeta con las especies y un filtro, y la casilla de generalizar coordenadas al exportar ya no depende de verificar los nombres en línea; `dataGeneralizations` e `informationWithheld` dicen de qué lista sale (nacional, UICN o las dos). Una subespecie cuenta por su especie; un sinónimo que no esté en la lista no se reconoce sin la verificación de nombres.
