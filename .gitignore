@@ -6,6 +6,7 @@
 *.tsv
 *.json
 !ejemplo/ejemplo_visioncore.xlsx
+!pruebas/esperado.json
 informe*
 Informe*
 correcciones*
