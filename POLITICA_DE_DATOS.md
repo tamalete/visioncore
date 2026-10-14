@@ -23,11 +23,21 @@ Las bases con las que se probó el visor pertenecen a sus colectores y a la cole
 
 ## 3. Localidades sensibles
 
-Hay especies amenazadas cuya ubicación exacta no debe publicarse: la coordenada precisa de una población de una especie traficada es información útil para quien la trafica. VisionCore **todavía no** generaliza ni oculta esas coordenadas: hoy muestra lo que traiga el archivo.
+Hay especies amenazadas cuya ubicación exacta no debe publicarse: la coordenada precisa de una población de una especie traficada es información útil para quien la trafica.
 
-Mientras esa función no exista, antes de publicar un conjunto de datos hay que revisar a mano qué especies del archivo están en alguna categoría de amenaza y generalizar sus coordenadas, dejando constancia en los campos `informationWithheld` y `dataGeneralizations` de Darwin Core, que existen justo para eso.
+**Lo que hace VisionCore (desde la 0.31.0; con la lista nacional desde la 0.33.0).** Si alguna especie del archivo está como Vulnerable (VU), En peligro (EN) o En peligro crítico (CR) en la lista nacional de la **Resolución 0126 de 2024** del Ministerio de Ambiente (incluida en el visor, sin internet) o, después de verificar los nombres contra el Catalogue of Life (botón "Verificar nombres", necesita internet), en la Lista Roja global de la UICN, aparece la casilla **"generalizar coordenadas de especies amenazadas (0,1°)"**. Con la casilla marcada, las exportaciones Darwin Core (.xlsx y .csv), el GeoJSON y el Excel corregido:
 
-*(Por verificar antes de citarla en cualquier documento: la resolución colombiana vigente que lista las especies silvestres amenazadas y su categoría.)*
+- redondean la latitud y la longitud de esos registros a 0,1° (unos 11 km);
+- vacían las columnas *verbatim* de coordenadas de esos registros;
+- escriben en `dataGeneralizations` e `informationWithheld` qué se hizo y por qué, que son los campos de Darwin Core que existen justo para eso;
+- en la hoja «Cambios» del Excel corregido, no muestran la coordenada exacta.
+
+**Lo que no cubre.** Revísalo a mano antes de publicar:
+
+- La lista nacional se coteja por nombre escrito: un **sinónimo** o un nombre mal escrito no se reconoce, y la UICN solo se consulta si se verifican los nombres (con internet).
+- Las listas regionales o de CITES no se usan.
+- La **localidad**, el municipio y los demás textos salen como estén escritos: una localidad muy precisa puede revelar el sitio aunque la coordenada esté redondeada.
+- La **lista de correcciones** (CSV de hallazgos) y el **informe para imprimir** muestran los valores originales de cada celda, incluidas las coordenadas: son documentos de trabajo para la colección, no para publicar.
 
 ## 4. Lo que el programa hace con los datos de quien lo use
 

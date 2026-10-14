@@ -1,0 +1,31 @@
+{
+  "ejemplo_visioncore.xlsx": {
+    "registros": 14,
+    "con_error": 7,
+    "coord_confiable": 13,
+    "iss": {
+      "clase_es_orden": 1,
+      "familia_mal_escrita": 2,
+      "fecha_improbable": 1,
+      "genero_no_concuerda": 1,
+      "lon_sin_hemisferio": 1,
+      "segundos_invalidos": 1
+    },
+    "sib": {
+      "sib_countrycode": 14,
+      "sib_institutioncode_formato": 14,
+      "sib_obligatorio:collectionID": 14,
+      "sib_obligatorio:disposition": 14,
+      "sib_obligatorio:institutionID": 14,
+      "sib_obligatorio:occurrenceID": 14,
+      "sib_obligatorio:taxonRank": 14,
+      "sib_obligatorio:type": 14,
+      "vocabulario_etapa": 1,
+      "vocabulario_sexo": 11
+    },
+    "alertas": {
+      "sin_altitud": 1,
+      "sin_coordenadas": 1
+    }
+  }
+}

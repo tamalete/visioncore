@@ -10,7 +10,7 @@ Corre entero en el navegador: una página HTML, sin servidor, sin cuenta, sin in
 
 Publicar un conjunto de datos en el SiB o en GBIF exige que los campos sean coherentes entre sí, y en una colección con miles de registros digitados a lo largo de años esas incoherencias no se ven a simple vista: una rana registrada como reptil, una longitud sin el signo W que manda el punto a África, segundos de coordenada mayores a 60, una familia con una letra cambiada que deja al ejemplar huérfano de taxonomía. VisionCore las busca con reglas deterministas, las explica en español y propone el valor que debería ir.
 
-En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.150 registros, con 8.736 hallazgos entre errores y campos vacíos. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
+En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 registros) encontró errores en 1.154 registros, con 8.740 hallazgos entre errores y campos vacíos, y reconoció 19 especies (228 registros) de la lista nacional de especies amenazadas. En una descarga de GBIF de *Dendropsophus* (3.647 registros) marcó errores en 9, y los seis puntos que caen fuera de Colombia son los mismos que marca GBIF en sus propias banderas.
 
 ## Cómo se usa
 
@@ -28,6 +28,8 @@ En una prueba sobre las colecciones de anfibios y reptiles de la UPTC (4.315 reg
    Para probar primero, usa `ejemplo/ejemplo_visioncore.xlsx`: son 14 registros inventados con errores puestos a propósito.
 4. Se abre la pantalla de revisión, con sus pestañas: errores del dato, campos vacíos, requisitos para publicar en el SiB, alertas de GBIF y, si la pides, verificación de nombres. Desde ahí se exporta.
 
+El selector **Tema** cambia entre oscuro, claro, alto contraste y una paleta segura para daltonismo; el tema queda en la dirección (`#tema=claro`), no en el navegador.
+
 Se pueden cargar varios archivos a la vez (por ejemplo, la plantilla del SiB y una descarga de GBIF): cada uno queda como una fuente con su color y se puede quitar. Mientras carga, una pantalla muestra el archivo, la fase y el avance; lo mismo al verificar nombres y al exportar.
 
 En el panel se filtra por grupo, por tipo de registro (espécimen, iNaturalist, otra observación, muestra, cámara o grabadora), por hallazgo y por periodo en una línea de tiempo (año, lustro o década), y la lista se agrupa por familia, género, especie (como está escrita o aceptada), conjunto de datos, localidad o tipo de registro. Lo filtrado se puede exportar aparte.
@@ -36,19 +38,20 @@ En el panel se filtra por grupo, por tipo de registro (espécimen, iNaturalist, 
 
 Reconoce anfibios, reptiles, peces, aves, mamíferos, insectos, otros artrópodos, moluscos, plantas y hongos (por clase, orden, filo o reino). Las tablas de familias, que permiten detectar una familia mal escrita o una clase que no le corresponde, existen para anfibios, reptiles y peces; para los demás grupos no se juzga la familia.
 
-Hay 66 tipos de hallazgo, más una capa de alertas, agrupados en:
+Hay 67 tipos de hallazgo, más una capa de alertas, agrupados en:
 
-- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido (también cuando el visor tomó la coordenada de otra columna), puntos fuera de Colombia cuando el registro dice Colombia, coordenadas que no caen en el país del registro (`country`, `countryCode` o la localidad) o en su departamento, con la corrección de signo o de ejes que la haría caer ahí, desacuerdo entre las coordenadas originales y las columnas decimales.
+- **Georreferenciación** — coordenadas ilegibles o fuera de rango, latitud y longitud intercambiadas, longitud sin hemisferio, minutos o segundos ≥ 60, grados faltantes, separador decimal perdido (también cuando el visor tomó la coordenada de otra columna), puntos fuera de Colombia cuando el registro dice Colombia (contra el contorno real del país; el mar territorial cuenta como Colombia), coordenadas que no caen en el país del registro (`country`, `countryCode` o la localidad) o en su departamento, con la corrección de signo o de ejes que la haría caer ahí, desacuerdo entre las coordenadas originales y las columnas decimales.
 - **Taxonomía** — clase que no concuerda con la familia, órdenes escritos en la columna `class`, familias mal escritas o con nombres no vigentes, género y epíteto que no concuerdan con el nombre científico (en descargas de GBIF, con el nombre aceptado cuando el nombre es un sinónimo).
 - **Duplicados** — el mismo número de catálogo repetido dentro de la misma institución, colección y conjunto de datos (o el mismo `occurrenceID` si no hay catálogo). Dos catálogos que solo difieren en espacios, guiones, mayúsculas o ceros a la izquierda cuentan como el mismo.
 - **Fechas, altitud y vocabularios** — fechas ilegibles o imposibles, `eventDate` que no coincide con `year`, `month` y `day`, altitud escrita en la columna equivocada, en pies o fuera de rango, sexo y etapa de vida fuera del vocabulario del SiB.
 - **Campos vacíos** — identificador, familia, coordenada, fecha, recolector, determinador, altitud y localidad.
-- **Para publicar en el SiB** — una capa aparte, basada en el manual de la plantilla del SiB v4.0. No dice que el dato biológico esté mal, sino que, como está escrito, el SiB no lo recibiría: elementos obligatorios según el origen de los datos (colección biológica, permiso de recolección, eventos, marinos u otros), vocabularios controlados, coherencia entre `basisOfRecord` y `type`, formato de `institutionCode` y `occurrenceID`, nombres con cf., aff., sp. o autoría, listas de personas mal separadas, números de catálogo escritos de varias formas dentro de una misma serie. Donde el manual da la receta, propone el valor. En una descarga de GBIF esta capa avisa que GBIF ya reescribió esos valores.
-- **Alertas de GBIF** — una pestaña aparte que no cuenta como error: las banderas de la columna `issue` de GBIF, traducidas y clasificadas en alta, media e informativa; posibles registros repetidos (misma especie, día y punto, con el mismo número de catálogo o de campo, otro conjunto de datos u otro tipo de registro), y registros que dicen ser una observación aunque el ejemplar se colectó.
+- **Para publicar en el SiB** — una capa aparte, basada en la plantilla de registros biológicos del SiB, versión 4.1. No dice que el dato biológico esté mal, sino que, como está escrito, el SiB no lo recibiría: elementos obligatorios según el origen de los datos (colección biológica, permiso de recolección, eventos, marinos u otros), vocabularios controlados, coherencia entre `basisOfRecord` y `type`, formato de `institutionCode` y `occurrenceID`, nombres con cf., aff., sp. o autoría, listas de personas mal separadas, números de catálogo escritos de varias formas dentro de una misma serie. Donde el manual da la receta, propone el valor. En una descarga de GBIF esta capa avisa que GBIF ya reescribió esos valores.
+- **Alertas de GBIF** — una pestaña aparte que no cuenta como error: las banderas de la columna `issue` de GBIF, traducidas y clasificadas en alta, media e informativa; posibles registros repetidos (misma especie, día y punto, con el mismo número de catálogo o de campo, otro conjunto de datos u otro tipo de registro), registros que dicen ser una observación aunque el ejemplar se colectó, coordenadas que quedan lejos del municipio que dice el registro (aviso, por distancia al centro del municipio) y posibles lotes o filas copiadas (informativa).
 - **Personas** — la misma persona escrita de varias formas en `recordedBy` o `identifiedBy`, con la forma más frecuente como propuesta. Tampoco cuenta como error.
+- **Especies amenazadas de Colombia** (sin internet) — compara el nombre científico con la lista nacional de la Resolución 0126 de 2024 del Ministerio de Ambiente (2.104 taxones, incluida en el visor) y muestra la categoría (CR, EN o VU) en la ficha y en la pestaña de nombres.
 - **Verificación de nombres** (opcional, usa internet) — compara los nombres científicos con el Catalogue of Life a través de GBIF y señala nombres mal escritos, sinónimos, nombres que el catálogo no reconoce, solo reconocidos como género, familias distintas a las del catálogo, nombres de otro grupo y especies en categoría vulnerable, en peligro o en peligro crítico de la UICN. El emparejamiento lo hace GBIF, no el visor.
 
-Cada hallazgo trae la columna Darwin Core donde se corrige, qué pasó, por qué importa al publicar y cómo se arregla. Se exporta en cinco formas: Darwin Core `.xlsx` y `.csv` (con todas las columnas y valores originales; lo que calcula el visor va en una hoja aparte), GeoJSON, una lista de correcciones en `.xlsx` con una fila por hallazgo, pensada para abrirla al lado del Excel, y un Darwin Core `.xlsx` con las correcciones seguras ya aplicadas (vocabularios con equivalencia exacta, fechas a ISO, familias mal escritas, separador decimal perdido, `taxonRank` deducido del nombre…) y una hoja "Cambios" con cada celda que cambió. Ese archivo nunca toca identificadores ni nada que dependa de juicio, y el original no se modifica.
+Cada hallazgo trae la columna Darwin Core donde se corrige, qué pasó, por qué importa al publicar y cómo se arregla. También propone la familia correcta cuando está mal escrita. Se exporta en cinco formas: Darwin Core `.xlsx` y `.csv` (con todas las columnas y valores originales; lo que calcula el visor va en una hoja aparte), GeoJSON, una lista de correcciones en `.xlsx` con una fila por hallazgo, pensada para abrirla al lado del Excel, y un Darwin Core `.xlsx` con las correcciones seguras ya aplicadas (vocabularios con equivalencia exacta, fechas a ISO, familias mal escritas, separador decimal perdido, `taxonRank` deducido del nombre…) y una hoja "Cambios" con cada celda que cambió. Ese archivo nunca toca identificadores ni nada que dependa de juicio, y el original no se modifica. Además hay un **informe para imprimir** (o guardar como PDF desde el navegador) con el resumen por capa y los primeros casos de cada tipo.
 
 También lee la plantilla del SiB aunque venga maltratada: escoge la hoja correcta del libro, recupera encabezados pisados usando las etiquetas en español de la segunda fila, y acepta las coordenadas en los formatos en que realmente las escriben los colectores (`5°26'32.7"N`, `5° 26' 32,7''`, `05°26ʹ32.7ʺ N`, `5.53214N`, `72 42 41.3 W`).
 
@@ -58,8 +61,8 @@ Conviene decirlo claro para no dar por buena una base solo porque pasó la revis
 
 - **No es inteligencia artificial.** Son reglas lógicas verificables: cada hallazgo se puede rastrear hasta la celda que lo produjo. La verificación de nombres la hace el servicio de GBIF y solo cuando la pides; el visor muestra lo que ese servicio responde y no garantiza que esté libre de errores.
 - Los registros repetidos por especie, día y punto son una alerta para revisar, no un veredicto: una serie del mismo número de campo puede ser un lote legítimo.
-- No comprueba que el municipio declarado corresponda a la coordenada. La comprobación de "fuera de Colombia" usa cajas y no el contorno del país: el mar Caribe al norte de La Guajira todavía cuenta como Colombia.
-- Generalizar las coordenadas de especies amenazadas es opcional y solo al exportar: si la verificación de nombres encontró especies en categoría VU, EN o CR de la UICN, aparece una casilla que redondea sus coordenadas a 0,1° y llena `dataGeneralizations` e `informationWithheld`. Es la categoría global de la UICN, no la lista nacional de especies amenazadas. **Si vas a publicar datos de especies con riesgo de tráfico, decide con la colección qué generalizar.**
+- El municipio se compara con la coordenada solo por distancia al centro del municipio (no hay límites municipales en el visor): es un aviso, no un error, y un municipio grande o alargado puede dar avisos de más o de menos. El departamento y los demás países se comprueban con cajas aproximadas; solo Colombia tiene contorno real. Un punto en el mar territorial cuenta como Colombia, aunque la especie sea terrestre.
+- Generalizar las coordenadas de especies amenazadas es opcional y solo al exportar: si alguna especie está como VU, EN o CR en la lista nacional (Resolución 0126 de 2024) o, tras verificar los nombres, en la Lista Roja de la UICN, aparece una casilla que redondea sus coordenadas a 0,1° y llena `dataGeneralizations` e `informationWithheld`, diciendo de qué lista sale. La lista nacional se coteja por el nombre escrito: un sinónimo que no esté en ella no se reconoce sin la verificación de nombres. La localidad escrita no se toca. **Si vas a publicar datos de especies con riesgo de tráfico, decide con la colección qué generalizar** (ver [POLITICA_DE_DATOS.md](POLITICA_DE_DATOS.md)).
 - No escribe sobre tu archivo: lee, reporta y exporta archivos nuevos.
 
 ## Privacidad y seguridad
@@ -73,7 +76,7 @@ El visor hace solo dos tipos de petición a internet:
 
 Además, los enlaces a gbif.org de los resultados de nombres solo se abren si les haces clic.
 
-Las tres librerías y las dos tipografías que usa van empaquetadas dentro del repositorio, no se cargan de ningún CDN. Ver [SECURITY.md](SECURITY.md) y [POLITICA_DE_DATOS.md](POLITICA_DE_DATOS.md).
+Las tres librerías y las dos tipografías que usa van empaquetadas dentro del repositorio, no se cargan de ningún CDN. La lista de especies amenazadas, la tabla de municipios y el contorno de Colombia van dentro de `index.html`: no se consultan en internet. Ver [SECURITY.md](SECURITY.md) y [POLITICA_DE_DATOS.md](POLITICA_DE_DATOS.md).
 
 ## Datos
 
@@ -81,7 +84,7 @@ Este repositorio **no contiene datos biológicos reales**, solo un archivo de ej
 
 ## Tecnología
 
-HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https://leafletjs.com) y [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para el mapa, [SheetJS](https://sheetjs.com) para leer los Excel. Las tres están en `vendor/` con sus licencias; ver [NOTICE](NOTICE).
+HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https://leafletjs.com) y [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster) para el mapa, [SheetJS](https://sheetjs.com) para leer los Excel. Las tres están en `vendor/` con sus licencias. Las tablas de datos incluidas en el visor (Resolución 0126 de 2024, municipios del DANE, contorno de geoBoundaries) y la plantilla del SiB tienen su fuente y su licencia en [NOTICE](NOTICE).
 
 ## Estructura del repositorio
 
@@ -91,10 +94,11 @@ HTML, CSS y JavaScript sin framework ni paso de construcción. [Leaflet](https:/
 | `vendor/` | Leaflet, Leaflet.markercluster, SheetJS y las tipografías, con sus licencias. `index.html` los carga con rutas relativas: se mueven juntos. |
 | `ejemplo/` | `ejemplo_visioncore.xlsx`, 14 registros inventados para probar. |
 | `docs/` | Imágenes del README. |
-| `.github/` | Plantillas para reportar problemas y proponer mejoras. |
+| `pruebas/` | Pruebas automáticas (solo Node, sin dependencias): cifras del ejemplo y funciones puras. Ver `pruebas/README.md`. |
+| `.github/` | Plantillas para reportar problemas y proponer mejoras, y la acción que corre las pruebas en cada cambio. |
 | `CHANGELOG.md` | Qué cambió en cada versión. Cada versión publicada tiene su [release](https://github.com/tamalete/visioncore/releases). |
 | `POLITICA_DE_DATOS.md`, `SECURITY.md` | Qué datos no entran aquí y cómo está construido el visor por dentro. |
-| `CITATION.cff`, `LICENSE`, `NOTICE` | Cómo citar, licencia y licencias de terceros. |
+| `CITATION.cff`, `LICENSE`, `NOTICE` | Cómo citar, licencia, y licencias y fuentes de terceros (software y datos). |
 
 ## Cómo citar
 

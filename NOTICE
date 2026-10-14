@@ -22,3 +22,36 @@ el visor funcione sin conexión y sin depender de ningún CDN:
 Las teselas de los mapas base son servicios de terceros (Esri, OpenTopoMap y
 OpenStreetMap) y se usan bajo sus propias condiciones; la atribución aparece
 en la interfaz del visor.
+
+Datos de terceros incluidos dentro de index.html
+------------------------------------------------
+
+Para funcionar sin conexión, el visor lleva dentro tres tablas de datos y usa
+los nombres de la plantilla del SiB. No son software y no quedan cubiertas por
+la licencia Apache 2.0 de VisionCore: cada una conserva las condiciones de su
+fuente.
+
+- Lista de especies silvestres amenazadas de la diversidad biológica
+  continental y marino-costera de Colombia – Resolución 0126 de 2024.
+  Ministerio de Ambiente y Desarrollo Sostenible, publicada por el SiB Colombia.
+  Versión 1.2 (2024-02-15), 2.104 taxones. DOI 10.15472/frowz3.
+  Licencia CC0 1.0.
+
+- Municipios de Colombia (nombre y área oficial; el centro de cada municipio
+  lo calculó VisionCore a partir de la geometría generalizada).
+  Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co
+  Marco Geoestadístico Nacional (MGN) 2025, capa Municipio, 1.122 filas.
+  Se usa bajo los términos y condiciones del portal del DANE
+  (https://www.dane.gov.co/index.php/terminos-y-condiciones), que autorizan
+  "el uso, aprovechamiento, transformación y análisis de la información"
+  citando la fuente. No es una licencia Creative Commons: quien reutilice esta
+  tabla debe citar al DANE y revisar esos términos.
+
+- Contorno de Colombia: geoBoundaries (gbOpen, COL ADM0, simplificado),
+  William & Mary geoLab, https://www.geoboundaries.org. Licencia CC0 1.0.
+
+- Plantilla para la publicación de registros biológicos, versión 4.1.
+  Plata C, Ortiz R, Marentes E, Velásquez J, Diaz J, Escobar D, Castro C,
+  Leuro N, Sánchez L. 2024. SiB Colombia. Licencia CC BY-SA 4.0.
+  De ella solo se tomaron los nombres de los elementos, sus etiquetas en
+  español y los valores de los vocabularios controlados.
