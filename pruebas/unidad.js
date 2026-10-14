@@ -80,6 +80,13 @@ const casos=[
    ['municipio vacío no empareja',muni('Boyacá',''),null,SI('municipioDe')],
    ['aviso: punto en el centro de Tunja, nada',avi(tunja),{t:null,evaluados:1,emparejados:1},SI('avisoMunicipio')],
    ['aviso: punto a ~270 km de Tunja',avi(Object.assign({},tunja,{lat:7.5,lon:-72})),{t:'al_fuera_municipio',evaluados:1,emparejados:1},SI('avisoMunicipio')],
+   // v34: contorno de cada municipio en lugar de la distancia al centro
+   ['aviso: a ~4 km del límite de Tunja son los alrededores (informativo)',avi(Object.assign({},tunja,{lon:-73.27})),{t:'al_municipio_vecino',evaluados:1,emparejados:1},SI('municipioEnPunto')],
+   ['aviso: a ~44 km del límite de Barrancabermeja, y dice dónde cae',`(a=>a&&[a.t,a.sug])(avisoMunicipio(${J({lat:7.06,lon:-73.15,cok:true,mun:'Barrancabermeja',dept:'Santander',pais:'Colombia'})},{evaluados:0,emparejados:0,sinEmparejar:0,avisos:0}))`,['al_fuera_municipio','county: GIRÓN'],SI('municipioEnPunto')],
+   ['aviso: un punto fuera de Colombia (ya es error) no se juzga',avi(Object.assign({},tunja,{lat:7.5,lon:-72,iss:[{t:'coord_fuera_colombia'}]})),{t:null,evaluados:0,emparejados:0},SI('municipioEnPunto')],
+   ['municipioEnPunto: el centro de Tunja cae en Tunja',`(e=>e&&e.m.n)(municipioEnPunto(5.535,-73.367))`,'TUNJA',SI('municipioEnPunto')],
+   ['municipioEnPunto: San Andrés (isla, fuera del contorno continental)',`(e=>e&&e.m.n)(municipioEnPunto(12.55,-81.72))`,'SAN ANDRÉS',SI('municipioEnPunto')],
+   ['municipioEnPunto: en el mar, ninguno',`municipioEnPunto(12.5,-79)`,null,SI('municipioEnPunto')],
    ['aviso: sin municipio no se juzga ni se cuenta',avi(Object.assign({},tunja,{mun:''})),{t:null,evaluados:0,emparejados:0},SI('avisoMunicipio')],
    ['aviso: municipio que no aparece se cuenta pero no avisa',avi(Object.assign({},tunja,{mun:'Vereda Inventada'})),{t:null,evaluados:1,emparejados:0},SI('avisoMunicipio')],
    ['aviso: registro de otro país no se juzga',avi(Object.assign({},tunja,{pais:'Perú'})),{t:null,evaluados:0,emparejados:0},SI('avisoMunicipio')],

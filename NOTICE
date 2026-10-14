@@ -37,8 +37,9 @@ fuente.
   Versión 1.2 (2024-02-15), 2.104 taxones. DOI 10.15472/frowz3.
   Licencia CC0 1.0.
 
-- Municipios de Colombia (nombre y área oficial; el centro de cada municipio
-  lo calculó VisionCore a partir de la geometría generalizada).
+- Municipios de Colombia (nombre, área oficial y contorno; el centro de cada
+  municipio y el contorno simplificado a cerca de 1 km los calculó VisionCore
+  a partir de la geometría generalizada).
   Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co
   Marco Geoestadístico Nacional (MGN) 2025, capa Municipio, 1.122 filas.
   Se usa bajo los términos y condiciones del portal del DANE
