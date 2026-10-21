@@ -2,6 +2,28 @@
 
 El proyecto se desarrolló como versiones numeradas de un archivo HTML antes de existir como repositorio; esta es la historia resumida. El repositorio arrancó en 0.23.0 porque la versión interna vigente era la v23; la numeración sigue la interna (v30 = 0.30.0). Las versiones intermedias no se publicaron una por una.
 
+## 0.35.0 — 21 de octubre de 2026
+
+Sale de revisar la base de anfibios de la UPTC registro por registro contra el visor. Todos los errores que marcaba el visor eran reales, pero había una alerta falsa y varios errores reales que pasaban sin aviso.
+
+- **«Sin etiqueta» ya no cuenta como número de campo.** Tampoco «S/N», «NA», «000» ni las iniciales solas del colector. Todo lote sin etiqueta salía como «posible registro repetido» (alerta media); ahora es «posible lote» (informativa). En los Excel de la UPTC, los repetidos pasan de 96 a 4.
+- **Grados, minutos y segundos mal escritos** (error nuevo): `7°41”` (¿52 minutos, o 5 minutos y 2 segundos?) o más de tres números con un solo símbolo de grados. Antes se leían como minutos y el punto podía correrse decenas de kilómetros; ahora la coordenada queda sin valor hasta que se aclare. El par entero en una celda y los minutos decimales de GPS (`07°14,385"`) se leen como siempre.
+- **La familia no es la del género** (error nuevo, anfibios, sin internet): por ejemplo, *Craugastor* en Strabomantidae o *Hyloxalus* en Aromobatidae. Usa una tabla de 116 géneros de anfibios de Colombia revisada contra el Catalogue of Life (que sigue a Amphibian Species of the World) y el backbone de GBIF. Donde las fuentes no coinciden valen las dos: *Pristimantis* y parientes en Strabomantidae o Craugastoridae, Phyllomedusidae o Hylidae, Siphonopidae o Caeciliidae. Se suma la familia Dermophiidae.
+- **Epíteto vacío** (campo vacío nuevo): la columna `specificEpithet` está vacía, pero el nombre científico trae la especie.
+- **Cuatro alertas nuevas** (no cuentan como error):
+  - **Municipio que no está en ese departamento** (media). Antes solo se contaba aparte. Dice si es un municipio de otro departamento y dónde cae el punto, y propone `stateProvince` o `county`.
+  - **Mismo número de campo en ejemplares distintos** (media): otra especie, otra fecha u otro municipio. Si un número reúne tres especies o más se toma como número de estación y solo se comparan la fecha y el municipio; si en el archivo se repite más del 10 % de los números, el archivo numera estaciones y no se compara nada.
+  - **El mismo punto en varios municipios** (informativa): coordenada genérica o copiada. Las escrituras distintas de un mismo municipio no cuentan; si un municipio tiene el 90 % del punto, solo se avisan los demás.
+  - **Código distinto al del resto del archivo** (media): `institutionCode`, `institutionID` o `collectionCode` distinto del que tiene casi todo el archivo.
+- **Especies amenazadas con el nombre mal escrito, sin internet**: si el epíteto está a una o dos letras de uno de la lista nacional, en el mismo género, cuenta como amenazada con el aviso «nombre parecido: revisa si está mal escrito». También reconoce variantes de género gramatical (*Chelonoidis carbonaria*).
+- **Arreglos**:
+  - en la verificación de nombres, el género en minúscula (`pristimantis sp2`) salía «no encontrado» y ahora sale como problema de mayúsculas;
+  - Cali, Buga, Sincé, Puerto Inírida, El Darién, Armero Guayabal, Güicán, San Martín de los Llanos y «Bogotá, D.C.» anotada en Cundinamarca no se reconocían como municipios.
+- **Con los Excel de la UPTC**:
+  - 1.171 registros con al menos un error (antes 1.154: 28 anfibios con la familia de otro género y 3 coordenadas mal escritas, en parte en registros que ya tenían otro error);
+  - 20 especies y 244 registros de la lista nacional de amenazadas, de ellos 16 registros por nombre parecido.
+- **Pruebas:** 114 casos (21 nuevos). El ejemplo del repositorio no cambia.
+
 ## 0.34.0 — 14 de octubre de 2026
 
 - **Municipio contra coordenada, con el contorno real de cada municipio** (DANE, MGN 2025, simplificado a cerca de 1 km) en lugar de la distancia al centro. Se compara con todo el territorio del municipio (casco urbano, veredas y zona rural), no con el pueblo. Hasta 3 km fuera del límite no se avisa (por lo simplificado de los límites); de 3 a 10 km es una alerta informativa, «Coordenada en los alrededores del municipio», lo normal cuando se anota el pueblo de referencia; a más de 10 km es una alerta media, «Coordenada fuera del municipio».

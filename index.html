@@ -665,7 +665,7 @@ body.capas-off .layers-panel{display:none}
     <span class="hoja-txt" id="hojaTxt">Panel de datos</span>
   </button>
   <div class="masthead">
-    <div class="kicker">VISIONCORE · v34</div>
+    <div class="kicker">VISIONCORE · v35</div>
     <h1>Visor Darwin Core</h1>
     <div class="tema-fila"><label for="temaSel">Tema</label>
       <select id="temaSel" aria-label="Tema de color">
@@ -759,7 +759,7 @@ body.capas-off .layers-panel{display:none}
         <div class="list" id="list"></div>
       </div>
     </section>
-    <footer class="pie">VisionCore v34 · UPTC</footer>
+    <footer class="pie">VisionCore v35 · UPTC</footer>
   </div>
 </aside>
 <button class="aside-toggle" id="asideToggle" onclick="toggleAside()" title="Ocultar/mostrar panel" aria-label="Ocultar o mostrar el panel lateral">‹</button>
@@ -1562,7 +1562,7 @@ function normT(t){let v=NORM_T.get(t);if(v===undefined){v=norm(t);NORM_T.set(t,v
 const NORM_C=new Map();
 function normC(t){let v=NORM_C.get(t);if(v===undefined){v=norm(t);if(NORM_C.size>20000)NORM_C.clear();NORM_C.set(t,v);}return v;}
 
-const FAM_ANF=['Allophrynidae','Aromobatidae','Bufonidae','Caeciliidae','Centrolenidae','Ceratophryidae','Craugastoridae','Dendrobatidae','Eleutherodactylidae','Hemiphractidae','Hylidae','Hylodidae','Leptodactylidae','Microhylidae','Phyllomedusidae','Pipidae','Plethodontidae','Ranidae','Rhinatrematidae','Siphonopidae','Strabomantidae','Telmatobiidae','Typhlonectidae'];
+const FAM_ANF=['Allophrynidae','Aromobatidae','Bufonidae','Caeciliidae','Centrolenidae','Ceratophryidae','Craugastoridae','Dendrobatidae','Eleutherodactylidae','Hemiphractidae','Hylidae','Hylodidae','Leptodactylidae','Microhylidae','Phyllomedusidae','Pipidae','Plethodontidae','Ranidae','Rhinatrematidae','Siphonopidae','Strabomantidae','Telmatobiidae','Typhlonectidae','Dermophiidae'];
 const FAM_REP=['Alligatoridae','Alopoglossidae','Amphisbaenidae','Anguidae','Aniliidae','Anomalepididae','Boidae','Charinidae','Chelidae','Chelydridae','Colubridae','Corytophanidae','Crocodylidae','Anolidae','Diploglossidae','Dipsadidae','Elapidae','Emydidae','Gekkonidae','Geoemydidae','Gymnophthalmidae','Hoplocercidae','Iguanidae','Kinosternidae','Leiosauridae','Leptotyphlopidae','Mabuyidae','Natricidae','Phyllodactylidae','Podocnemididae','Polychrotidae','Anolidae','Scincidae','Sphaerodactylidae','Teiidae','Testudinidae','Tropidophidae','Tropiduridae','Typhlopidae','Viperidae'];
 const FAM2CLS=tabla(),FAM_CANON=tabla();
 FAM_ANF.forEach(f=>{FAM2CLS[norm(f)]='Amphibia';FAM_CANON[norm(f)]=f;});
@@ -1578,6 +1578,31 @@ const FAM_TYPO=tabla({aromabatidae:'Aromobatidae',bufoniade:'Bufonidae',centrona
 // al revés y marcaba Anolidae como no vigente. Polychrotidae sigue siendo válida, pero solo para
 // Polychrus: con Anolis es un nombre viejo (ver la condición en parseWorkbook).
 const FAM_OLD=tabla({dactyloidae:'Anolidae'});
+// Anfibios de Colombia: familia de cada género. Sirve para avisar sin internet de una familia que no es la del género (Craugastor en Strabomantidae,
+// Hyloxalus en Aromobatidae). Revisada el 21 oct de 2026 contra el Catalogue of Life (ChecklistBank, versión 3LR), que toma los anfibios de Amphibian Species
+// of the World, y contra el backbone de GBIF; los géneros son los de la tabla anterior más todos los que tienen registros en Colombia en GBIF (salvo fósiles e
+// introducidos sin poblaciones). Donde las fuentes no coinciden valen las dos: los Pristimantis y parientes son Strabomantidae en la ASW y Craugastoridae en GBIF
+// (Geobatrachus y Atopophrynus, sin familia en el Catalogue of Life, van con ellos); las ranas de Phyllomedusidae estuvieron en Hylidae y muchas colecciones las
+// siguen anotando así; Siphonopidae salió de Caeciliidae; Allophryne estuvo en Centrolenidae. Hyla, Bufo y Rana son nombres viejos que siguen en las colecciones
+// (Hyla labialis, Bufo marinus): su familia es la misma. Un género que no esté aquí no se juzga.
+const GEN_FAM_ANF=tabla(),GEN_CANON=tabla();
+[[['Aromobatidae'],'Allobates Anomaloglossus Aromobates Mannophryne Rheobates'],
+ [['Dendrobatidae'],'Adelphobates Ameerega Andinobates Colostethus Dendrobates Ectopoglossus Epipedobates Excidobates Hyloxalus Leucostethus Minyobates Oophaga Paruwrobates Phyllobates Ranitomeya Silverstoneia'],
+ [['Bufonidae'],'Amazophrynella Atelopus Bufo Dendrophryniscus Incilius Osornophryne Rhaebo Rhinella'],
+ [['Centrolenidae'],'Centrolene Celsiella Chimerella Cochranella Espadarana Hyalinobatrachium Ikakogi Nymphargus Rulyrana Sachatamia Teratohyla Vitreorana'],
+ [['Allophrynidae','Centrolenidae'],'Allophryne'],
+ [['Craugastoridae'],'Craugastor'],
+ [['Strabomantidae','Craugastoridae'],'Pristimantis Niceforonia Tachiramantis Strabomantis Lynchius Hypodactylus Oreobates Noblella Phrynopus Geobatrachus Atopophrynus'],
+ [['Eleutherodactylidae'],'Diasporus Eleutherodactylus Adelophryne Phyzelaphryne'],
+ [['Hemiphractidae'],'Cryptobatrachus Gastrotheca Hemiphractus'],
+ [['Hylidae'],'Boana Dendropsophus Ecnomiohyla Hyla Hyloscirtus Isthmohyla Lysapsus Nyctimantis Osteocephalus Osteopilus Pseudis Scarthyla Scinax Smilisca Sphaenorhynchus Trachycephalus'],
+ [['Phyllomedusidae','Hylidae'],'Agalychnis Callimedusa Cruziohyla Phyllomedusa Pithecopus'],
+ [['Leptodactylidae'],'Adenomera Edalorhina Engystomops Hydrolaetare Leptodactylus Lithodytes Physalaemus Pleurodema Pseudopaludicola'],
+ [['Microhylidae'],'Chiasmocleis Ctenophryne Elachistocleis Gastrophryne Hamptophryne Nelsonophryne Otophryne Relictivomer Synapturanus'],
+ [['Ceratophryidae'],'Ceratophrys'],[['Ranidae'],'Lithobates Rana'],[['Pipidae'],'Pipa'],[['Telmatobiidae'],'Telmatobius'],
+ [['Plethodontidae'],'Bolitoglossa Oedipina'],[['Caeciliidae'],'Caecilia Oscaecilia'],[['Siphonopidae','Caeciliidae'],'Microcaecilia Parvicaecilia Siphonops'],[['Dermophiidae'],'Dermophis'],
+ [['Typhlonectidae'],'Potomotyphlus Typhlonectes'],[['Rhinatrematidae'],'Epicrionops']
+].forEach(([fams,gens])=>gens.split(' ').forEach(g=>{GEN_FAM_ANF[norm(g)]=fams;GEN_CANON[norm(g)]=g;}));
 const ORD2CLS=tabla({anura:'Amphibia',caudata:'Amphibia',gymnophiona:'Amphibia',squamata:'Reptilia',sauria:'Reptilia',serpentes:'Reptilia',ophidia:'Reptilia',testudines:'Reptilia',chelonia:'Reptilia',crocodilia:'Reptilia',crocodylia:'Reptilia',rhynchocephalia:'Reptilia'});
 // órdenes de peces (Betancur-R. et al. 2017 y Catalog of Fishes): todas valen para el grupo Peces
 ['Acanthuriformes','Acipenseriformes','Albuliformes','Amiiformes','Anabantiformes','Anguilliformes','Atheriniformes','Aulopiformes','Batrachoidiformes','Beloniformes','Beryciformes','Blenniiformes','Carangiformes','Carcharhiniformes','Centrarchiformes','Ceratodontiformes','Cetomimiformes','Characiformes','Chimaeriformes','Cichliformes','Clupeiformes','Cypriniformes','Cyprinodontiformes','Elopiformes','Esociformes','Gadiformes','Gobiiformes','Gonorynchiformes','Gymnotiformes','Hexanchiformes','Holocentriformes','Istiophoriformes','Labriformes','Lamniformes','Lepidosireniformes','Lepisosteiformes','Lophiiformes','Mugiliformes','Myctophiformes','Myliobatiformes','Myxiniformes','Ophidiiformes','Orectolobiformes','Osteoglossiformes','Perciformes','Petromyzontiformes','Pleuronectiformes','Polypteriformes','Pristiformes','Rajiformes','Rhinopristiformes','Salmoniformes','Scombriformes','Scorpaeniformes','Siluriformes','Squaliformes','Squatiniformes','Stomiiformes','Synbranchiformes','Syngnathiformes','Tetraodontiformes','Torpediniformes','Zeiformes'].forEach(o=>{ORD2CLS[norm(o)]='Peces';});
@@ -1980,7 +2005,7 @@ const DEPTOS=[
 'Putumayo||-0.6,1.6,-77.9,-73.9',
 'Quindío|quindio|4.0,4.8,-76.0,-75.5',
 'Risaralda||4.6,5.4,-76.3,-75.4',
-'San Andrés y Providencia|san andres,san andres providencia y santa catalina,archipielago de san andres,san andres islas,san andres y providencia islas|12.1,16.1,-81.9,-78.4',
+'San Andrés y Providencia|san andres,san andres providencia y santa catalina,archipielago de san andres,archipielago de san andres providencia y santa catalina,san andres islas,san andres y providencia islas|12.1,16.1,-81.9,-78.4',
 'Santander||5.7,8.2,-74.7,-72.4',
 'Sucre||8.3,10.0,-76.0,-74.5',
 'Tolima||2.9,5.3,-76.0,-74.3',
@@ -2025,7 +2050,10 @@ let MUNI_MARGEN_KM=3,MUNI_VECINO_KM=10,MUNI_LIMITE_KM=1;
 // formas conocidas que el DANE escribe distinto (norm -> norm del nombre del DANE); valen en cualquier departamento
 const MUNI_ALIAS=tabla({villadeleiva:'villadeleyva',cucuta:'sanjosedecucuta',cartagena:'cartagenadeindias',mompox:'santacruzdemompox',mompos:'santacruzdemompox',
   mariquita:'sansebastiandemariquita',tumaco:'sanandresdetumaco',ubate:'villadesandiegodeubate',tolu:'santiagodetolu',cocuy:'elcocuy',pazdelrio:'pazderio',
-  agustincodazi:'agustincodazzi',tierraalta:'tierralta',elagrado:'agrado',bogota:'bogotadc',bogotadistritocapital:'bogotadc',santafedebogota:'bogotadc'});
+  agustincodazi:'agustincodazzi',tierraalta:'tierralta',elagrado:'agrado',bogota:'bogotadc',bogotadistritocapital:'bogotadc',santafedebogota:'bogotadc',
+  // 0.35.0: nombres de uso común que el DANE escribe completos (antes salían como municipio no reconocido)
+  bogotadc:'bogotadc',cali:'santiagodecali',buga:'guadalajaradebuga',since:'sanluisdesince',puertoinirida:'inirida',eldarien:'calima',calimaeldarien:'calima',
+  armeroguayabal:'armero',guican:'guicandelasierra',sanmartindelosllanos:'sanmartin'});
 let MUNI_IDX=null;
 function indiceMunicipios(){
   if(MUNI_IDX)return MUNI_IDX;
@@ -2105,6 +2133,26 @@ function avisoMunicipio(r,est){
   return {t,d,v:r.lat.toFixed(5)+', '+r.lon.toFixed(5),sug:otro?'county: '+otro.n+(otroDep?' · stateProvince: '+otro.dep:''):''};
 }
 
+// El municipio no está en el departamento del registro (antes solo se contaba como «sin emparejar»). Dice si el nombre es de un municipio de otro departamento
+// y, si hay coordenada confiable, en qué municipio cae el punto. Si el departamento no se reconoce no se dice nada: no hay contra qué comparar.
+function avisoMunicipioDesconocido(r){
+  if(!r.mun||!r.dept||!esDeColombia(r))return null;
+  const dk=DEPTO_NOM[norm(r.dept)];if(!dk||municipioDe(r.dept,r.mun))return null;
+  const I=indiceMunicipios(),k=claveMunicipio(r.mun);if(!k)return null;
+  const otros=Object.keys(I).filter(d=>d!==dk&&(I[d][k]||I[d][MUNI_ALIAS[k]])).map(d=>({m:I[d][k]||I[d][MUNI_ALIAS[k]],d}));
+  let d=r.mun+' no es un municipio de '+dk+' en la lista del DANE';
+  if(otros.length)d+='; '+otros.map(o=>o.m.n+' ('+o.d+')').join(', ')+' sí';
+  let sug='';
+  const en=(r.lat!=null&&r.lon!=null&&r.cok!==false&&!(r.iss||[]).some(x=>x.t==='coord_fuera_colombia'))?municipioEnPunto(r.lat,r.lon):null;
+  if(en)d+='; el punto cae en '+en.m.n+(en.m.dep!==dk?' ('+en.m.dep+')':'')+(en.km<MUNI_LIMITE_KM?' (cerca del límite)':'');
+  // la propuesta: si el nombre es de un municipio de otro departamento y el punto cae en él o a 10 km o menos, el error es el departamento
+  // (Puerto Boyacá anotado en Santander); si no, el municipio donde cae el punto
+  const cerca=otros.find(o=>en&&en.m===o.m)||(otros.length===1&&en==null?otros[0]:null)||otros.find(o=>r.lat!=null&&distMunicipioKm(o.m,r.lat,r.lon)<=MUNI_VECINO_KM);
+  if(cerca)sug='stateProvince: '+cerca.d;
+  else if(en)sug='county: '+en.m.n+(en.m.dep!==dk?' · stateProvince: '+en.m.dep:'');
+  return {t:'al_municipio_desconocido',d,v:r.mun,sug};
+}
+
 // <<TABLAS_V34 (generado con un script a partir de las fuentes citadas; no editar a mano)
 // ----- Especies amenazadas de Colombia: Resolución 0126 de 2024 (MADS) -----
 // Fuente: «Lista de especies silvestres amenazadas de la diversidad biológica continental y marino-costera de Colombia – Resolución 0126 de 2024»,
@@ -2141,10 +2189,13 @@ const QC_TYPES={
   familia_desconocida:{s:'err',n:'Familia no reconocida'},
   genero_no_concuerda:{s:'err',n:'El género no concuerda con el nombre científico'},
   epiteto_no_concuerda:{s:'err',n:'El epíteto no concuerda con el nombre científico'},
+  familia_no_concuerda_genero:{s:'err',n:'La familia no es la del género'},
+  epiteto_vacio:{s:'falta',n:'Sin epíteto (el nombre científico sí lo trae)'},
   id_duplicado:{s:'err',n:'Número de catálogo repetido'},
   catalogo_formato:{s:'sib',n:'Número de catálogo escrito de varias formas'},
   coord_intercambiadas:{s:'err',n:'Latitud y longitud intercambiadas'},
   coord_grados_faltantes:{s:'err',n:'A la coordenada le faltan los grados'},
+  coord_dms_dudosa:{s:'err',n:'Grados, minutos y segundos mal escritos'},
   coord_reconstruida:{s:'err',n:'Coordenada sin separador decimal (reconstruida)'},
   coord_sin_punto:{s:'err',n:'Coordenada sin punto decimal en las columnas de latitud y longitud'},
   coord_ilegible:{s:'err',n:'Coordenada ilegible'},
@@ -2208,6 +2259,14 @@ const QC_TYPES={
   al_fuera_municipio:{s:'alerta',nivel:'media',n:'Coordenada fuera del municipio'},
   // lo mismo, pero a 10 km o menos del límite: los alrededores del municipio (otro municipio para Darwin Core, pero es lo normal al anotar el pueblo de referencia)
   al_municipio_vecino:{s:'alerta',nivel:'info',n:'Coordenada en los alrededores del municipio'},
+  // el municipio (county) no está en el departamento del registro según el DANE (una provincia, una vereda, otro departamento, otra escritura): antes solo se contaba como «sin emparejar»
+  al_municipio_desconocido:{s:'alerta',nivel:'media',n:'Municipio que no está en ese departamento'},
+  // el mismo número de campo en dos ejemplares con otra especie, otra fecha u otro municipio: un número de campo es de un solo ejemplar (o de un solo lote)
+  al_campo_repetido:{s:'alerta',nivel:'media',n:'Mismo número de campo en ejemplares distintos'},
+  // el mismo punto exacto en registros de varios municipios: una coordenada genérica (la de la zona o la de la expedición) o copiada de otra fila
+  al_punto_compartido:{s:'alerta',nivel:'info',n:'El mismo punto en varios municipios'},
+  // institutionCode, institutionID o collectionCode distinto del que tiene casi todo el archivo (un NIT con otro dígito, un anfibio con el código de reptiles)
+  al_valor_suelto:{s:'alerta',nivel:'media',n:'Código distinto al del resto del archivo'},
   // especie en la lista nacional de amenazadas (Res. 0126 de 2024): no es un hallazgo de r.iss ni de r.nom, vive en r.amenCO; esta entrada sirve al filtro y a su nombre
   amen_co:{s:'nom',n:'Especie amenazada en Colombia (Res. 0126 de 2024)'}
 };
@@ -2295,6 +2354,15 @@ function leerCoord(raw,ejeHint,otro){
   if(grados){
     // "°31'48.77\" N" -> el numero de grados se perdio
     if(/^\s*[°º˚]/.test(t)){iss.push({t:'coord_grados_faltantes',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
+    // grados, minutos y segundos que no se pueden leer con certeza: no se adivina, la coordenada queda sin valor y se avisa
+    // - "7°41”": después de los grados viene un número con la marca de segundos y no hay minutos. Leerlo como 7°41′ corría el punto 87 km
+    //   (en una base real las filas vecinas decían otra cosa: era una coordenada sin el apóstrofo de los minutos)
+    // - "N °07 12´34´5\"": más de tres números con un solo símbolo de grados (con dos es el par entero en una celda, «4°10'20"N 74°30'15"W», y se lee como siempre)
+    // Minutos con tres decimales o más ("07°14,385\"") son minutos decimales de GPS aunque lleven la marca de segundos: se leen como minutos.
+    const nGr=(t.match(/[°º˚]/g)||[]).length;
+    if((nums.length===2&&/[°º˚]\s*\d+(?:[.,]\d{1,2})?\s*(?:["”“″ʺ]|''|’’|´´)/.test(t))||(nums.length>3&&nGr<2)){
+      iss.push({t:'coord_dms_dudosa',d:t.slice(0,40)+(nums.length===2?' (¿minutos o segundos?)':' (sobran números)'),v:t.slice(0,40)});return{v:null,eje,iss};
+    }
     const d=nums[0],mi=nums.length>1?nums[1]:0,se=nums.length>2?nums[2]:0;
     if(mi>=60){iss.push({t:'minutos_invalidos',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
     if(se>=60){iss.push({t:'segundos_invalidos',d:t.slice(0,40),v:t.slice(0,40)});return{v:null,eje,iss};}
@@ -2955,6 +3023,12 @@ function* parseWorkbookGen(wb){
     // morfotipos y calificadores: "sp", "sp.", "sp1", "sp2 Nov.", "spp", "cf.", "aff.", "indet."
     const vago=x=>/^(sp|spp|aff|cf|indet|nov)\.?\d*\.?$/i.test(String(x||'').trim().split(/\s+/)[0]);
     if(epi&&partes[1]&&!vago(epi)&&!vago(partes[1])&&norm(epi)!==norm(partes[1]))iss.push({t:'epiteto_no_concuerda',d:epi+' vs '+partes[1],v:epi,sug:partes[1]});
+    // la columna del epíteto existe y está vacía, pero el nombre científico sí trae la especie
+    else if(!epi&&!esGbif&&col.specificEpithet!=null&&partes[1]&&!vago(partes[1])&&/^[a-zà-ÿ][a-zà-ÿ-]+$/.test(partes[1]))iss.push({t:'epiteto_vacio',d:sci,v:'',sug:partes[1]});
+    // anfibios: la familia contra el género, sin internet (con internet, la verificación de nombres lo dice con el Catalogue of Life)
+    {const gk=GEN_FAM_ANF[norm(gen)]?norm(gen):norm(partes[0]||''),ok=GEN_FAM_ANF[gk];
+     if(ok&&famN&&FAM2CLS[famN]==='Amphibia'&&!ok.some(f=>norm(f)===famN))
+       iss.push({t:'familia_no_concuerda_genero',d:(famSug||fam)+' con el género '+GEN_CANON[gk]+' (es '+ok.join(' o ')+')',v:fam,sug:ok[0]});}
 
     // --- país: si el registro dice que es de otro país, lo que el visor supone de Colombia no se aplica a su coordenada ---
     // (country o countryCode distintos de Colombia/CO; vacío, o uno de los dos diciendo Colombia, se comporta como siempre)
@@ -3000,7 +3074,7 @@ function* parseWorkbookGen(wb){
       lat=par.lat;lon=par.lon;
       par.iss.forEach(x=>iss.push(x));
       // en otro país no hay caja contra la que comparar: la coordenada se dibuja y no se marca como fuera de Colombia
-      cok=(otroPais||enColombia(lat,lon))&&!par.iss.some(x=>['coord_reconstruida','coord_intercambiadas','minutos_invalidos','segundos_invalidos','coord_grados_faltantes'].includes(x.t));
+      cok=(otroPais||enColombia(lat,lon))&&!par.iss.some(x=>['coord_reconstruida','coord_intercambiadas','minutos_invalidos','segundos_invalidos','coord_grados_faltantes','coord_dms_dudosa'].includes(x.t));
       if(!otroPais&&!enColombia(lat,lon))iss.push(coordFueraDeColombia(cell(g('stateProvince')),lat,lon));
       // país distinto de Colombia: la coordenada tiene que caer en la caja de ese país; queda dudosa si no (cok=false, como las imposibles)
       else if(otroPais&&isoReg&&isoReg!=='CO'&&PAIS_CAJAS[isoReg]&&!enCajas(PAIS_CAJAS[isoReg],lat,lon,MARGEN_PAIS)){cok=false;iss.push(coordFueraDePais(isoReg,fuentePais,lat,lon));}
@@ -3307,6 +3381,8 @@ let verificando=false;
 function nombreConsulta(sci,tal){
   const w=sinSubgenero(sci).split(' ').filter(Boolean); // a GBIF se le manda sin el subgénero
   if(!w.length)return '';
+  // el género va con mayúscula: «pristimantis sp2» se consultaba tal cual, el catálogo no lo encontraba y salía «no encontrado» en vez de «solo mayúsculas»
+  if(!tal&&/^[a-zà-ÿ][a-zà-ÿ]+$/.test(w[0]))w[0]=w[0][0].toUpperCase()+w[0].slice(1);
   // "Pristimantis sp1", "Rhinella aff. horribilis": de lo unico que hay certeza es del genero
   if(w.length>1&&/^(sp|spp|sp\d+|aff|cf|indet|nov)\.?\d*\.?$/i.test(w[1]))return w[0];
   // GBIF trae el autor pegado ("Anolis heterodermus Duméril, 1851"): se corta antes del autor
@@ -4028,10 +4104,13 @@ const QC_INFO={
  familia_no_vigente:{col:'family',que:'La familia existe pero ya no se usa para ese grupo.',porque:'Los anolis salieron de Polychrotidae hace años y de Dactyloidae en 2023: hoy la Reptile Database y el Catalogue of Life los ponen en Anolidae. Publicar con el nombre viejo desactualiza toda la base.',como:'Confirma contra la taxonomía que use la colección (o contra GBIF) y actualiza la familia. No lo cambies en masa sin revisarlo: hay géneros que sí siguen en Polychrotidae.'},
  familia_desconocida:{col:'family',que:'Esa familia no está en las listas de familias de anfibios, reptiles y peces del programa. Solo se revisa en esos tres grupos (o cuando no se sabe de qué grupo es el ejemplar): de aves, mamíferos, insectos, plantas y demás no hay lista de familias y no se juzgan.',porque:'O está mal escrita, o es una familia que el validador todavía no conoce, o el ejemplar no es de ninguno de esos tres grupos.',como:'Verifica el nombre. Cuando hay una familia conocida muy parecida y una sola, el aviso la propone («¿quisiste decir…?»): es una pista, no se corrige sola; confírmala en el Excel. Si la familia es correcta, avísale al programa: hay que agregarla a la tabla de familias.'},
  genero_no_concuerda:{col:'genus',que:'El género de la columna genus no es el mismo que el del nombre científico.',porque:'A veces es un error de tipeo, pero a veces son dos identificaciones distintas en la misma fila: alguien redeterminó el ejemplar y no actualizó todas las columnas.',como:'Decide cuál de los dos es el bueno y deja las dos columnas iguales. Si fue una redeterminación, actualiza también familia, orden e identifiedBy.'},
+ familia_no_concuerda_genero:{col:'family',que:'La familia escrita no es la del género (por ejemplo, Craugastor en Strabomantidae o Hyloxalus en Aromobatidae). Se revisa sin internet con una lista de los géneros de anfibios de Colombia y su familia según Amphibian Species of the World; donde las fuentes no coinciden valen las dos (Pristimantis en Strabomantidae o Craugastoridae; Phyllomedusa en Phyllomedusidae o Hylidae).',porque:'Con la familia equivocada el ejemplar se cuenta en otro grupo en cualquier resumen, y al publicar la clasificación queda contradictoria.',como:'Pon la familia del género (la propuesta). Si lo que está mal es el género, corrige el género y el nombre científico. La verificación de nombres con el Catalogue of Life lo confirma.'},
+ epiteto_vacio:{col:'specificEpithet',que:'La columna del epíteto está vacía, pero el nombre científico sí trae la especie.',porque:'Quien filtre o agrupe por specificEpithet no encuentra el ejemplar en su especie.',como:'Copia en specificEpithet la segunda palabra del nombre científico (la propuesta).'},
  epiteto_no_concuerda:{col:'specificEpithet',que:'El epíteto específico no coincide con la segunda palabra del nombre científico.',porque:'Mismo caso del género: o es tipeo, o el ejemplar se redeterminó a medias.',como:'Deja las dos columnas iguales. Si el ejemplar se redeterminó, actualiza todas las columnas taxonómicas.'},
  id_duplicado:{col:'catalogNumber',que:'Ese número de catálogo aparece en más de una fila.',porque:'Puede ser un lote (el manual del SiB permite repetir catalogNumber cuando los ejemplares están agrupados en un frasco o caja) o una fila copiada por error. Lo que sí debe ser único para publicar es occurrenceID.',como:'Busca las filas con ese número. Si es un lote, deja el número y dale a cada fila un occurrenceID distinto; si es la misma fila copiada, bórrala; si son ejemplares distintos, corrige el número.'},
  catalogo_formato:{col:'catalogNumber',que:'El número de catálogo está escrito distinto al de la mayoría de su serie: otro separador, otras mayúsculas, un espacio de más o un cero de más (o de menos) en el número.',porque:'Para GBIF y el SiB "MUS- Am-0042" y "MUS-Am-0042" son dos catálogos distintos: el mismo ejemplar puede quedar publicado dos veces y la búsqueda por número falla. El visor ya compara sin espacios, guiones, mayúsculas ni ceros a la izquierda para marcar los repetidos, pero la base los publica tal cual.',como:'Escribe todos los catálogos de la serie con la forma que se propone (la que usa la mayoría). Antes confirma contra el frasco o la etiqueta cuál es la forma oficial de la colección: si la mayoría está mal escrita, corrige la mayoría. El visor no cambia este identificador en el Excel de correcciones aplicadas.'},
  coord_intercambiadas:{col:'decimalLatitude / decimalLongitude',que:'La latitud tiene el valor de la longitud y viceversa.',porque:'El punto cae al otro lado del mundo. En Colombia la latitud va entre 0 y 13 y la longitud entre −67 y −79: si ves 73 en la latitud, están cruzadas.',como:'Intercambia los dos valores y revisa las letras: N/S son de latitud, E/W (u O) de longitud.'},
+ coord_dms_dudosa:{col:'verbatimLatitude / verbatimLongitude / decimalLatitude / decimalLongitude',que:'La coordenada en grados, minutos y segundos no se puede leer con certeza: después de los grados viene un solo número con la marca de segundos (7°41”: ¿41 minutos o 4 minutos y 1 segundo?), o hay más de tres números.',porque:'Leerla de una forma u otra puede mover el punto decenas de kilómetros. El programa no adivina: la coordenada queda sin valor hasta que se aclare.',como:'Mírala en la libreta de campo o en el GPS, o compárala con las de la misma localidad, y escríbela completa: grados, minutos (′) y segundos (″).'},
  coord_grados_faltantes:{col:'verbatimLatitude / verbatimLongitude',que:'La coordenada empieza en el símbolo de grados: se perdió el número.',porque:'Sin los grados no hay forma de saber dónde es; el programa no la puede usar.',como:'Búscala en la libreta de campo o en el GPS y vuelve a escribirla completa.'},
  coord_reconstruida:{col:'verbatimLatitude / verbatimLongitude',que:'El número venía sin punto decimal y el programa lo reconstruyó (5432109 se leyó como 5.432109).',porque:'La reconstrucción es una suposición razonable, no un dato: por eso el punto no se dibuja en el mapa hasta que alguien lo confirme.',como:'Confirma el valor contra la fuente original y escríbelo con su punto decimal.'},
  coord_sin_punto:{col:'decimalLatitude / decimalLongitude',que:'Las columnas de latitud y longitud traen el número sin punto decimal (5123456 en vez de 5.123456). El visor usó la coordenada original (verbatimCoordinates), que sí está bien escrita, y leyó esas columnas solo para compararlas. Cubre también el número pegado en un solo bloque (060445.4).',porque:'Un número así no es una coordenada: si el archivo se publica o se abre en otro programa, el punto cae lejísimos o no se lee. Antes el visor lo reconstruía en silencio y el error seguía en el Excel.',como:'Escribe el valor con su punto decimal en esas columnas (5.675859 y −76.597636). Si el Excel guardó los números sin separador, revisa el formato regional de las celdas.'},
@@ -4248,7 +4327,11 @@ function claveBandera(cod){
 }
 QC_INFO.al_repetido={col:'catalogNumber / occurrenceID',que:'Hay otro registro de la misma especie, del mismo día y a 100 m o menos, y además coincide el número de catálogo o de campo, o viene de otro conjunto de datos u otro tipo de registro.',porque:'Un mismo ejemplar publicado dos veces (por la colección y por un proyecto, o por dos proyectos) cuenta doble en cualquier resumen y en los modelos de distribución. El agrupamiento de duplicados de GBIF no los une cuando cambian el número de catálogo, la altitud o quien identificó.',como:'Compara los dos registros (ficha en GBIF o fila del Excel). Si son el mismo ejemplar, deja uno solo y anota el otro en associatedOccurrences; si son individuos distintos de una misma salida, no hay nada que corregir. Es una sospecha, no un veredicto.'};
 QC_INFO.al_lote={col:'decimalLatitude / decimalLongitude / eventDate',que:'Hay otras filas de la misma especie, del mismo día y en el mismo punto (coordenadas iguales hasta el cuarto decimal, unos 11 m).',porque:'En una colección esto suele ser legítimo: varios ejemplares de una misma captura, un lote, tienen la misma especie, el mismo lugar y la misma fecha. Pero también es lo que queda cuando una fila se copió y se pegó por error, y entonces el mismo ejemplar cuenta doble en cualquier resumen.',como:'Mira si cada fila tiene su propio número de catálogo y ejemplar distinto (sexo, etapa, medidas). Si son individuos distintos, no hay nada que corregir. Si es la misma fila copiada, deja una sola. Es una sospecha, no un error: no cuenta en «con error».'};
-QC_INFO.al_fuera_municipio={col:'county / decimalLatitude / decimalLongitude',que:'La coordenada cae fuera del municipio que dice el registro (county, dentro de su departamento), a más de '+MUNI_VECINO_KM+' km de su límite. Se compara con todo el territorio del municipio (casco urbano, veredas y zona rural), no con el pueblo, así que no son los alrededores. El aviso dice en qué municipio cae el punto.',porque:'Un municipio mal escrito, un dígito cambiado en la coordenada o un ejemplar anotado en otro municipio dejan el punto lejos de donde dice el registro. Los límites vienen del DANE (MGN 2025), simplificados a cerca de 1 km. Si el nombre del municipio no se reconoce, o el departamento falta, no se juzga; si el punto está fuera de Colombia, eso ya sale como error y aquí no se repite.',como:'Mira la localidad en la libreta de campo. Si el punto está bien, pon en county el municipio donde cae (la propuesta) y deja el pueblo de referencia en locality. Si el municipio está bien, corrige la coordenada. Es una sospecha: no cuenta en «con error» y no se corrige solo.'};
+QC_INFO.al_fuera_municipio={col:'county / decimalLatitude / decimalLongitude',que:'La coordenada cae fuera del municipio que dice el registro (county, dentro de su departamento), a más de '+MUNI_VECINO_KM+' km de su límite. Se compara con todo el territorio del municipio (casco urbano, veredas y zona rural), no con el pueblo, así que no son los alrededores. El aviso dice en qué municipio cae el punto.',porque:'Un municipio mal escrito, un dígito cambiado en la coordenada o un ejemplar anotado en otro municipio dejan el punto lejos de donde dice el registro. Los límites vienen del DANE (MGN 2025), simplificados a cerca de 1 km. Si el departamento falta no se juzga; si el municipio no se reconoce en su departamento, sale aparte («Municipio que no está en ese departamento»); si el punto está fuera de Colombia, eso ya sale como error y aquí no se repite.',como:'Mira la localidad en la libreta de campo. Si el punto está bien, pon en county el municipio donde cae (la propuesta) y deja el pueblo de referencia en locality. Si el municipio está bien, corrige la coordenada. Es una sospecha: no cuenta en «con error» y no se corrige solo.'};
+QC_INFO.al_municipio_desconocido={col:'county / stateProvince',que:'El municipio que dice el registro no aparece en ese departamento en la lista del DANE. Puede ser una provincia o una vereda en lugar del municipio, un municipio de otro departamento o una escritura que el visor no conoce. El aviso dice, si hay coordenada, en qué municipio cae el punto.',porque:'Sin un municipio que se reconozca no se puede comprobar que la coordenada esté donde dice el registro, y el SiB y GBIF tampoco lo pueden cruzar.',como:'Pon en county el nombre oficial del municipio (la propuesta, si el punto cae en uno) y deja la provincia, la vereda o el corregimiento en locality. Si el municipio es de otro departamento, revisa stateProvince. Es un aviso: no cuenta en «con error» y no se corrige solo.'};
+QC_INFO.al_campo_repetido={col:'recordNumber',que:'Otro registro tiene el mismo número de campo, pero es de otra especie, de otra fecha o de otro municipio.',porque:'El número de campo es el que une el ejemplar con la libreta del colector: si dos ejemplares distintos lo comparten, uno de los dos tiene el número de otro y ya no se puede volver a la libreta. Textos como «Sin etiqueta» o solo las iniciales del colector no son números y no se comparan.',como:'Busca los dos ejemplares en la libreta de campo o en el frasco y corrige el número del que lo tenga mal. Si de verdad son un lote con un solo número, anótalo en occurrenceRemarks. Es una sospecha: no cuenta en «con error».'};
+QC_INFO.al_punto_compartido={col:'decimalLatitude / decimalLongitude / county',que:'Exactamente el mismo punto (hasta el cuarto decimal, unos 11 m) aparece en registros de municipios distintos.',porque:'Suele ser una coordenada genérica (la del centro de la zona de muestreo o la de la expedición) o una coordenada copiada de otra fila. El punto no es donde se colectó y quien lea la base no lo sabe.',como:'Si es una coordenada genérica, anota cuánto puede alejarse del sitio real en coordinateUncertaintyInMeters y explícalo en georeferenceRemarks. Si se copió de otra fila, busca la coordenada de verdad. Es informativo: no cuenta en «con error».'};
+QC_INFO.al_valor_suelto={col:'institutionCode / institutionID / collectionCode',que:'Casi todo el archivo tiene un mismo valor en esta columna y unas pocas filas tienen otro.',porque:'Suele ser un error de digitación (un NIT con otro dígito de verificación) o una fila de otra colección (un anfibio con el código de los reptiles). Al publicar, esas filas quedarían en otra institución o en otra colección.',como:'Si la fila es de esta colección, pon el valor del resto (la propuesta). Si de verdad es de otra, déjala. Es un aviso: no cuenta en «con error» y no se corrige solo.'};
 QC_INFO.al_municipio_vecino={col:'county / decimalLatitude / decimalLongitude',que:'La coordenada cae en los alrededores del municipio que dice el registro: fuera de su límite, pero a '+MUNI_VECINO_KM+' km o menos (los primeros '+MUNI_MARGEN_KM+' km no se avisan, por lo simplificado de los límites). El aviso dice en qué municipio cae el punto.',porque:'Es lo normal cuando se anota el pueblo de referencia y se colecta en sus alrededores. Pero en Darwin Core, county es el municipio donde está el punto, no el pueblo de referencia: el SiB y GBIF lo cruzan con la coordenada.',como:'No es urgente. Si quieres dejarlo exacto, pon en county el municipio donde cae (la propuesta) y el pueblo en locality, por ejemplo «5 km al norte de Barrancabermeja». Es informativo: no cuenta en «con error», queda plegado y no se corrige solo.'};
 QC_INFO.al_obs_colectado={col:'basisOfRecord',que:'basisOfRecord dice observación (HumanObservation, Observation o MachineObservation), pero preparations o disposition dicen que el ejemplar se colectó o está en una colección (colecta, ETOH, alcohol, en colección, preserved, voucher…).',porque:'Un registro no puede ser a la vez una observación y un ejemplar de museo. Con la base equivocada el ejemplar no se cuenta como espécimen, no se ubica en su colección y puede aparecer repetido como observación de otro conjunto de datos.',como:'Si el ejemplar está en la colección, cambia basisOfRecord a PreservedSpecimen (y type a PhysicalObject). Si de verdad solo se observó, borra preparations y disposition.'};
 const NIVEL_ALERTA={alta:'alta',media:'media',info:'informativa'};
@@ -4265,11 +4348,14 @@ function claveConjunto(r){return r.dsKey||norm(r.ds)||norm(r.dsId)||('f:'+(r.__s
 // distancia en metros entre dos registros (plana: sirve para decenas de metros)
 function distM(a,b){const dy=(b.lat-a.lat)*110574,dx=(b.lon-a.lon)*111320*Math.cos((a.lat+b.lat)*Math.PI/360);return Math.sqrt(dx*dx+dy*dy);}
 // Por qué dos registros cercanos de la misma especie y día parecen el mismo ejemplar. Vacío si no hay motivo.
+// el número de campo como clave para comparar, o '' si no es un número: «Sin etiqueta», «S/N», «NA», «000» o solo las iniciales del colector («ABC»).
+// Hasta la 0.34.0 «Sin etiqueta» contaba como número de campo y todos los lotes sin etiqueta salían como «posible registro repetido» (en una base real, 49 de 53).
+function numCampo(rec){const s=String(rec||'');return /[1-9]/.test(s)?norm(s):'';}
 function motivosRepetido(a,b){
   const m=[],ca=catNorm(a.cat);
   if(ca&&ca===catNorm(b.cat))m.push('mismo número de catálogo');
-  const ra=norm(a.rec);
-  if(ra&&ra===norm(b.rec))m.push('mismo número de campo');
+  const ra=numCampo(a.rec);
+  if(ra&&ra===numCampo(b.rec))m.push('mismo número de campo');
   if(claveConjunto(a)!==claveConjunto(b))m.push('otro conjunto de datos');
   if((a.tipo||'otro')!==(b.tipo||'otro'))m.push('otro tipo de registro');
   return m;
@@ -4346,8 +4432,81 @@ function calcularAlertas(){
   });
   // 5. la coordenada fuera del municipio que dice el registro (solo Colombia, solo con coordenada confiable, departamento y municipio que se reconocen)
   const est={evaluados:0,emparejados:0,sinEmparejar:0,avisos:0};
-  DATA.forEach(r=>{const a=avisoMunicipio(r,est);if(a)r.alerta.push(a);});
+  DATA.forEach(r=>{const a=avisoMunicipio(r,est)||avisoMunicipioDesconocido(r);if(a)r.alerta.push(a);});
   muniStats=est;
+  // 6. el mismo número de campo en ejemplares distintos (otra especie, otra fecha u otro municipio). No en descargas de GBIF: ahí se mezclan colectores.
+  // Un número de campo con letras («ABC 123») ya lleva al colector; uno solo de cifras («156») se compara además con el primer colector, y sin colector no se compara.
+  const porCampo=new Map();
+  DATA.forEach((r,i)=>{
+    if(r.gbif)return;const n=numCampo(r.rec);if(!n)return;
+    const col1=norm(String(r.by||'').split(/[|│;]/)[0]);
+    if(!/[a-z]/.test(n)&&!col1)return;
+    const k=(r.__src||'')+''+n+(/[a-z]/.test(n)?'':'|'+col1);
+    const a=porCampo.get(k);if(a)a.push(i);else porCampo.set(k,[i]);
+  });
+  // un archivo en el que más del 10 % de los números de campo se repiten no numera ejemplares sino estaciones o eventos (en peces el número suele
+  // ser el de una estación visitada en varias fechas): en ese archivo no se compara nada
+  const numerados=new Map(),compartidos=new Map();
+  porCampo.forEach((ix,k)=>{const s=k.slice(0,k.indexOf(''));numerados.set(s,(numerados.get(s)||0)+ix.length);if(ix.length>1)compartidos.set(s,(compartidos.get(s)||0)+ix.length);});
+  porCampo.forEach((ix,k)=>{
+    if(ix.length<2)return;
+    const s=k.slice(0,k.indexOf(''));if(compartidos.get(s)/numerados.get(s)>0.1)return;
+    // tres especies o más con un mismo número: es el número de la estación o del evento de muestreo (así se usa en peces), no el de un ejemplar.
+    // Ahí la especie no se compara; la fecha y el municipio sí
+    const estacion=new Set(ix.map(i=>nombreConsulta(especieAceptada(DATA[i])).toLowerCase())).size>=3;
+    ix.forEach(i=>{
+      const A=DATA[i],qa=estacion?'':nombreConsulta(especieAceptada(A)).toLowerCase(),motivos=[];
+      ix.forEach(j=>{
+        if(j===i)return;const B=DATA[j],mot=[];
+        if(qa&&nombreConsulta(especieAceptada(B)).toLowerCase()!==qa)mot.push(B.sci||'otra especie');
+        if(A.date&&B.date&&A.date!==B.date)mot.push(B.date);
+        if(A.mun&&B.mun&&claveMunicipio(A.mun)!==claveMunicipio(B.mun))mot.push(B.mun);
+        if(mot.length)motivos.push((B.cat||B.id||'fila '+B.fila)+' ('+mot.join(', ')+')');
+      });
+      if(motivos.length)A.alerta.push({t:'al_campo_repetido',d:A.rec+' también en '+motivos.slice(0,3).join('; ')+(motivos.length>3?' y '+fmtN(motivos.length-3)+' más':''),v:A.rec,sug:''});
+    });
+  });
+  // 7. el mismo punto exacto (cuatro decimales, unos 11 m) en registros de municipios distintos: coordenada genérica o copiada
+  const porPunto=new Map();
+  DATA.forEach((r,i)=>{
+    if(r.gbif||r.lat==null||r.lon==null||!r.mun)return;
+    const k=(+r.lat).toFixed(4)+'|'+(+r.lon).toFixed(4),a=porPunto.get(k);
+    if(a)a.push(i);else porPunto.set(k,[i]);
+  });
+  porPunto.forEach(ix=>{
+    if(ix.length<2)return;
+    // el municipio del DANE si se reconoce; si no, el nombre, y dos nombres a dos letras o menos son el mismo escrito distinto (una tilde o una letra de más):
+    // así «Paz del Río» y «Paz de Río» o «Tierralta» y «Tierra Alta» no cuentan como dos municipios
+    const cuenta=new Map(),claveDe=new Map();
+    ix.forEach(i=>{
+      const r=DATA[i],m=municipioDe(r.dept,r.mun),k0=m?norm(m.n):claveMunicipio(r.mun);
+      const k=cuenta.has(k0)?k0:([...cuenta.keys()].find(x=>Math.abs(x.length-k0.length)<=2&&distEd(x,k0)<=2)||k0);
+      claveDe.set(i,k);const c=cuenta.get(k);if(c)c.n++;else cuenta.set(k,{n:1,mun:r.mun});
+    });
+    if(cuenta.size<2)return;
+    const orden=[...cuenta.entries()].sort((a,b)=>b[1].n-a[1].n);
+    const d=fmtN(ix.length)+' registros en este punto, de '+orden.map(([,c])=>c.mun+' ('+fmtN(c.n)+')').join(', ');
+    // si un municipio tiene el 90 % o más del punto, el punto es de ese municipio y lo raro son los demás: solo se avisan esos
+    // (cientos de registros de un municipio y uno de otro); si no, el punto entero es sospechoso (coordenada genérica) y se avisan todos
+    const mayor=orden[0][1].n/ix.length>=0.9?orden[0][0]:null;
+    ix.filter(i=>claveDe.get(i)!==mayor).forEach(i=>DATA[i].alerta.push({t:'al_punto_compartido',d,v:(+DATA[i].lat).toFixed(5)+', '+(+DATA[i].lon).toFixed(5),sug:''}));
+  });
+  // 8. institutionCode, institutionID o collectionCode distinto del que tiene casi todo el archivo (90 % o más): las pocas filas distintas (2 % o menos) se avisan
+  const porArchivo=new Map();
+  DATA.forEach((r,i)=>{if(r.gbif)return;const k=r.__src||'',a=porArchivo.get(k);if(a)a.push(i);else porArchivo.set(k,[i]);});
+  porArchivo.forEach(ix=>{
+    if(ix.length<20)return;
+    ['institutionCode','institutionID','collectionCode'].forEach(t=>{
+      const val=i=>t==='institutionCode'?String(DATA[i].inst||'').trim():t==='collectionCode'?String(DATA[i].colc||'').trim():celdaDe(DATA[i],t).trim();
+      const c=new Map();ix.forEach(i=>{const v=val(i);if(v)c.set(v,(c.get(v)||0)+1);});
+      if(c.size<2)return;
+      const orden=[...c.entries()].sort((a,b)=>b[1]-a[1]),[top,nTop]=orden[0],tot=orden.reduce((s,x)=>s+x[1],0);
+      if(nTop/tot<0.9)return;
+      const lim=Math.max(2,Math.floor(tot*0.02)),sueltos=new Set(orden.slice(1).filter(x=>x[1]<=lim).map(x=>x[0]));
+      if(!sueltos.size)return;
+      ix.forEach(i=>{const v=val(i);if(sueltos.has(v))DATA[i].alerta.push({t:'al_valor_suelto',d:t+' = '+v+' (en '+fmtN(nTop)+' de '+fmtN(tot)+' filas dice '+top+')',v,sug:t+': '+top});});
+    });
+  });
 }
 // cifras de las alertas: cuántas hay de cada tipo y cuántos registros tienen alguna de nivel alta/media o solo informativas
 function alertaCifras(){
@@ -4388,8 +4547,8 @@ function bloqueAlertas(){
   let h='<div class="sib-lead">';
   h+='<p class="sib-cifra">Registros con alguna alerta: <b>'+fmtN(nReg)+'</b> de '+fmtN(DATA.length)+'</p>';
   h+='<p class="sib-prop">Para revisar (alta o media): <b>'+fmtN(ac.regFuertes)+'</b> registros. Con alguna informativa: '+fmtN(ac.regInfo)+' registros.</p>';
-  h+='<p class="sib-aviso">Esto no son errores del dato: son avisos. No cuentan en «con error» ni en las cifras de errores, y no cambian nada en tu archivo. Hay dos orígenes: las banderas de GBIF, que vienen de la columna <b>issue</b>'+(nGbif?'':' (solo existe en descargas de GBIF y aquí no hay ninguna cargada)')+', y las alertas que calcula este visor con cualquier archivo: posible registro repetido, posible lote o fila copiada, «observación, pero colectado» y coordenada fuera del municipio. Las del visor son sospechas; en una colección, un lote de ejemplares de la misma captura es normal.</p>';
-  if(muniStats.evaluados)h+='<p class="sib-aviso">Municipio contra coordenada: de '+fmtN(muniStats.evaluados)+' registros de Colombia con coordenada confiable, departamento y municipio, '+fmtN(muniStats.emparejados)+' se emparejaron con la tabla del DANE (MGN 2025) y '+fmtN(muniStats.sinEmparejar)+' no (el nombre no aparece en su departamento; esos no se juzgan). Se compara con el contorno de cada municipio (simplificado a cerca de 1 km), con '+MUNI_MARGEN_KM+' km de margen.</p>';
+  h+='<p class="sib-aviso">Esto no son errores del dato: son avisos. No cuentan en «con error» ni en las cifras de errores, y no cambian nada en tu archivo. Hay dos orígenes: las banderas de GBIF, que vienen de la columna <b>issue</b>'+(nGbif?'':' (solo existe en descargas de GBIF y aquí no hay ninguna cargada)')+', y las alertas que calcula este visor con cualquier archivo: posible registro repetido, posible lote o fila copiada, «observación, pero colectado», coordenada fuera del municipio, municipio que no está en su departamento, mismo número de campo en ejemplares distintos, el mismo punto en varios municipios y códigos distintos al resto del archivo. Las del visor son sospechas; en una colección, un lote de ejemplares de la misma captura es normal.</p>';
+  if(muniStats.evaluados)h+='<p class="sib-aviso">Municipio contra coordenada: de '+fmtN(muniStats.evaluados)+' registros de Colombia con coordenada confiable, departamento y municipio, '+fmtN(muniStats.emparejados)+' se emparejaron con la tabla del DANE (MGN 2025) y '+fmtN(muniStats.sinEmparejar)+' no (el nombre no aparece en su departamento: salen como «Municipio que no está en ese departamento»). Se compara con el contorno de cada municipio (simplificado a cerca de 1 km), con '+MUNI_MARGEN_KM+' km de margen.</p>';
   h+='</div>';
   if(!grupos.length)return h+'<p class="rev-vacio">Ninguna alerta en los datos cargados.</p>';
   const bloque=(nivel,tit,sub)=>{
@@ -4398,8 +4557,8 @@ function bloqueAlertas(){
     h+=gs.length?gs.map(g=>tarjetaRev(g,'alerta')).join(''):'<p class="rev-vacio">Ninguna.</p>';
   };
   bloque('alta','Alta','Es muy probable que el dato esté mal, o GBIF no pudo usarlo.');
-  bloque('media','Media','Para revisar: GBIF duda, o hay un posible repetido, una base del registro que no cuadra o una coordenada lejos del municipio que dice.');
-  bloque('info','Informativas','Lo que GBIF hizo al leer el registro, un posible lote de la misma captura o un punto en los alrededores del municipio. Normalmente no hay nada que corregir.');
+  bloque('media','Media','Para revisar: GBIF duda, o hay un posible repetido, un número de campo en dos ejemplares, una base del registro que no cuadra, un código distinto al del resto, un municipio que no se reconoce o una coordenada lejos del municipio que dice.');
+  bloque('info','Informativas','Lo que GBIF hizo al leer el registro, un posible lote de la misma captura, un punto en los alrededores del municipio o el mismo punto usado en varios municipios. Normalmente no hay nada que corregir.');
   return h;
 }
 
@@ -4747,7 +4906,16 @@ function listaAmenCO(){
   }));
   return AMEN_CO;
 }
-// devuelve {cat, lista (el nombre como está en la lista), via ('nombre', 'especie' si es una subespecie que cuenta por su especie, o 'aceptado')} o null
+// la lista por género, para buscar epítetos parecidos
+let AMEN_GEN=null;
+function amenPorGenero(){
+  if(AMEN_GEN)return AMEN_GEN;
+  AMEN_GEN=tabla();
+  const L=listaAmenCO();
+  Object.keys(L).forEach(k=>{const n=L[k].n,p=n.split(' ');if(p.length!==2)return;const g=norm(p[0]);(AMEN_GEN[g]||(AMEN_GEN[g]=[])).push({e:norm(p[1]),n,cat:L[k].cat});});
+  return AMEN_GEN;
+}
+// devuelve {cat, lista (el nombre como está en la lista), via ('nombre', 'especie' si es una subespecie que cuenta por su especie, 'aceptado', o 'parecido' si el epíteto está a una o dos letras)} o null
 function amenazadaNacional(sci,aceptado){
   const L=listaAmenCO();
   const prueba=txt=>{
@@ -4759,7 +4927,15 @@ function amenazadaNacional(sci,aceptado){
   };
   const a=prueba(sci);if(a)return a;
   const b=aceptado&&aceptado!==sci?prueba(aceptado):null;
-  return b?{cat:b.cat,lista:b.lista,via:'aceptado'}:null;
+  if(b)return {cat:b.cat,lista:b.lista,via:'aceptado'};
+  // sin internet, un epíteto mal escrito no se encontraba (en una base real, 15 registros de dos especies).
+  // Mismo género y el epíteto a una o dos letras de uno solo de la lista: se marca como parecido, para revisar el nombre
+  const w=nombreConsulta(sci).split(' ');
+  if(w.length<2||w[1].length<5)return null;
+  const gi=amenPorGenero()[norm(w[0])];if(!gi)return null;
+  const e=norm(w[1]),lim=e.length>=8?2:1;
+  const cerca=gi.filter(x=>Math.abs(x.e.length-e.length)<=lim&&distEd(e,x.e)<=lim);
+  return cerca.length===1?{cat:cerca[0].cat,lista:cerca[0].n,via:'parecido'}:null;
 }
 // r.amenCO para todos los registros (con una memoria por nombre: un archivo grande repite pocos nombres)
 function calcularAmenazadasCO(){
@@ -4772,14 +4948,14 @@ function calcularAmenazadasCO(){
 }
 function amenBlock(r){
   const a=r.amenCO;if(!a)return '';
-  return '<div class="v-flags"><div class="v-flag falta">Especie amenazada en Colombia ('+esc(AMEN_CO_NOMBRE)+'): <b>'+esc(a.cat)+'</b> · '+esc(IUCN_TXT[a.cat]||'')+(a.lista!==nombreConsulta(r.sci)?' · en la lista como <i>'+esc(a.lista)+'</i>'+(a.via==='especie'?' (una subespecie cuenta por su especie)':a.via==='aceptado'?' (nombre aceptado)':''):'')+'</div></div>';
+  return '<div class="v-flags"><div class="v-flag falta">Especie amenazada en Colombia ('+esc(AMEN_CO_NOMBRE)+'): <b>'+esc(a.cat)+'</b> · '+esc(IUCN_TXT[a.cat]||'')+(a.lista!==nombreConsulta(r.sci)?' · en la lista como <i>'+esc(a.lista)+'</i>'+(a.via==='especie'?' (una subespecie cuenta por su especie)':a.via==='aceptado'?' (nombre aceptado)':a.via==='parecido'?' (nombre parecido: revisa si está mal escrito)':''):'')+'</div></div>';
 }
 // encabezado de la pestaña de nombres: no necesita internet
 function bloqueAmenCO(){
   const t=tabla();let nReg=0;
   DATA.forEach(r=>{const a=r.amenCO;if(!a)return;nReg++;const g=t[a.lista]||(t[a.lista]={lista:a.lista,cat:a.cat,n:0});g.n++;});
   const filas=Object.values(t).sort((a,b)=>b.n-a.n);
-  const nota='Se compara el nombre científico (sin autoría) con la lista de la Resolución 0126 de 2024 del Ministerio de Ambiente, que va dentro del visor: no usa internet. Fuente: lista publicada por el SiB Colombia (v1.2, DOI 10.15472/frowz3, CC0). Un sinónimo que no esté en la lista no se detecta, salvo que la verificación de nombres (abajo) lo lleve a su nombre aceptado.';
+  const nota='Se compara el nombre científico (sin autoría) con la lista de la Resolución 0126 de 2024 del Ministerio de Ambiente, que va dentro del visor: no usa internet. Fuente: lista publicada por el SiB Colombia (v1.2, DOI 10.15472/frowz3, CC0). Un sinónimo que no esté en la lista no se detecta, salvo que la verificación de nombres (abajo) lo lleve a su nombre aceptado. Un epíteto a una o dos letras de uno de la lista, en el mismo género, cuenta como parecido: puede ser la especie mal escrita.';
   if(!filas.length)return '<div class="sib-lead"><p class="sib-cifra">Especies amenazadas en Colombia: ninguna</p><p class="sib-aviso">'+esc(nota)+'</p></div>';
   let c='<div class="rev-card falta"><div class="rev-card-h"><span class="rev-n">'+fmtN(filas.length)+'</span><h3>Especies amenazadas en Colombia (Res. 0126 de 2024)</h3><code>'+fmtN(nReg)+' registro'+(nReg===1?'':'s')+'</code></div>';
   c+='<p class="rev-q"><b>Qué pasó:</b> '+esc(nota)+'</p>';
@@ -4971,7 +5147,7 @@ window.addEventListener('resize',debounce(()=>{
 // ====== INFORME PARA IMPRIMIR ======
 // Arma el informe dentro de #informeImp (oculto en pantalla) y abre el diálogo de imprimir del navegador, donde se puede «Guardar como PDF».
 // En papel todo es blanco y negro, con cualquier tema. Sin librerías y sin enviar nada: es el mismo DOM del visor.
-const VERSION_VISOR='0.34.0';
+const VERSION_VISOR='0.35.0';
 const CASOS_INFORME=5; // casos que se muestran por tipo de hallazgo
 function hallazgosInforme(){
   const capas=[{k:'err',tit:'Errores',sub:'Contradicciones y valores que no corresponden.',t:{}},{k:'falta',tit:'Campos vacíos',sub:'Datos importantes que faltan.',t:{}},
