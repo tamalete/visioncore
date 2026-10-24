@@ -1,4 +1,9 @@
-# VisionCore
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/visioncore-horizontal.svg">
+    <img src="docs/visioncore-horizontal-claro.svg" alt="VisionCore" width="360">
+  </picture>
+</h1>
 
 Visor y validador de datos **Darwin Core** para colecciones biológicas. Abre un archivo de la plantilla del SiB Colombia o una descarga de GBIF, lo pone en un mapa y te dice qué hay que corregir antes de publicarlo — con la corrección concreta, no solo el diagnóstico.
 

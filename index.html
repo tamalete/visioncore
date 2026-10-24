@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VisionCore · visor y validador Darwin Core</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' rx='44' fill='%230c1015'/%3E%3Cpath d='M16 100 Q100 22 184 100 Q100 178 16 100 Z' fill='none' stroke='%234fd39a' stroke-width='14' stroke-linejoin='round'/%3E%3Ccircle cx='100' cy='100' r='35' fill='%234fd39a'/%3E%3Cellipse cx='100' cy='100' rx='24' ry='10' fill='%230c1015'/%3E%3C/svg%3E">
 <script>
 // tema desde el hash (#tema=claro) antes de pintar, para que no parpadee; sin hash o con un valor desconocido queda oscuro
 (function(){try{var m=/(?:^#|&)tema=([a-z-]+)/.exec(location.hash);if(m&&['oscuro','claro','alto-contraste','daltonismo'].indexOf(m[1])>=0)document.documentElement.setAttribute('data-theme',m[1]);}catch(e){}})();
@@ -54,6 +55,13 @@ body.aside-hidden .aside-toggle{left:0;transform:translateY(-50%) rotate(180deg)
 .kicker{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .kicker::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
 h1{font-weight:600;font-size:24px;line-height:1.08;letter-spacing:-.02em}
+.masthead h1{display:flex;align-items:center;gap:.4em}
+/* el ojo del logo (identidad/logo) sigue el tema; a este tamaño va la versión de favicon, sin brillo */
+.marca-ojo{width:1.3em;height:1.3em;flex:none}
+.marca-ojo .ojo-c{fill:none;stroke:var(--accent);stroke-width:14;stroke-linejoin:round}
+.marca-ojo .ojo-i{fill:var(--accent)}
+.marca-ojo .ojo-p{fill:var(--bg)}
+[data-theme="claro"] .marca-ojo .ojo-p{fill:#0c1015}
 .sub{font-size:12.5px;color:var(--txt2);margin-top:8px;line-height:1.5}
 .tema-fila{display:flex;align-items:center;gap:9px;margin-top:10px}
 .tema-fila label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)}
@@ -665,8 +673,8 @@ body.capas-off .layers-panel{display:none}
     <span class="hoja-txt" id="hojaTxt">Panel de datos</span>
   </button>
   <div class="masthead">
-    <div class="kicker">VISIONCORE · v35</div>
-    <h1>Visor Darwin Core</h1>
+    <div class="kicker">VISIONCORE · v36</div>
+    <h1><svg class="marca-ojo" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><path class="ojo-c" d="M16 100 Q100 22 184 100 Q100 178 16 100 Z"/><circle class="ojo-i" cx="100" cy="100" r="35"/><ellipse class="ojo-p" cx="100" cy="100" rx="24" ry="10"/></svg>Visor Darwin Core</h1>
     <div class="tema-fila"><label for="temaSel">Tema</label>
       <select id="temaSel" aria-label="Tema de color">
         <option value="oscuro">Oscuro</option><option value="claro">Claro</option><option value="alto-contraste">Alto contraste</option><option value="daltonismo">Daltonismo (paleta segura)</option>
@@ -759,7 +767,7 @@ body.capas-off .layers-panel{display:none}
         <div class="list" id="list"></div>
       </div>
     </section>
-    <footer class="pie">VisionCore v35 · UPTC</footer>
+    <footer class="pie">VisionCore v36 · UPTC</footer>
   </div>
 </aside>
 <button class="aside-toggle" id="asideToggle" onclick="toggleAside()" title="Ocultar/mostrar panel" aria-label="Ocultar o mostrar el panel lateral">‹</button>
@@ -5147,7 +5155,7 @@ window.addEventListener('resize',debounce(()=>{
 // ====== INFORME PARA IMPRIMIR ======
 // Arma el informe dentro de #informeImp (oculto en pantalla) y abre el diálogo de imprimir del navegador, donde se puede «Guardar como PDF».
 // En papel todo es blanco y negro, con cualquier tema. Sin librerías y sin enviar nada: es el mismo DOM del visor.
-const VERSION_VISOR='0.35.0';
+const VERSION_VISOR='0.36.0';
 const CASOS_INFORME=5; // casos que se muestran por tipo de hallazgo
 function hallazgosInforme(){
   const capas=[{k:'err',tit:'Errores',sub:'Contradicciones y valores que no corresponden.',t:{}},{k:'falta',tit:'Campos vacíos',sub:'Datos importantes que faltan.',t:{}},

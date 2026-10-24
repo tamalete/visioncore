@@ -2,6 +2,15 @@
 
 El proyecto se desarrolló como versiones numeradas de un archivo HTML antes de existir como repositorio; esta es la historia resumida. El repositorio arrancó en 0.23.0 porque la versión interna vigente era la v23; la numeración sigue la interna (v30 = 0.30.0). Las versiones intermedias no se publicaron una por una.
 
+## 0.36.0 — 24 de octubre de 2026
+
+VisionCore estrena logo: un ojo con iris verde y la pupila horizontal de una rana, por la *visión* del visor y el origen herpetológico del proyecto.
+
+- **Favicon** en la pestaña del navegador. Va incrustado en el HTML, así que el visor sigue siendo un solo archivo.
+- **El ojo en la cabecera**, junto al título. Toma el color de cada tema (oscuro, claro, alto contraste y daltonismo).
+- **El logo arriba del README**, en versión para fondo oscuro y para fondo claro (`docs/visioncore-horizontal.svg` y `-claro.svg`). GitHub muestra la que corresponde a tu tema.
+- Las reglas, las cifras y las pruebas no cambian: 114 casos, y el ejemplo da lo mismo que en la 0.35.0.
+
 ## 0.35.0 — 21 de octubre de 2026
 
 Sale de revisar la base de anfibios de la UPTC registro por registro contra el visor. Todos los errores que marcaba el visor eran reales, pero había una alerta falsa y varios errores reales que pasaban sin aviso.

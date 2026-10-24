@@ -8,8 +8,8 @@ authors:
     affiliation: "Universidad Pedagógica y Tecnológica de Colombia"
     city: "Tunja"
     country: CO
-version: "0.35.0"
-date-released: "2026-10-21"
+version: "0.36.0"
+date-released: "2026-10-24"
 license: Apache-2.0
 abstract: >-
   Aplicación web de una sola página que lee archivos Darwin Core con la plantilla
