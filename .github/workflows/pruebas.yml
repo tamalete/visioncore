@@ -12,3 +12,6 @@ jobs:
           node-version: 'lts/*'
       - run: node pruebas/correr.js
       - run: node pruebas/unidad.js
+      - run: node pruebas/casos.js
+      - run: node pruebas/presentacion.js
+      - run: node pruebas/idavuelta.js
