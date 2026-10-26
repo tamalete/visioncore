@@ -239,6 +239,46 @@ ok(!cV2.some(c=>verb(c.columna)),'v2 sintético: una decisión escribió en una 
 const rv=decidir(a2.wb).find(p=>p.codigo_regla==='coord_sin_punto');
 ok(!rv||/verbatim/.test(rv.resultado),`v2 sintético: coord_sin_punto en verbatim debía quedar con el motivo «verbatim» y dice «${rv&&rv.resultado}»`);
 
+// ================= 5. longitud sin W con las decimales vacías o en grados: la propuesta las llena; la decimal ya negativa no se marca =================
+seccion='decimales llenas';
+{
+  const filasD=[
+    S.fila(0,{decimalLatitude:undefined,decimalLongitude:undefined,verbatimLatitude:'5.54',verbatimLongitude:'73.36'}),     // vacías, verbatim decimal
+    S.fila(1,{decimalLatitude:'5°32\'24" N',decimalLongitude:'73°21\'36"'}),                                              // grados y minutos en las decimales
+    S.fila(2,{decimalLatitude:undefined,decimalLongitude:undefined,verbatimCoordinates:'5.54, 73.36'}),                    // vacías, verbatimCoordinates
+    S.fila(3,{decimalLatitude:5.54,decimalLongitude:-73.36,verbatimCoordinates:'5.54, 73.36'}),                            // decimal negativa y verbatim positivo: no se marca
+    S.fila(4,{decimalLatitude:5.54,decimalLongitude:73.36,verbatimCoordinates:'5.54, 73.36'})                              // decimal positiva: la propuesta de siempre
+  ];
+  const wbD=S.libro(XL,filasD,ETQ),archD='sintetico_decimales.xlsx';
+  const recD=cargar(wbD,archD).recs;
+  const lonD=recD.map(r=>(r.iss||[]).some(x=>x.t==='lon_sin_hemisferio'));
+  igual(lonD,[true,true,true,false,true],'filas con lon_sin_hemisferio en el libro de decimales');
+  const posD=recD.map(r=>[r.lat,r.lon]);
+  const d1=descargar(),pd1=decidir(d1.wb).filter(p=>p.codigo_regla==='lon_sin_hemisferio');
+  igual(pd1.length,4,'propuestas lon_sin_hemisferio en «Por decidir»');
+  ok(pd1.some(p=>/convertida de grados a decimales y con W/.test(p.propuesta)),'una propuesta debía decir «convertida de grados a decimales y con W»');
+  ok(pd1.filter(p=>/tomada de verbatim/.test(p.propuesta)&&/ y con W\)$/.test(p.propuesta)).length===2,'dos propuestas debían decir «tomada de verbatim… y con W»');
+  ok(pd1.every(p=>p.visioncore_la_aplica==='sí, al volver a cargar'),'todas las propuestas de longitud se aplican al volver a cargar');
+  const wD=guardarYAbrir(d1.wb),iAD=aoa(wD,'Por decidir')[0].indexOf(COLAPL);
+  decidir(wD).forEach(p=>{if(p.codigo_regla==='lon_sin_hemisferio')poner(wD,'Por decidir',p._fila-1,iAD,'sí');});
+  cargar(guardarYAbrir(wD),d1.nombre);
+  const d2=descargar(),PD2=aoa(d2.wb,'Plantilla'),h2=PD2[0],iLa=h2.indexOf('decimalLatitude'),iLo=h2.indexOf('decimalLongitude');
+  const num=v=>typeof v==='number'?v:+String(v).replace(',','.');
+  igual([0,1,2].map(i=>[num(PD2[2+i][iLa]),num(PD2[2+i][iLo])]),[[5.54,-73.36],[5.54,-73.36],[5.54,-73.36]],'decimales escritas en las tres filas que estaban vacías o en grados');
+  igual(num(PD2[6][iLo]),-73.36,'la decimal positiva (fila 7) pasa a negativa con la propuesta de siempre');
+  igual(num(PD2[6][iLa]),5.54,'la latitud numérica de la fila 7 no se toca');
+  igual(num(PD2[5][iLo]),-73.36,'la decimal que ya era negativa (fila 6) sigue igual');
+  const cD2=cambios(d2.wb);
+  ok(!cD2.some(c=>verb(c.columna)),'las decisiones de longitud escribieron en una columna verbatim');
+  ok(cD2.filter(c=>/^Aprobada/.test(c.regla)&&/convertida de grados|tomada de verbatim/.test(c.regla)).length===6,'«Cambios» debía decir de dónde sale cada decimal escrita (6 celdas)');
+  const wbD0=aoa(wbD,'Plantilla');
+  wbD0[0].forEach((h,j)=>{if(verb(h))for(let i=2;i<wbD0.length;i++)ok(txt(wbD0[i][j])===txt(PD2[i][h2.indexOf(h)]),`decimales llenas: ${h} fila ${i+1} cambió`);});
+  // al recargar la v2 ya no queda ningún lon_sin_hemisferio, y los puntos no se movieron
+  const rec2=cargar(guardarYAbrir(d2.wb),d2.nombre).recs;
+  igual(rec2.map(r=>(r.iss||[]).some(x=>x.t==='lon_sin_hemisferio')),[false,false,false,false,false],'filas con lon_sin_hemisferio al recargar la v2');
+  igual(rec2.map(r=>[r.lat,r.lon]),posD,'posiciones de los registros antes y después de aplicar');
+}
+
 console.log(`\nVisor: ${path.relative(process.cwd(),html)}`);
 if(mal)console.log('FALLAS:\n'+fallos.join('\n'));
 console.log(`${bien} comprobaciones bien, ${mal} fallan`);
