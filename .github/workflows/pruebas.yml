@@ -10,4 +10,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-      - run: node pruebas/todo.js   # sintaxis de cada <script> y las cinco pruebas
+      - run: node pruebas/todo.js   # sintaxis de cada <script>, las cinco pruebas y la de navegador (Chrome viene en ubuntu-latest)

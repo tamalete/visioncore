@@ -1,11 +1,11 @@
-// Todas las pruebas de una vez: sintaxis de cada <script> del HTML y luego las cinco pruebas.
+// Todas las pruebas de una vez: sintaxis de cada <script> del HTML, las cinco pruebas sin navegador y la de navegador.
 //   node pruebas/todo.js [ruta_al_html]
 // Sale con 1 si algo falla. Es lo que corren el hook pre-commit (.githooks/) y la acción de GitHub.
 const fs=require('fs'),path=require('path'),vm=require('vm'),{spawnSync}=require('child_process');
 const RAIZ=path.resolve(__dirname,'..');
 const html=path.resolve(process.argv[2]||path.join(RAIZ,'index.html'));
 if(!fs.existsSync(html)){console.error('No existe '+html);process.exit(1);}
-const PRUEBAS=['correr','unidad','casos','presentacion','idavuelta'];
+const PRUEBAS=['correr','unidad','casos','presentacion','idavuelta','navegador']; // navegador: se omite sola si no hay Chrome, Chromium ni Edge
 let fallas=0;
 
 // 1. sintaxis: cada <script> sin src se compila sin correrlo; el error dice la línea del HTML
@@ -21,7 +21,7 @@ if(!n){fallas++;console.error('FALLA: el HTML no tiene ningún <script> propio')
 console.log((fallas?'✗':'✓')+' sintaxis ('+n+' bloques <script>)');
 if(fallas){console.error('\nNo se corren las pruebas: el visor ni siquiera compila.');process.exit(1);}
 
-// 2. las cinco pruebas, cada una en su propio proceso (así un estado global no se cuela de una a otra)
+// 2. las pruebas, cada una en su propio proceso (así un estado global no se cuela de una a otra)
 for(const p of PRUEBAS){
   const r=spawnSync(process.execPath,[path.join(__dirname,p+'.js'),html],{encoding:'utf8'});
   const salida=(r.stdout||'')+(r.stderr||'');

@@ -1,15 +1,34 @@
 # Pruebas automáticas
 
-Corren sin navegador y sin dependencias (solo Node 18 o superior). Cargan el `<script>` del visor en un `vm` con un DOM falso y usan el SheetJS de `vendor/`. Solo usan datos sintéticos de `ejemplo/`.
+Sin dependencias (Node 22 o superior). Las cinco primeras cargan el `<script>` del visor en un `vm` con un DOM falso y usan el SheetJS de `vendor/`; la de navegador usa el Chrome, Chromium o Edge que haya en el equipo. Solo usan datos sintéticos de `ejemplo/`.
 
 ```
-node pruebas/todo.js          # todo de una vez: sintaxis de cada <script> y las cinco de abajo
+node pruebas/todo.js          # todo de una vez: sintaxis de cada <script> y las seis de abajo
 node pruebas/correr.js        # cifras del ejemplo contra pruebas/esperado.json
 node pruebas/unidad.js        # funciones puras: fechas, coordenadas, horas, catClave
 node pruebas/casos.js         # una fila (o un pequeño libro) por regla: qué debe salir y qué no (falsos positivos)
 node pruebas/presentacion.js  # hechos de columna de la pestaña del SiB (sibColumnas): la lógica, no el HTML
 node pruebas/idavuelta.js     # Excel corregido -> «sí» en «Por decidir» -> recarga -> versión _v2, _v3
+node pruebas/navegador.js     # en un navegador real y SIN RED: carga el ejemplo y recorre temas, revisión, ficha, celular e informe
 ```
+
+## En un navegador real (`navegador.js`)
+
+Abre el visor en Chrome, Chromium o Edge sin ventana (por el protocolo de DevTools, con el `WebSocket` de Node) y **sin red**:
+el visor tiene que funcionar sin conexión. Las librerías salen de `vendor/` aunque el HTML apunte a un CDN. En escritorio
+(1400×900) y en celular (390×844) carga el ejemplo y abre la revisión (sus tres pestañas), la ficha, el panel del celular,
+los cuatro temas y el informe para imprimir. Falla si salta cualquier error de JavaScript. Si no hay navegador, se omite
+(`CHROME=/ruta` para indicar uno).
+
+Con dos archivos compara además **el estilo calculado de cada elemento** (unos 40.000: cada estado, cada tema, los dos
+tamaños y la vista de impresión) y dice qué propiedad cambió y dónde. Sirve para reordenar el CSS sin cambiar nada:
+
+```
+node pruebas/navegador.js antes.html despues.html
+```
+
+No mira `:hover` ni `:focus`. Dentro del mapa ignora la posición (`transform`) y los marcadores que una de las dos páginas
+todavía no dibujó: dependen del mapa, no del CSS.
 
 Contra otro archivo del visor (por ejemplo un borrador del taller, desde `repositorio/`):
 
