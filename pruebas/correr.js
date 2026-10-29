@@ -20,7 +20,7 @@ for(const f of archivos){
   srcs.push({name:f,recs:r.recs,hoja:r.hoja});
 }
 X.setSources(srcs);
-try{X.unirFuentes();}catch(e){console.error('(aviso) unirFuentes falló:',e.message);}
+try{X.unirFuentes();}catch(e){console.error('FALLA: unirFuentes falló:',e.message);process.exit(1);}
 
 const sumar=(o,k)=>{o[k]=(o[k]||0)+1;};
 const obtenido={};

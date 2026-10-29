@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Antes de cada commit: si cambia el visor, sus pruebas, el ejemplo o vendor/, corre pruebas/todo.js
+# contra el index.html tal como va en el commit (lo que está en el índice, no lo que hay en disco).
+# Si algo falla, el commit no se hace. Se activa con: git config core.hooksPath .githooks
+# Para una emergencia (nunca para tapar una falla): git commit --no-verify
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+if ! git diff --cached --name-only | grep -qE '^(index\.html|pruebas/|ejemplo/|vendor/)'; then
+  exit 0
+fi
+if ! command -v node >/dev/null 2>&1; then
+  echo "pre-commit: no está Node, no se pueden correr las pruebas. Instálalo o usa --no-verify sabiendo que van sin revisar." >&2
+  exit 1
+fi
+
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+git show :index.html > "$tmp/index.html" || exit 1
+echo "pre-commit: pruebas del index.html que va en el commit…"
+if ! node pruebas/todo.js "$tmp/index.html"; then
+  echo >&2
+  echo "pre-commit: el commit NO se hizo porque falla una prueba (arriba dice cuál)." >&2
+  exit 1
+fi

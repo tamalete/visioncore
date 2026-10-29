@@ -21,7 +21,10 @@ function cargarVisor(rutaHtml){
   // siempre el SheetJS local, aunque el HTML apunte a un CDN
   vm.runInContext(fs.readFileSync(path.join(RAIZ,'vendor/sheetjs/xlsx.full.min.js'),'utf8'),ctx);
   code=code.replace(/\blet (DATA|sources)\b/g,'var $1');
-  try{vm.runInContext(code,ctx);}catch(e){console.error('(aviso) error al inicializar el script del visor:',e.message);}
+  // si el script revienta al arrancar, el visor no sirve en el navegador: la prueba falla aquí, no sigue a medias
+  // (lineOffset: los números de línea del error son los del HTML)
+  try{vm.runInContext(code,ctx,{filename:rutaHtml,lineOffset:html.slice(0,i0).split('\n').length-1});}
+  catch(e){console.error('FALLA: el script del visor no arranca: '+e.name+': '+e.message+' ('+String(e.stack||'').split('\n')[0]+')');process.exit(1);}
   return ctx;
 }
 // evalúa una expresión dentro del contexto del visor

@@ -3,6 +3,7 @@
 Corren sin navegador y sin dependencias (solo Node 18 o superior). Cargan el `<script>` del visor en un `vm` con un DOM falso y usan el SheetJS de `vendor/`. Solo usan datos sintéticos de `ejemplo/`.
 
 ```
+node pruebas/todo.js          # todo de una vez: sintaxis de cada <script> y las cinco de abajo
 node pruebas/correr.js        # cifras del ejemplo contra pruebas/esperado.json
 node pruebas/unidad.js        # funciones puras: fechas, coordenadas, horas, catClave
 node pruebas/casos.js         # una fila (o un pequeño libro) por regla: qué debe salir y qué no (falsos positivos)
@@ -10,17 +11,19 @@ node pruebas/presentacion.js  # hechos de columna de la pestaña del SiB (sibCol
 node pruebas/idavuelta.js     # Excel corregido -> «sí» en «Por decidir» -> recarga -> versión _v2, _v3
 ```
 
-Contra otro archivo del visor (por ejemplo un borrador del taller):
+Contra otro archivo del visor (por ejemplo un borrador del taller, desde `repositorio/`):
 
 ```
-node pruebas/correr.js ../../versiones/visioncore/visioncore_vNN_borrador.html
-node pruebas/unidad.js ../../versiones/visioncore/visioncore_vNN_borrador.html
-node pruebas/casos.js ../../versiones/visioncore/visioncore_vNN_borrador.html
-node pruebas/presentacion.js ../../versiones/visioncore/visioncore_vNN_borrador.html
-node pruebas/idavuelta.js ../../versiones/visioncore/visioncore_vNN_borrador.html
+node pruebas/todo.js ../versiones/visioncore/visioncore_vNN_borrador.html
 ```
 
-Todas terminan con código 1 si algo cambia, y dicen qué cifra o caso cambió.
+Cada prueba suelta acepta la misma ruta.
+
+Todas terminan con código 1 si algo cambia, y dicen qué cifra o caso cambió. Si el script del visor no arranca (un error al cargarlo), fallan de una vez; antes solo avisaban y seguían.
+
+## Antes de cada commit
+
+`.githooks/pre-commit` corre `todo.js` contra el `index.html` que va en el commit, cuando el commit toca `index.html`, `pruebas/`, `ejemplo/` o `vendor/`. Si algo falla, el commit no se hace. Se activa una vez en cada copia del repositorio con `git config core.hooksPath .githooks`. La acción de GitHub corre lo mismo después de cada push.
 
 ## Regla
 

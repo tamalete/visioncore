@@ -1,0 +1,2 @@
+# Los hooks de git corren con bash también en Windows: sin CRLF
+.githooks/* text eol=lf
