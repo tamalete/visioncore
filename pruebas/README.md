@@ -1,14 +1,15 @@
 # Pruebas automáticas
 
-Sin dependencias (Node 22 o superior). Las cinco primeras cargan el `<script>` del visor en un `vm` con un DOM falso y usan el SheetJS de `vendor/`; la de navegador usa el Chrome, Chromium o Edge que haya en el equipo. Solo usan datos sintéticos de `ejemplo/`.
+Sin dependencias (Node 22 o superior). Las seis primeras cargan el `<script>` del visor en un `vm` con un DOM falso y usan el SheetJS de `vendor/`; la de navegador usa el Chrome, Chromium o Edge que haya en el equipo. Solo usan datos sintéticos de `ejemplo/`.
 
 ```
-node pruebas/todo.js          # todo de una vez: sintaxis de cada <script> y las seis de abajo
+node pruebas/todo.js          # todo de una vez: sintaxis de cada <script> y las siete de abajo
 node pruebas/correr.js        # cifras del ejemplo contra pruebas/esperado.json
 node pruebas/unidad.js        # funciones puras: fechas, coordenadas, horas, catClave
 node pruebas/casos.js         # una fila (o un pequeño libro) por regla: qué debe salir y qué no (falsos positivos)
 node pruebas/presentacion.js  # hechos de columna de la pestaña del SiB (sibColumnas): la lógica, no el HTML
 node pruebas/idavuelta.js     # Excel corregido -> «sí» en «Por decidir» -> recarga -> versión _v2, _v3
+node pruebas/gbif.js          # importación de una descarga de GBIF: occurrence.txt y .zip DwC-A, campos mapeados y errores por fila
 node pruebas/navegador.js     # en un navegador real y SIN RED: carga el ejemplo y recorre temas, revisión, ficha, celular e informe
 ```
 
@@ -66,3 +67,13 @@ Las dos se omiten solas contra un visor que no tiene `sibColumnas` (hechos de co
 
 - `presentacion.js` comprueba que los hechos de columna del ejemplo se agrupan (8 columnas, listos 14 de 14), los umbrales (90 %, mínimo 5 registros, un solo valor), que lo agrupado más lo suelto cuadra con el total y que `r.sib` no cambia. No mira el HTML de la tarjeta o la tabla.
 - `idavuelta.js` reemplaza `XLSX.writeFile` para atrapar el libro, lo guarda y lo vuelve a abrir en memoria (así viajan los comentarios), y revisa hojas, comentarios, columnas `verbatim*`, «Por decidir», la recarga con «sí», el nombre `_v2` / `_v3` y los motivos de lo que no se puede aplicar. Incluye una celda cambiada a mano antes de recargar y un libro sintético con coordenadas en columnas `verbatim*`. Con datos reales (UPTC, Güepsa) no se corre aquí: eso se hace a mano en el taller.
+
+## Descarga de GBIF (`gbif.js`)
+
+Prueba la importación de una descarga de GBIF por el mismo camino que el botón de abrir archivo (`abrirLibro` -> `parseWorkbook` -> `unirFuentes`). Usa `ejemplo/gbif_occurrence_ejemplo.txt`: 8 registros inventados (especies reales de anfibios y reptiles de Colombia; gbifID, catálogos, localidades y personas ficticios) con columnas de una descarga simple de GBIF (`gbifID`, `datasetKey`, `decimalLatitude`, `scientificName`, `issue`…).
+
+- **TSV (`occurrence.txt`)**: se reconoce como descarga de GBIF, entran 8 registros, se mapean `gbifID`, `scientificName`, `decimalLatitude/Longitude`, `catalogNumber`, `occurrenceID`, `family` y la fecha, y los registros salen marcados como de GBIF.
+- **Errores por fila**: `clase_incongruente` (Rhinella marina con `class = Reptilia`) y nada más en esa fila; `coord_fuera_rango` (latitud 95,5); `sin_coordenadas`; las banderas de la columna `issue` salen como alertas `ag_*`; dos filas sanas no sacan ningún hallazgo.
+- **DwC-A (`.zip`)**: la prueba arma en memoria un zip sin compresión con `meta.xml`, `occurrence.txt`, `verbatim.txt` y el EML de un conjunto (`dataset/<datasetKey>.xml`). Comprueba que lee `occurrence.txt` y no `verbatim.txt`, que da los mismos registros y hallazgos que el TSV, que el título del conjunto sale del EML y que un zip sin `occurrence.txt` se rechaza con un mensaje claro.
+- No cubre la verificación de nombres contra GBIF (red) ni zips comprimidos con deflate (el navegador los abre con `DecompressionStream`, que el DOM falso no tiene). Se omite sola contra un visor sin `abrirLibro`.
+- Para cambiar el ejemplo hay que ajustar a la vez los números de fila de `gbif.js`.

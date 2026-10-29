@@ -5,7 +5,7 @@ const fs=require('fs'),path=require('path'),vm=require('vm'),{spawnSync}=require
 const RAIZ=path.resolve(__dirname,'..');
 const html=path.resolve(process.argv[2]||path.join(RAIZ,'index.html'));
 if(!fs.existsSync(html)){console.error('No existe '+html);process.exit(1);}
-const PRUEBAS=['correr','unidad','casos','presentacion','idavuelta','navegador']; // navegador: se omite sola si no hay Chrome, Chromium ni Edge
+const PRUEBAS=['correr','unidad','casos','presentacion','idavuelta','gbif','navegador']; // navegador: se omite sola si no hay Chrome, Chromium ni Edge
 let fallas=0;
 
 // 1. sintaxis: cada <script> sin src se compila sin correrlo; el error dice la línea del HTML
